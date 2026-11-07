@@ -1,82 +1,82 @@
 <meta name="dash-one-writer">
 <style>
-#dash-root { --dash-gutter: clamp(12px, 2.4vw, 28px); }
+#dash-root { --dash-gutter: clamp(12px, 2vw, 24px); }
 .sw {
   --sw-font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --sw-radius: 18px;
-  max-width: 1320px; margin-inline: auto;
+  --sw-radius: 16px;
+  max-width: 1360px; margin-inline: auto;
   font-family: var(--sw-font); color: var(--color-fg);
-  display: grid; gap: 12px; padding-block: 8px 20px;
+  display: grid; gap: 10px; padding-block: 4px 8px;
   -webkit-font-smoothing: antialiased;
 }
 .sw * { box-sizing: border-box; }
-.sw-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 6px 24px; padding-inline: 2px; }
-.sw-head h1 { margin: 0; font-size: clamp(22px, 2.6vw, 32px); line-height: 1.1; letter-spacing: -0.03em; font-weight: 700; text-wrap: balance; }
+.sw-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 20px; padding-inline: 2px; }
+.sw-head h1 { margin: 0; font-size: clamp(20px, 2vw, 26px); line-height: 1.15; letter-spacing: -0.03em; font-weight: 700; }
 .sw-head h1 span { color: var(--color-fg-muted); }
-.sw-meta { margin: 0; font-size: 13px; color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+.sw-meta { margin: 0; font-size: 12px; color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
 .sw-meta b { color: var(--color-fg); font-weight: 600; }
 
-.sw-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--sw-radius); padding: 16px 18px; display: grid; gap: 12px; align-content: start; min-width: 0; }
-.sw-card h2 { margin: 0; font-size: 13px; font-weight: 600; color: var(--color-fg-muted); letter-spacing: .01em; }
+.sw-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--sw-radius); padding: 14px 16px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.sw-card h2 { margin: 0; font-size: 12px; font-weight: 600; color: var(--color-fg-muted); letter-spacing: .01em; }
 
-.sw-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: 12px; }
-.sw-kpi { grid-template-columns: 1fr auto; align-items: center; gap: 4px 12px; }
-.sw-kpi h2 { grid-column: 1 / -1; }
-.sw-kpi-value { font-size: clamp(32px, 3.4vw, 42px); line-height: 1; font-weight: 700; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
-.sw-kpi-note { grid-column: 1; font-size: 12px; line-height: 1.35; color: var(--color-fg-muted); }
-.sw-ring { grid-column: 2; grid-row: 2 / span 2; width: 52px; height: 52px; display: block; }
+.sw-top { display: grid; grid-template-columns: 1.55fr 1fr; gap: 10px; }
+.sw-focus { background: var(--color-fg); color: var(--color-bg); border-color: var(--color-fg); padding: 18px 22px; gap: 14px; }
+.sw-focus h2 { color: color-mix(in srgb, var(--color-bg) 62%, transparent); }
+.sw-focus-head { margin: 0; font-size: clamp(22px, 2.3vw, 30px); line-height: 1.1; letter-spacing: -0.035em; font-weight: 700; text-wrap: balance; max-width: 26ch; }
+.sw-focus-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.sw-focus-item { display: grid; gap: 4px; padding: 10px 12px; border-radius: 12px; background: color-mix(in srgb, var(--color-bg) 9%, transparent); align-content: start; }
+.sw-focus-item b { font-size: 11px; font-weight: 600; letter-spacing: .02em; color: color-mix(in srgb, var(--color-bg) 62%, transparent); }
+.sw-focus-item span { font-size: 14px; line-height: 1.3; font-weight: 600; }
+.sw-focus-note { margin: 0; font-size: 11px; color: color-mix(in srgb, var(--color-bg) 55%, transparent); }
 
-.sw-main { display: grid; grid-template-columns: 1.15fr 1fr 1fr; grid-template-rows: auto auto; gap: 12px; }
-.sw-hypcard { grid-row: span 2; }
-@media (max-width: 1040px) { .sw-main { grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); } .sw-hypcard { grid-row: auto; } }
+.sw-kpis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.sw-kpi { gap: 2px; padding: 12px 14px; }
+.sw-kpi-value { font-size: clamp(28px, 2.8vw, 36px); line-height: 1.05; font-weight: 700; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
+.sw-kpi-note { font-size: 11px; line-height: 1.3; color: var(--color-fg-muted); }
 
-.sw-hyps { display: grid; gap: 2px; }
-.sw-hyp { display: grid; grid-template-columns: 28px 1fr auto; gap: 2px 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--color-border-line); }
-.sw-hyp:first-child { border-top: 0; padding-top: 2px; }
-.sw-hyp-id { font-size: 12px; font-weight: 700; color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
-.sw-hyp-name { font-size: 14px; line-height: 1.3; font-weight: 600; min-width: 0; }
-.sw-hyp-ev { grid-column: 2 / -1; font-size: 12px; line-height: 1.35; color: var(--color-fg-muted); }
-.sw-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 3px 9px 3px 8px; border-radius: 999px; white-space: nowrap; }
-.sw-pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.sw-main { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; gap: 10px; }
+@media (max-width: 1100px) { .sw-main { grid-template-columns: repeat(2, minmax(0, 1fr)); } .sw-top { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .sw-main, .sw-focus-grid { grid-template-columns: 1fr; } }
+
+.sw-hyps { display: grid; }
+.sw-hyp { display: grid; grid-template-columns: 24px 1fr auto; gap: 1px 8px; align-items: center; padding: 7px 0; border-top: 1px solid var(--color-border-line); }
+.sw-hyp:first-child { border-top: 0; padding-top: 0; }
+.sw-hyp-id { font-size: 11px; font-weight: 700; color: var(--color-fg-muted); }
+.sw-hyp-name { font-size: 13px; line-height: 1.25; font-weight: 600; min-width: 0; }
+.sw-hyp-ev { grid-column: 2 / -1; font-size: 11px; line-height: 1.3; color: var(--color-fg-muted); }
+.sw-pill { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; padding: 2px 8px 2px 7px; border-radius: 999px; white-space: nowrap; }
+.sw-pill::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
 .sw-pill.ok { color: var(--color-ok); background: color-mix(in srgb, var(--color-ok) 13%, transparent); }
 .sw-pill.warn { color: var(--color-warn); background: color-mix(in srgb, var(--color-warn) 14%, transparent); }
 .sw-pill.bad { color: var(--color-bad); background: color-mix(in srgb, var(--color-bad) 13%, transparent); }
 
-.sw-bars { display: grid; gap: 8px; min-height: 140px; }
-.sw-bar { display: grid; gap: 4px; }
-.sw-bar-top { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; line-height: 1.25; }
+.sw-bars { display: grid; gap: 7px; min-height: 120px; }
+.sw-bar { display: grid; gap: 3px; }
+.sw-bar-top { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; line-height: 1.25; }
 .sw-bar-top span:first-child { min-width: 0; }
 .sw-bar-top span:last-child { color: var(--color-fg-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.sw-track { height: 7px; border-radius: 999px; background: color-mix(in srgb, var(--color-fg) 7%, transparent); overflow: hidden; }
+.sw-track { height: 6px; border-radius: 999px; background: color-mix(in srgb, var(--color-fg) 7%, transparent); overflow: hidden; }
 .sw-fill { height: 100%; border-radius: 999px; background: var(--cds-chart-muted); }
 .sw-bar.top .sw-fill { background: var(--sw-accent, var(--color-fg)); }
 .sw-bar.top .sw-bar-top span:first-child { font-weight: 600; }
 
-.sw-donut-wrap { display: grid; grid-template-columns: 120px 1fr; gap: 14px; align-items: center; min-height: 140px; }
-.sw-donut { width: 120px; height: 120px; }
-.sw-legend { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; }
-.sw-legend li { display: grid; grid-template-columns: 10px 1fr auto; gap: 8px; align-items: center; font-size: 13px; }
-.sw-legend i { width: 10px; height: 10px; border-radius: 3px; }
-.sw-legend span:last-child { color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
-
-.sw-stack { display: grid; gap: 12px; min-height: 140px; align-content: start; }
-.sw-stack-row { display: grid; gap: 5px; }
-.sw-stack-label { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; }
+.sw-stack { display: grid; gap: 10px; min-height: 120px; align-content: start; }
+.sw-stack-row { display: grid; gap: 4px; }
+.sw-stack-label { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; }
 .sw-stack-label span:last-child { font-weight: 400; color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
-.sw-stack-bar { display: flex; height: 22px; border-radius: 7px; overflow: hidden; gap: 2px; }
+.sw-stack-bar { display: flex; height: 18px; border-radius: 6px; overflow: hidden; gap: 2px; }
 .sw-stack-bar div { min-width: 2px; }
-.sw-stack-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--color-fg-muted); }
-.sw-stack-legend span { display: inline-flex; align-items: center; gap: 6px; }
-.sw-stack-legend i { width: 9px; height: 9px; border-radius: 3px; }
+.sw-stack-legend { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 11px; color: var(--color-fg-muted); }
+.sw-stack-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.sw-stack-legend i { width: 8px; height: 8px; border-radius: 2px; }
 
-.sw-foot { margin: 0; font-size: 12px; color: var(--color-fg-muted); padding-inline: 2px; }
+.sw-foot { margin: 0; font-size: 11px; color: var(--color-fg-muted); padding-inline: 2px; }
 [data-dash-source-state=empty] { color: transparent; }
 [data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
 @media (prefers-reduced-motion: no-preference) {
   .sw-fill { animation: sw-grow var(--cds-dur-slow) var(--cds-ease-out) both; transform-origin: left; }
   @keyframes sw-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 }
-@media (max-width: 420px) { .sw-donut-wrap { grid-template-columns: 1fr; justify-items: center; } }
 </style>
 
 <div class="sw">
@@ -85,34 +85,27 @@
     <p class="sw-meta">Pesquisa SW Itapema · <b data-draw="n_total" data-source="kpis" data-field="n_total">—</b> respostas · <b data-draw="n_form" data-source="kpis" data-field="n_form">—</b> formulário · <b data-draw="n_rua" data-source="kpis" data-field="n_rua">—</b> rua</p>
   </header>
 
-  <section class="sw-kpis" id="numeros" aria-label="Números principais">
-    <div class="sw-card sw-kpi">
-      <h2>Acharam fácil reservar</h2>
-      <span class="sw-kpi-value" data-draw="pct_facil" data-source="kpis" data-field="pct_facil">—</span>
-      <span class="sw-kpi-note">Reservar não é a dor</span>
-      <span class="sw-ring" data-draw="ring_facil" data-source="kpis"></span>
-    </div>
-    <div class="sw-card sw-kpi">
-      <h2>Tiveram imprevisto</h2>
-      <span class="sw-kpi-value" data-draw="pct_imprevisto" data-source="kpis" data-field="pct_imprevisto">—</span>
-      <span class="sw-kpi-note">Algo fugiu do plano na viagem</span>
-      <span class="sw-ring" data-draw="ring_imprevisto" data-source="kpis"></span>
-    </div>
-    <div class="sw-card sw-kpi">
-      <h2>Fontes por pessoa</h2>
-      <span class="sw-kpi-value" data-draw="fontes" data-source="kpis" data-field="fontes_media">—</span>
-      <span class="sw-kpi-note">Informação espalhada para decidir</span>
-    </div>
-    <div class="sw-card sw-kpi">
-      <h2>Na rua, difícil escolher</h2>
-      <span class="sw-kpi-value" data-draw="rua_dif" data-source="c_rua" data-field="dificuldade">—</span>
-      <span class="sw-kpi-note">Onde comer, onde sair, o que encaixar</span>
-      <span class="sw-ring" data-draw="ring_rua" data-source="c_rua"></span>
-    </div>
+  <section class="sw-top">
+    <article class="sw-card sw-focus" id="foco">
+      <h2>Onde focar</h2>
+      <p class="sw-focus-head">Ajudar o turista a decidir o que fazer quando já está no destino.</p>
+      <div class="sw-focus-grid">
+        <div class="sw-focus-item"><b>Foco</b><span>O que fazer, onde comer e onde sair, com o roteiro do dia pronto</span></div>
+        <div class="sw-focus-item"><b>Para quem</b><span>Quem chega sem plano ou improvisa, o perfil que achamos na rua</span></div>
+        <div class="sw-focus-item"><b>Deixar de lado</b><span>Reserva de passeios, que já é fácil, e preço como promessa principal</span></div>
+      </div>
+      <p class="sw-focus-note">Recomendação do Claude (IA) com base nas hipóteses ao lado.</p>
+    </article>
+    <section class="sw-kpis" id="numeros" aria-label="Números principais">
+      <div class="sw-card sw-kpi"><h2>Acharam fácil reservar</h2><span class="sw-kpi-value" data-draw="pct_facil" data-source="kpis" data-field="pct_facil">—</span><span class="sw-kpi-note">do formulário</span></div>
+      <div class="sw-card sw-kpi"><h2>Tiveram imprevisto</h2><span class="sw-kpi-value" data-draw="pct_imprevisto" data-source="kpis" data-field="pct_imprevisto">—</span><span class="sw-kpi-note">algo fugiu do plano</span></div>
+      <div class="sw-card sw-kpi"><h2>Fontes por pessoa</h2><span class="sw-kpi-value" data-draw="fontes" data-source="kpis" data-field="fontes_media">—</span><span class="sw-kpi-note">para decidir o que fazer</span></div>
+      <div class="sw-card sw-kpi"><h2>Na rua, difícil escolher</h2><span class="sw-kpi-value" data-draw="rua_dif" data-source="c_rua" data-field="dificuldade">—</span><span class="sw-kpi-note">onde comer, onde sair</span></div>
+    </section>
   </section>
 
   <section class="sw-main">
-    <article class="sw-card sw-hypcard" id="validacoes">
+    <article class="sw-card" id="validacoes">
       <h2>Validação das hipóteses</h2>
       <div class="sw-hyps" data-draw="hip" data-source="hipoteses">—</div>
     </article>
@@ -124,17 +117,13 @@
       <h2>O que fugiu do esperado</h2>
       <div class="sw-bars" data-draw="q4" data-source="c_q4"></div>
     </article>
-    <article class="sw-card" id="reserva">
-      <h2>Como foi organizar e reservar</h2>
-      <div class="sw-donut-wrap" data-draw="q3" data-source="c_q3"></div>
-    </article>
     <article class="sw-card" id="perfil">
       <h2>Como planejaram: formulário x rua</h2>
       <div class="sw-stack" data-draw="perfil" data-source="c_perfil"></div>
     </article>
   </section>
 
-  <p class="sw-foot">Fonte: planilha de respostas do Forms. Veredito das hipóteses e agrupamento das entrevistas da rua feitos pelo Claude (IA). Amostra pequena: é sinal, não prova.</p>
+  <p class="sw-foot">Fonte: planilha de respostas do Forms. Veredito, agrupamento da rua e recomendação feitos pelo Claude (IA). Amostra pequena: é sinal, não prova.</p>
 </div>
 
 <script>
@@ -143,14 +132,6 @@ dash.calc('c_q2', { title: 'Como decidiu o que fazer (formulário)', description
     const f = respostas.filter((r) => r.origem === 'Formulário');
     const op = [['Google ou Google Maps', 'Google ou Maps'], ['Indicação de amigos ou família', 'Amigos ou família'], ['Instagram ou TikTok', 'Instagram ou TikTok'], ['ChatGPT ou outra IA', 'ChatGPT ou IA'], ['Sites de avaliação (TripAdvisor, Booking)', 'Sites de avaliação'], ['Dicas de moradores ou do hotel', 'Moradores ou hotel']];
     return op.map(([o, rotulo]) => ({ opcao: rotulo, n: f.filter((r) => (r.q2 || '').includes(o)).length, total: f.length }));
-  } });
-dash.calc('c_q3', { title: 'Organizar e reservar (formulário)', description: 'Pessoas do formulário por dificuldade para reservar.', inputs: ['respostas'],
-  fn: (respostas) => {
-    const f = respostas.filter((r) => r.origem === 'Formulário');
-    const op = [['Fácil, consegui tudo', 'Fácil'], ['Deu trabalho, mas consegui', 'Deu trabalho'], ['Difícil, deixei de fazer algumas coisas', 'Difícil'], ['Não reservei nada, fui na hora', 'Não reservou']];
-    const rows = op.map(([o, rotulo]) => ({ opcao: rotulo, n: f.filter((r) => (r.q3 || '').includes(o)).length, total: f.length }));
-    rows.push({ opcao: 'Outra resposta', n: f.length - rows.reduce((s, r) => s + r.n, 0), total: f.length });
-    return rows;
   } });
 dash.calc('c_q4', { title: 'O que fugiu do esperado (formulário)', description: 'Pessoas do formulário que marcaram cada situação.', inputs: ['respostas'],
   fn: (respostas) => {
@@ -204,28 +185,13 @@ dash.draw('rua_dif', (el) => {
   el.textContent = row ? row.dificuldade + ' de ' + row.total : '—';
 });
 
-const swRing = (id, share) => (el) => {
-  const d = dash.data(id);
-  el.replaceChildren();
-  if (d.status !== 'ok' || !d.data[0]) return;
-  const v = share(d.data[0]);
-  const sel = d3.select(el).append('svg').attr('viewBox', '0 0 52 52').attr('width', '100%');
-  const arc = d3.arc().innerRadius(19).outerRadius(25).cornerRadius(3);
-  const g = sel.append('g').attr('transform', 'translate(26,26)');
-  g.append('path').attr('d', arc({ startAngle: 0, endAngle: 2 * Math.PI })).style('fill', 'color-mix(in srgb, var(--color-fg) 8%, transparent)');
-  g.append('path').attr('d', arc({ startAngle: 0, endAngle: 2 * Math.PI * v })).style('fill', dash.colors[0]);
-};
-dash.draw('ring_facil', swRing('kpis', (r) => r.pct_facil));
-dash.draw('ring_imprevisto', swRing('kpis', (r) => r.pct_imprevisto));
-dash.draw('ring_rua', swRing('c_rua', (r) => r.dificuldade / r.total));
-
-const swBars = (id) => (el) => {
+const swBars = (id, limit) => (el) => {
   const d = dash.data(id);
   el.replaceChildren();
   if (d.status !== 'ok') { el.classList.add('dash-skeleton'); return; }
   el.classList.remove('dash-skeleton');
   el.style.setProperty('--sw-accent', dash.colors[0]);
-  const rows = d.data.filter((r) => r.n > 0).sort((a, b) => b.n - a.n);
+  const rows = d.data.filter((r) => r.n > 0).sort((a, b) => b.n - a.n).slice(0, limit);
   const max = d3.max(rows, (r) => r.n) || 1;
   rows.forEach((r, i) => {
     const bar = document.createElement('div');
@@ -247,42 +213,10 @@ const swBars = (id) => (el) => {
     el.append(bar);
   });
 };
-dash.draw('q2', swBars('c_q2'));
-dash.draw('q4', swBars('c_q4'));
+dash.draw('q2', swBars('c_q2', 5));
+dash.draw('q4', swBars('c_q4', 5));
 
 const swShades = (n) => [dash.colors[0], ...Array.from({ length: n - 1 }, (_, i) => `color-mix(in srgb, var(--cds-chart-muted) ${100 - i * 22}%, transparent)`)];
-
-dash.draw('q3', (el) => {
-  const d = dash.data('c_q3');
-  el.replaceChildren();
-  if (d.status !== 'ok') { el.classList.add('dash-skeleton'); return; }
-  el.classList.remove('dash-skeleton');
-  const rows = d.data.filter((r) => r.n > 0);
-  const colors = swShades(rows.length);
-  const total = rows[0] ? rows[0].total : 0;
-  const svg = d3.select(el).append('svg').attr('class', 'sw-donut').attr('viewBox', '0 0 120 120').attr('width', '100%');
-  const g = svg.append('g').attr('transform', 'translate(60,60)');
-  const arcs = d3.pie().sort(null).value((r) => r.n).padAngle(0.03)(rows);
-  const arc = d3.arc().innerRadius(38).outerRadius(56).cornerRadius(4);
-  g.selectAll('path').data(arcs).join('path').attr('d', arc).style('fill', (a, i) => colors[i]);
-  const first = rows[0];
-  g.append('text').attr('text-anchor', 'middle').attr('dy', '0.05em').style('font-size', '22px').style('font-weight', 700).style('fill', 'var(--color-fg)').style('letter-spacing', '-0.03em').text(first && total ? swPct(first.n / total) : '');
-  g.append('text').attr('text-anchor', 'middle').attr('dy', '1.6em').style('font-size', '10px').style('fill', 'var(--color-fg-muted)').text(first ? first.opcao.toLowerCase() : '');
-  const ul = document.createElement('ul');
-  ul.className = 'sw-legend';
-  rows.forEach((r, i) => {
-    const li = document.createElement('li');
-    const sw = document.createElement('i');
-    sw.style.background = colors[i];
-    const name = document.createElement('span');
-    name.textContent = r.opcao;
-    const val = document.createElement('span');
-    val.textContent = String(r.n);
-    li.append(sw, name, val);
-    ul.append(li);
-  });
-  el.append(ul);
-});
 
 dash.draw('perfil', (el) => {
   const d = dash.data('c_perfil');
