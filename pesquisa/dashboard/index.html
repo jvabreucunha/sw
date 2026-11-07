@@ -1,234 +1,162 @@
 <meta name="dash-one-writer">
 <style>
-#dash-root { --dash-gutter: clamp(16px, 4vw, 48px); }
+#dash-root { --dash-gutter: clamp(12px, 2.4vw, 28px); }
 .sw {
   --sw-font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --sw-radius: 22px;
-  max-width: 1080px; margin-inline: auto;
+  --sw-radius: 18px;
+  max-width: 1320px; margin-inline: auto;
   font-family: var(--sw-font); color: var(--color-fg);
-  display: grid; gap: clamp(40px, 7vw, 72px);
-  padding-block: clamp(16px, 4vw, 40px) 56px;
+  display: grid; gap: 12px; padding-block: 8px 20px;
   -webkit-font-smoothing: antialiased;
 }
 .sw * { box-sizing: border-box; }
-.sw-eyebrow { font-size: 13px; font-weight: 600; letter-spacing: .02em; color: var(--color-fg-muted); margin: 0; }
-.sw-hero { display: grid; gap: 14px; text-align: center; justify-items: center; }
-.sw-hero h1 { margin: 0; font-size: clamp(34px, 6.2vw, 64px); line-height: 1.04; letter-spacing: -0.035em; font-weight: 700; text-wrap: balance; max-width: 16ch; }
-.sw-hero h1 span { color: var(--color-fg-muted); }
-.sw-lead { margin: 0; font-size: clamp(17px, 2.2vw, 21px); line-height: 1.45; color: var(--color-fg-muted); max-width: 46ch; text-wrap: balance; }
-.sw-lead b { color: var(--color-fg); font-weight: 600; }
+.sw-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 6px 24px; padding-inline: 2px; }
+.sw-head h1 { margin: 0; font-size: clamp(22px, 2.6vw, 32px); line-height: 1.1; letter-spacing: -0.03em; font-weight: 700; text-wrap: balance; }
+.sw-head h1 span { color: var(--color-fg-muted); }
+.sw-meta { margin: 0; font-size: 13px; color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+.sw-meta b { color: var(--color-fg); font-weight: 600; }
 
-.sw-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 14px; }
-.sw-kpi { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--sw-radius); padding: 22px 22px 20px; display: grid; gap: 6px; align-content: start; }
-.sw-kpi-label { font-size: 13px; font-weight: 600; color: var(--color-fg-muted); }
-.sw-kpi-value { font-size: clamp(40px, 5vw, 52px); line-height: 1; font-weight: 700; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
-.sw-kpi-note { font-size: 13px; line-height: 1.4; color: var(--color-fg-muted); }
+.sw-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--sw-radius); padding: 16px 18px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.sw-card h2 { margin: 0; font-size: 13px; font-weight: 600; color: var(--color-fg-muted); letter-spacing: .01em; }
 
-.sw-section { display: grid; gap: 22px; }
-.sw-section-head { display: grid; gap: 8px; max-width: 62ch; }
-.sw-section-head h2 { margin: 0; font-size: clamp(26px, 3.4vw, 36px); line-height: 1.1; letter-spacing: -0.03em; font-weight: 700; text-wrap: balance; }
-.sw-section-head p { margin: 0; font-size: 17px; line-height: 1.5; color: var(--color-fg-muted); }
+.sw-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: 12px; }
+.sw-kpi { grid-template-columns: 1fr auto; align-items: center; gap: 4px 12px; }
+.sw-kpi h2 { grid-column: 1 / -1; }
+.sw-kpi-value { font-size: clamp(32px, 3.4vw, 42px); line-height: 1; font-weight: 700; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
+.sw-kpi-note { grid-column: 1; font-size: 12px; line-height: 1.35; color: var(--color-fg-muted); }
+.sw-ring { grid-column: 2; grid-row: 2 / span 2; width: 52px; height: 52px; display: block; }
 
-.sw-hyps { display: grid; gap: 12px; }
-.sw-hyp { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--sw-radius); padding: 20px 22px; display: grid; grid-template-columns: auto 1fr; gap: 6px 18px; align-items: start; }
-.sw-hyp-id { grid-row: span 2; font-size: 13px; font-weight: 700; color: var(--color-fg-muted); font-variant-numeric: tabular-nums; padding-top: 4px; }
-.sw-hyp-top { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; min-width: 0; }
-.sw-hyp h3 { margin: 0; font-size: 19px; line-height: 1.3; font-weight: 600; letter-spacing: -0.01em; }
-.sw-hyp p { margin: 0; font-size: 15px; line-height: 1.5; color: var(--color-fg-muted); min-width: 0; }
-.sw-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 4px 10px 4px 9px; border-radius: 999px; white-space: nowrap; }
-.sw-pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.sw-main { display: grid; grid-template-columns: 1.15fr 1fr 1fr; grid-template-rows: auto auto; gap: 12px; }
+.sw-hypcard { grid-row: span 2; }
+@media (max-width: 1040px) { .sw-main { grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); } .sw-hypcard { grid-row: auto; } }
+
+.sw-hyps { display: grid; gap: 2px; }
+.sw-hyp { display: grid; grid-template-columns: 28px 1fr auto; gap: 2px 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--color-border-line); }
+.sw-hyp:first-child { border-top: 0; padding-top: 2px; }
+.sw-hyp-id { font-size: 12px; font-weight: 700; color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+.sw-hyp-name { font-size: 14px; line-height: 1.3; font-weight: 600; min-width: 0; }
+.sw-hyp-ev { grid-column: 2 / -1; font-size: 12px; line-height: 1.35; color: var(--color-fg-muted); }
+.sw-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 3px 9px 3px 8px; border-radius: 999px; white-space: nowrap; }
+.sw-pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 .sw-pill.ok { color: var(--color-ok); background: color-mix(in srgb, var(--color-ok) 13%, transparent); }
 .sw-pill.warn { color: var(--color-warn); background: color-mix(in srgb, var(--color-warn) 14%, transparent); }
 .sw-pill.bad { color: var(--color-bad); background: color-mix(in srgb, var(--color-bad) 13%, transparent); }
 
-.sw-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 14px; }
-.sw-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--sw-radius); padding: 22px; display: grid; gap: 16px; align-content: start; min-width: 0; }
-.sw-card h3 { margin: 0; font-size: 17px; line-height: 1.3; font-weight: 600; letter-spacing: -0.01em; }
-.sw-card-note { margin: -10px 0 0; font-size: 13px; line-height: 1.4; color: var(--color-fg-muted); }
-.sw-bars { display: grid; gap: 11px; min-height: 120px; }
-.sw-bar { display: grid; gap: 5px; }
-.sw-bar-top { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; line-height: 1.3; }
+.sw-bars { display: grid; gap: 8px; min-height: 140px; }
+.sw-bar { display: grid; gap: 4px; }
+.sw-bar-top { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; line-height: 1.25; }
 .sw-bar-top span:first-child { min-width: 0; }
 .sw-bar-top span:last-child { color: var(--color-fg-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.sw-track { height: 8px; border-radius: 999px; background: color-mix(in srgb, var(--color-fg) 7%, transparent); overflow: hidden; }
+.sw-track { height: 7px; border-radius: 999px; background: color-mix(in srgb, var(--color-fg) 7%, transparent); overflow: hidden; }
 .sw-fill { height: 100%; border-radius: 999px; background: var(--cds-chart-muted); }
 .sw-bar.top .sw-fill { background: var(--sw-accent, var(--color-fg)); }
 .sw-bar.top .sw-bar-top span:first-child { font-weight: 600; }
 
-.sw-quotes { display: grid; gap: 10px; }
-.sw-quote { margin: 0; padding: 14px 16px; border-radius: 16px; background: color-mix(in srgb, var(--color-fg) 4%, transparent); display: grid; gap: 4px; }
-.sw-quote q { font-size: 15px; line-height: 1.45; quotes: "“" "”"; }
-.sw-quote span { font-size: 12px; font-weight: 600; color: var(--color-fg-muted); }
+.sw-donut-wrap { display: grid; grid-template-columns: 120px 1fr; gap: 14px; align-items: center; min-height: 140px; }
+.sw-donut { width: 120px; height: 120px; }
+.sw-legend { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; }
+.sw-legend li { display: grid; grid-template-columns: 10px 1fr auto; gap: 8px; align-items: center; font-size: 13px; }
+.sw-legend i { width: 10px; height: 10px; border-radius: 3px; }
+.sw-legend span:last-child { color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
 
-.sw-split { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 12px; }
-.sw-mini { display: grid; gap: 4px; }
-.sw-mini b { font-size: 34px; line-height: 1; font-weight: 700; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
-.sw-mini span { font-size: 13px; line-height: 1.4; color: var(--color-fg-muted); }
+.sw-stack { display: grid; gap: 12px; min-height: 140px; align-content: start; }
+.sw-stack-row { display: grid; gap: 5px; }
+.sw-stack-label { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; }
+.sw-stack-label span:last-child { font-weight: 400; color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+.sw-stack-bar { display: flex; height: 22px; border-radius: 7px; overflow: hidden; gap: 2px; }
+.sw-stack-bar div { min-width: 2px; }
+.sw-stack-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--color-fg-muted); }
+.sw-stack-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw-stack-legend i { width: 9px; height: 9px; border-radius: 3px; }
 
-.sw-foot { border-top: 1px solid var(--color-border-line); padding-top: 18px; }
-.sw-foot summary { cursor: pointer; font-size: 14px; font-weight: 600; color: var(--color-fg-muted); }
-.sw-foot summary:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 3px; border-radius: 4px; }
-.sw-foot dl { display: grid; gap: 12px; margin: 14px 0 0; max-width: 70ch; }
-.sw-foot dt { font-size: 14px; font-weight: 600; }
-.sw-foot dd { margin: 2px 0 0; font-size: 14px; line-height: 1.5; color: var(--color-fg-muted); }
-
+.sw-foot { margin: 0; font-size: 12px; color: var(--color-fg-muted); padding-inline: 2px; }
 [data-dash-source-state=empty] { color: transparent; }
 [data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
 @media (prefers-reduced-motion: no-preference) {
   .sw-fill { animation: sw-grow var(--cds-dur-slow) var(--cds-ease-out) both; transform-origin: left; }
   @keyframes sw-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 }
-@media (max-width: 520px) {
-  .sw-hyp { grid-template-columns: 1fr; }
-  .sw-hyp-id { grid-row: auto; padding-top: 0; }
-}
+@media (max-width: 420px) { .sw-donut-wrap { grid-template-columns: 1fr; justify-items: center; } }
 </style>
 
 <div class="sw">
-  <header class="sw-hero">
-    <p class="sw-eyebrow">Partiu · Pesquisa de validação · Itapema, 7 de novembro de 2026</p>
+  <header class="sw-head">
     <h1 id="titulo">Reservar é fácil. <span>Decidir o que fazer, não.</span></h1>
-    <p class="sw-lead"><b data-draw="n_total" data-source="kpis" data-field="n_total">—</b> respostas: <b data-draw="n_form" data-source="kpis" data-field="n_form">—</b> pelo formulário e <b data-draw="n_rua" data-source="kpis" data-field="n_rua">—</b> em entrevistas na rua. A hipótese de reserva caiu, e o problema real aparece na hora de escolher.</p>
+    <p class="sw-meta">Pesquisa SW Itapema · <b data-draw="n_total" data-source="kpis" data-field="n_total">—</b> respostas · <b data-draw="n_form" data-source="kpis" data-field="n_form">—</b> formulário · <b data-draw="n_rua" data-source="kpis" data-field="n_rua">—</b> rua</p>
   </header>
 
   <section class="sw-kpis" id="numeros" aria-label="Números principais">
-    <div class="sw-kpi">
-      <span class="sw-kpi-label">Acharam fácil reservar</span>
+    <div class="sw-card sw-kpi">
+      <h2>Acharam fácil reservar</h2>
       <span class="sw-kpi-value" data-draw="pct_facil" data-source="kpis" data-field="pct_facil">—</span>
-      <span class="sw-kpi-note">do formulário organizaram e reservaram sem dificuldade</span>
+      <span class="sw-kpi-note">Reservar não é a dor</span>
+      <span class="sw-ring" data-draw="ring_facil" data-source="kpis"></span>
     </div>
-    <div class="sw-kpi">
-      <span class="sw-kpi-label">Tiveram imprevisto</span>
+    <div class="sw-card sw-kpi">
+      <h2>Tiveram imprevisto</h2>
       <span class="sw-kpi-value" data-draw="pct_imprevisto" data-source="kpis" data-field="pct_imprevisto">—</span>
-      <span class="sw-kpi-note">algo fugiu do plano durante a viagem</span>
+      <span class="sw-kpi-note">Algo fugiu do plano na viagem</span>
+      <span class="sw-ring" data-draw="ring_imprevisto" data-source="kpis"></span>
     </div>
-    <div class="sw-kpi">
-      <span class="sw-kpi-label">Fontes por pessoa</span>
+    <div class="sw-card sw-kpi">
+      <h2>Fontes por pessoa</h2>
       <span class="sw-kpi-value" data-draw="fontes" data-source="kpis" data-field="fontes_media">—</span>
-      <span class="sw-kpi-note">em média, para decidir o que fazer</span>
+      <span class="sw-kpi-note">Informação espalhada para decidir</span>
     </div>
-    <div class="sw-kpi">
-      <span class="sw-kpi-label">Planejaram tudo antes</span>
-      <span class="sw-kpi-value" data-draw="pct_planejou" data-source="kpis" data-field="pct_planejou">—</span>
-      <span class="sw-kpi-note">do formulário, a nossa bolha</span>
+    <div class="sw-card sw-kpi">
+      <h2>Na rua, difícil escolher</h2>
+      <span class="sw-kpi-value" data-draw="rua_dif" data-source="c_rua" data-field="dificuldade">—</span>
+      <span class="sw-kpi-note">Onde comer, onde sair, o que encaixar</span>
+      <span class="sw-ring" data-draw="ring_rua" data-source="c_rua"></span>
     </div>
   </section>
 
-  <section class="sw-section" id="validacoes">
-    <div class="sw-section-head">
+  <section class="sw-main">
+    <article class="sw-card sw-hypcard" id="validacoes">
       <h2>Validação das hipóteses</h2>
-      <p>O que testamos, o que os dados dizem e o veredito de cada uma.</p>
-    </div>
-    <div class="sw-hyps" data-draw="hip" data-source="hipoteses">—</div>
-  </section>
-
-  <section class="sw-section" id="formulario">
-    <div class="sw-section-head">
-      <h2>Formulário</h2>
-      <p>Respostas de alternativa, divulgadas em grupos de WhatsApp. Em destaque, a opção mais escolhida.</p>
-    </div>
-    <div class="sw-grid">
-      <article class="sw-card" id="q1">
-        <h3>Como planejou a última viagem</h3>
-        <p class="sw-card-note">Uma resposta por pessoa</p>
-        <div class="sw-bars" data-draw="q1" data-source="c_q1"></div>
-      </article>
-      <article class="sw-card" id="q3">
-        <h3>Como foi organizar e reservar</h3>
-        <p class="sw-card-note">Uma resposta por pessoa</p>
-        <div class="sw-bars" data-draw="q3" data-source="c_q3"></div>
-      </article>
-      <article class="sw-card" id="q2">
-        <h3>Como decidiu o que fazer</h3>
-        <p class="sw-card-note">Podia marcar mais de uma</p>
-        <div class="sw-bars" data-draw="q2" data-source="c_q2"></div>
-      </article>
-      <article class="sw-card" id="q4">
-        <h3>O que fugiu do esperado</h3>
-        <p class="sw-card-note">Podia marcar mais de uma</p>
-        <div class="sw-bars" data-draw="q4" data-source="c_q4"></div>
-      </article>
-      <article class="sw-card" id="q5">
-        <h3>Ferramentas e ajuda que usou</h3>
-        <p class="sw-card-note">Podia marcar mais de uma</p>
-        <div class="sw-bars" data-draw="q5" data-source="c_q5"></div>
-      </article>
-    </div>
-  </section>
-
-  <section class="sw-section" id="rua">
-    <div class="sw-section-head">
-      <h2>Entrevistas na rua</h2>
-      <p>Perguntas abertas, feitas pessoalmente. Fora da nossa bolha, o perfil é de improviso.</p>
-    </div>
-    <div class="sw-grid">
-      <article class="sw-card">
-        <h3>Como planejaram</h3>
-        <p class="sw-card-note">Respostas abertas agrupadas por tema</p>
-        <div class="sw-bars" data-draw="rua_plan" data-source="c_rua_plan"></div>
-      </article>
-      <article class="sw-card">
-        <h3>O que relataram</h3>
-        <p class="sw-card-note">De cada entrevista na rua</p>
-        <div class="sw-split">
-          <div class="sw-mini"><b data-draw="rua_dif" data-source="c_rua" data-field="dificuldade">—</b><span>tiveram dificuldade para escolher onde ir</span></div>
-          <div class="sw-mini"><b data-draw="rua_perda" data-source="c_rua" data-field="perda">—</b><span>perderam tempo, dinheiro ou algum passeio</span></div>
-          <div class="sw-mini"><b data-draw="rua_ag" data-source="c_rua" data-field="agencia">—</b><span>usaram agência</span></div>
-        </div>
-      </article>
-    </div>
-    <article class="sw-card" id="falas">
-      <h3>O que disseram</h3>
-      <p class="sw-card-note">Trechos das respostas, como foram anotados</p>
-      <div class="sw-quotes" data-draw="quotes" data-source="rua"></div>
+      <div class="sw-hyps" data-draw="hip" data-source="hipoteses">—</div>
+    </article>
+    <article class="sw-card" id="fontes">
+      <h2>Como decidiu o que fazer</h2>
+      <div class="sw-bars" data-draw="q2" data-source="c_q2"></div>
+    </article>
+    <article class="sw-card" id="imprevistos">
+      <h2>O que fugiu do esperado</h2>
+      <div class="sw-bars" data-draw="q4" data-source="c_q4"></div>
+    </article>
+    <article class="sw-card" id="reserva">
+      <h2>Como foi organizar e reservar</h2>
+      <div class="sw-donut-wrap" data-draw="q3" data-source="c_q3"></div>
+    </article>
+    <article class="sw-card" id="perfil">
+      <h2>Como planejaram: formulário x rua</h2>
+      <div class="sw-stack" data-draw="perfil" data-source="c_perfil"></div>
     </article>
   </section>
 
-  <details class="sw-foot">
-    <summary>Como os dados foram tratados</summary>
-    <dl>
-      <dt>Fonte única</dt>
-      <dd>Todas as respostas estão na aba “Respostas ao formulário 1” da planilha do Forms. A coluna Origem separa formulário e entrevista na rua.</dd>
-      <dt>Entrevistas na rua</dt>
-      <dd>As respostas abertas foram agrupadas por tema pelo Claude (IA). Uma resposta de teste foi descartada.</dd>
-      <dt>Veredito das hipóteses</dt>
-      <dd>Avaliação do Claude com base nas duas fontes. É um sinal para orientar o próximo passo, não uma prova.</dd>
-      <dt>Limites</dt>
-      <dd>Amostra pequena e concentrada em conhecidos, que tendem a planejar mais. Vale repetir na rua para confirmar.</dd>
-    </dl>
-  </details>
+  <p class="sw-foot">Fonte: planilha de respostas do Forms. Veredito das hipóteses e agrupamento das entrevistas da rua feitos pelo Claude (IA). Amostra pequena: é sinal, não prova.</p>
 </div>
 
 <script>
-dash.calc('c_q1', { title: 'Como planejou (formulário)', description: 'Pessoas do formulário por forma de planejar.', inputs: ['respostas'],
-  fn: (respostas) => {
-    const f = respostas.filter((r) => r.origem === 'Formulário');
-    const op = [['Planejei tudo antes de ir', 'Planejou tudo antes'], ['Planejei uma parte e decidi o resto lá', 'Planejou uma parte'], ['Contratei agência ou pacote', 'Agência ou pacote'], ['Não planejei, decidi tudo na hora', 'Decidiu na hora'], ['Outra pessoa planejou', 'Outra pessoa planejou']];
-    return op.map(([o, rotulo]) => ({ opcao: rotulo, n: f.filter((r) => (r.q1 || '').includes(o)).length, total: f.length }));
-  } });
 dash.calc('c_q2', { title: 'Como decidiu o que fazer (formulário)', description: 'Pessoas do formulário que marcaram cada fonte.', inputs: ['respostas'],
   fn: (respostas) => {
     const f = respostas.filter((r) => r.origem === 'Formulário');
-    const op = [['Google ou Google Maps', 'Google ou Google Maps'], ['Indicação de amigos ou família', 'Amigos ou família'], ['Instagram ou TikTok', 'Instagram ou TikTok'], ['ChatGPT ou outra IA', 'ChatGPT ou outra IA'], ['Sites de avaliação (TripAdvisor, Booking)', 'Sites de avaliação'], ['Dicas de moradores ou do hotel', 'Moradores ou hotel']];
+    const op = [['Google ou Google Maps', 'Google ou Maps'], ['Indicação de amigos ou família', 'Amigos ou família'], ['Instagram ou TikTok', 'Instagram ou TikTok'], ['ChatGPT ou outra IA', 'ChatGPT ou IA'], ['Sites de avaliação (TripAdvisor, Booking)', 'Sites de avaliação'], ['Dicas de moradores ou do hotel', 'Moradores ou hotel']];
     return op.map(([o, rotulo]) => ({ opcao: rotulo, n: f.filter((r) => (r.q2 || '').includes(o)).length, total: f.length }));
   } });
 dash.calc('c_q3', { title: 'Organizar e reservar (formulário)', description: 'Pessoas do formulário por dificuldade para reservar.', inputs: ['respostas'],
   fn: (respostas) => {
     const f = respostas.filter((r) => r.origem === 'Formulário');
-    const op = [['Fácil, consegui tudo', 'Fácil'], ['Deu trabalho, mas consegui', 'Deu trabalho'], ['Difícil, deixei de fazer algumas coisas', 'Difícil, deixou de fazer algo'], ['Não reservei nada, fui na hora', 'Não reservou nada']];
-    return op.map(([o, rotulo]) => ({ opcao: rotulo, n: f.filter((r) => (r.q3 || '').includes(o)).length, total: f.length }));
+    const op = [['Fácil, consegui tudo', 'Fácil'], ['Deu trabalho, mas consegui', 'Deu trabalho'], ['Difícil, deixei de fazer algumas coisas', 'Difícil'], ['Não reservei nada, fui na hora', 'Não reservou']];
+    const rows = op.map(([o, rotulo]) => ({ opcao: rotulo, n: f.filter((r) => (r.q3 || '').includes(o)).length, total: f.length }));
+    rows.push({ opcao: 'Outra resposta', n: f.length - rows.reduce((s, r) => s + r.n, 0), total: f.length });
+    return rows;
   } });
 dash.calc('c_q4', { title: 'O que fugiu do esperado (formulário)', description: 'Pessoas do formulário que marcaram cada situação.', inputs: ['respostas'],
   fn: (respostas) => {
     const f = respostas.filter((r) => r.origem === 'Formulário');
-    const op = [['Não, saiu como planejado', 'Nada, saiu como planejado'], ['Perdi tempo decidindo o que fazer', 'Perdeu tempo decidindo'], ['Gastei mais do que esperava', 'Gastou mais do que esperava'], ['Lugar pior do que parecia', 'Lugar pior do que parecia'], ['Descobri depois algo bom que perdi', 'Descobriu depois algo bom'], ['Lugar fechado, lotado ou sem vaga', 'Fechado, lotado ou sem vaga']];
+    const op = [['Não, saiu como planejado', 'Nada, saiu como planejado'], ['Perdi tempo decidindo o que fazer', 'Perdeu tempo decidindo'], ['Gastei mais do que esperava', 'Gastou mais'], ['Lugar pior do que parecia', 'Lugar pior que parecia'], ['Descobri depois algo bom que perdi', 'Perdeu algo bom'], ['Lugar fechado, lotado ou sem vaga', 'Fechado ou lotado']];
     return op.map(([o, rotulo]) => ({ opcao: rotulo, n: f.filter((r) => (r.q4 || '').includes(o)).length, total: f.length }));
-  } });
-dash.calc('c_q5', { title: 'Ferramentas e ajuda (formulário)', description: 'Pessoas do formulário que marcaram cada recurso.', inputs: ['respostas'],
-  fn: (respostas) => {
-    const f = respostas.filter((r) => r.origem === 'Formulário');
-    const op = [['Pesquisei tudo sozinho(a) na internet', 'Pesquisou sozinho na internet'], ['Agência ou pacote turístico', 'Agência ou pacote'], ['Amigos ou família', 'Amigos ou família'], ['Apps de reserva (Booking, Airbnb, Decolar)', 'Apps de reserva'], ['Guia local', 'Guia local']];
-    return op.map(([o, rotulo]) => ({ opcao: rotulo, n: f.filter((r) => (r.q5 || '').includes(o)).length, total: f.length }));
   } });
 dash.calc('kpis', { title: 'Números principais', description: 'Totais e percentuais do formulário; fontes por pessoa soma as marcações de fonte e divide pelo total.', inputs: ['respostas', 'c_q2'],
   fn: (respostas, c_q2) => {
@@ -241,22 +169,21 @@ dash.calc('kpis', { title: 'Números principais', description: 'Totais e percent
       pct_facil: f.filter((r) => (r.q3 || '').startsWith('Fácil')).length / n,
       pct_imprevisto: f.filter((r) => (r.q4 || '').trim() !== 'Não, saiu como planejado').length / n,
       fontes_media: c_q2.reduce((s, r) => s + r.n, 0) / n,
-      pct_planejou: f.filter((r) => (r.q1 || '').includes('Planejei tudo antes de ir')).length / n,
     }];
   } });
-dash.calc('c_rua_plan', { title: 'Como planejaram (rua)', description: 'Entrevistas na rua agrupadas por forma de planejar.', inputs: ['rua'],
-  fn: (rua) => {
-    const by = new Map();
-    rua.forEach((r) => by.set(r.planejamento, (by.get(r.planejamento) || 0) + 1));
-    return [...by].map(([opcao, n]) => ({ opcao, n, total: rua.length }));
+dash.calc('c_rua', { title: 'Relatos da rua', description: 'Entrevistas na rua que tiveram dificuldade para escolher onde ir.', inputs: ['rua'],
+  fn: (rua) => [{ total: rua.length, dificuldade: rua.filter((r) => r.dificuldade_escolher === 'Sim').length }] });
+dash.calc('c_perfil', { title: 'Como planejaram, por origem', description: 'Formulário e rua nas mesmas quatro categorias de planejamento.', inputs: ['respostas', 'rua'],
+  fn: (respostas, rua) => {
+    const f = respostas.filter((r) => r.origem === 'Formulário');
+    const catF = (v) => v.includes('Planejei tudo') ? 'Planejou tudo' : v.includes('Planejei uma parte') ? 'Planejou em parte' : v.includes('Não planejei') ? 'Improvisou' : 'Outros organizaram';
+    const catR = (v) => v === 'Planejou antes' ? 'Planejou tudo' : v === 'Improviso' ? 'Improvisou' : 'Outros organizaram';
+    const cats = ['Planejou tudo', 'Planejou em parte', 'Improvisou', 'Outros organizaram'];
+    const out = [];
+    cats.forEach((c) => out.push({ grupo: 'Formulário', categoria: c, n: f.filter((r) => catF(r.q1 || '') === c).length, total: f.length }));
+    cats.forEach((c) => out.push({ grupo: 'Rua', categoria: c, n: rua.filter((r) => catR(r.planejamento || '') === c).length, total: rua.length }));
+    return out;
   } });
-dash.calc('c_rua', { title: 'Relatos da rua', description: 'Entrevistas na rua que responderam sim a cada tema.', inputs: ['rua'],
-  fn: (rua) => [{
-    total: rua.length,
-    dificuldade: rua.filter((r) => r.dificuldade_escolher === 'Sim').length,
-    perda: rua.filter((r) => r.perdeu_algo === 'Sim').length,
-    agencia: rua.filter((r) => r.agencia === 'Sim').length,
-  }] });
 
 const swPct = (x) => Math.round(x * 100) + '%';
 const swDec = (x) => x.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
@@ -271,14 +198,26 @@ dash.draw('n_rua', swOne('kpis', 'n_rua', String));
 dash.draw('pct_facil', swOne('kpis', 'pct_facil', swPct));
 dash.draw('pct_imprevisto', swOne('kpis', 'pct_imprevisto', swPct));
 dash.draw('fontes', swOne('kpis', 'fontes_media', swDec));
-dash.draw('pct_planejou', swOne('kpis', 'pct_planejou', swPct));
-['dificuldade', 'perda', 'agencia'].forEach((field, i) => {
-  dash.draw(['rua_dif', 'rua_perda', 'rua_ag'][i], (el) => {
-    const d = dash.data('c_rua');
-    const row = d.status === 'ok' ? d.data[0] : null;
-    el.textContent = row ? row[field] + ' de ' + row.total : '—';
-  });
+dash.draw('rua_dif', (el) => {
+  const d = dash.data('c_rua');
+  const row = d.status === 'ok' ? d.data[0] : null;
+  el.textContent = row ? row.dificuldade + ' de ' + row.total : '—';
 });
+
+const swRing = (id, share) => (el) => {
+  const d = dash.data(id);
+  el.replaceChildren();
+  if (d.status !== 'ok' || !d.data[0]) return;
+  const v = share(d.data[0]);
+  const sel = d3.select(el).append('svg').attr('viewBox', '0 0 52 52').attr('width', '100%');
+  const arc = d3.arc().innerRadius(19).outerRadius(25).cornerRadius(3);
+  const g = sel.append('g').attr('transform', 'translate(26,26)');
+  g.append('path').attr('d', arc({ startAngle: 0, endAngle: 2 * Math.PI })).style('fill', 'color-mix(in srgb, var(--color-fg) 8%, transparent)');
+  g.append('path').attr('d', arc({ startAngle: 0, endAngle: 2 * Math.PI * v })).style('fill', dash.colors[0]);
+};
+dash.draw('ring_facil', swRing('kpis', (r) => r.pct_facil));
+dash.draw('ring_imprevisto', swRing('kpis', (r) => r.pct_imprevisto));
+dash.draw('ring_rua', swRing('c_rua', (r) => r.dificuldade / r.total));
 
 const swBars = (id) => (el) => {
   const d = dash.data(id);
@@ -308,8 +247,87 @@ const swBars = (id) => (el) => {
     el.append(bar);
   });
 };
-['q1', 'q2', 'q3', 'q4', 'q5'].forEach((q) => dash.draw(q, swBars('c_' + q)));
-dash.draw('rua_plan', swBars('c_rua_plan'));
+dash.draw('q2', swBars('c_q2'));
+dash.draw('q4', swBars('c_q4'));
+
+const swShades = (n) => [dash.colors[0], ...Array.from({ length: n - 1 }, (_, i) => `color-mix(in srgb, var(--cds-chart-muted) ${100 - i * 22}%, transparent)`)];
+
+dash.draw('q3', (el) => {
+  const d = dash.data('c_q3');
+  el.replaceChildren();
+  if (d.status !== 'ok') { el.classList.add('dash-skeleton'); return; }
+  el.classList.remove('dash-skeleton');
+  const rows = d.data.filter((r) => r.n > 0);
+  const colors = swShades(rows.length);
+  const total = rows[0] ? rows[0].total : 0;
+  const svg = d3.select(el).append('svg').attr('class', 'sw-donut').attr('viewBox', '0 0 120 120').attr('width', '100%');
+  const g = svg.append('g').attr('transform', 'translate(60,60)');
+  const arcs = d3.pie().sort(null).value((r) => r.n).padAngle(0.03)(rows);
+  const arc = d3.arc().innerRadius(38).outerRadius(56).cornerRadius(4);
+  g.selectAll('path').data(arcs).join('path').attr('d', arc).style('fill', (a, i) => colors[i]);
+  const first = rows[0];
+  g.append('text').attr('text-anchor', 'middle').attr('dy', '0.05em').style('font-size', '22px').style('font-weight', 700).style('fill', 'var(--color-fg)').style('letter-spacing', '-0.03em').text(first && total ? swPct(first.n / total) : '');
+  g.append('text').attr('text-anchor', 'middle').attr('dy', '1.6em').style('font-size', '10px').style('fill', 'var(--color-fg-muted)').text(first ? first.opcao.toLowerCase() : '');
+  const ul = document.createElement('ul');
+  ul.className = 'sw-legend';
+  rows.forEach((r, i) => {
+    const li = document.createElement('li');
+    const sw = document.createElement('i');
+    sw.style.background = colors[i];
+    const name = document.createElement('span');
+    name.textContent = r.opcao;
+    const val = document.createElement('span');
+    val.textContent = String(r.n);
+    li.append(sw, name, val);
+    ul.append(li);
+  });
+  el.append(ul);
+});
+
+dash.draw('perfil', (el) => {
+  const d = dash.data('c_perfil');
+  el.replaceChildren();
+  if (d.status !== 'ok') { el.classList.add('dash-skeleton'); return; }
+  el.classList.remove('dash-skeleton');
+  const cats = [...new Set(d.data.map((r) => r.categoria))];
+  const colors = swShades(cats.length);
+  ['Formulário', 'Rua'].forEach((grupo) => {
+    const rows = d.data.filter((r) => r.grupo === grupo);
+    const total = rows[0] ? rows[0].total : 0;
+    const row = document.createElement('div');
+    row.className = 'sw-stack-row';
+    const label = document.createElement('div');
+    label.className = 'sw-stack-label';
+    const a = document.createElement('span');
+    a.textContent = grupo;
+    const b = document.createElement('span');
+    const plan = rows.find((r) => r.categoria === 'Planejou tudo');
+    b.textContent = plan && total ? swPct(plan.n / total) + ' planejou tudo' : '';
+    label.append(a, b);
+    const bar = document.createElement('div');
+    bar.className = 'sw-stack-bar';
+    rows.forEach((r) => {
+      if (!r.n) return;
+      const seg = document.createElement('div');
+      seg.style.flex = String(r.n);
+      seg.style.background = colors[cats.indexOf(r.categoria)];
+      seg.setAttribute('aria-label', r.categoria + ': ' + r.n + ' de ' + total);
+      bar.append(seg);
+    });
+    row.append(label, bar);
+    el.append(row);
+  });
+  const leg = document.createElement('div');
+  leg.className = 'sw-stack-legend';
+  cats.forEach((c, i) => {
+    const s = document.createElement('span');
+    const sw = document.createElement('i');
+    sw.style.background = colors[i];
+    s.append(sw, document.createTextNode(c));
+    leg.append(s);
+  });
+  el.append(leg);
+});
 
 dash.draw('hip', (el) => {
   const d = dash.data('hipoteses');
@@ -317,40 +335,23 @@ dash.draw('hip', (el) => {
   if (d.status !== 'ok') { el.textContent = '—'; return; }
   const tone = { 'Validada': 'ok', 'Validada em parte': 'warn', 'Sinal fraco': 'warn', 'Não validada': 'bad' };
   d.data.forEach((r) => {
-    const card = document.createElement('article');
-    card.className = 'sw-hyp';
+    const row = document.createElement('div');
+    row.className = 'sw-hyp';
+    row.title = r.evidencia;
     const id = document.createElement('span');
     id.className = 'sw-hyp-id';
     id.textContent = r.id;
-    const top = document.createElement('div');
-    top.className = 'sw-hyp-top';
-    const h = document.createElement('h3');
-    h.textContent = r.hipotese;
+    const name = document.createElement('span');
+    name.className = 'sw-hyp-name';
+    name.textContent = r.hipotese;
     const pill = document.createElement('span');
     pill.className = 'sw-pill ' + (tone[r.status] || 'warn');
     pill.textContent = r.status;
-    top.append(h, pill);
-    const p = document.createElement('p');
-    p.textContent = r.evidencia;
-    card.append(id, top, p);
-    el.append(card);
-  });
-});
-
-dash.draw('quotes', (el) => {
-  const d = dash.data('rua');
-  el.replaceChildren();
-  if (d.status !== 'ok') { el.classList.add('dash-skeleton'); return; }
-  el.classList.remove('dash-skeleton');
-  d.data.filter((r) => r.citacao && r.citacao.length > 12).forEach((r) => {
-    const fig = document.createElement('figure');
-    fig.className = 'sw-quote';
-    const q = document.createElement('q');
-    q.textContent = r.citacao;
-    const who = document.createElement('span');
-    who.textContent = r.planejamento + ' · ' + r.data_hora.slice(11, 16);
-    fig.append(q, who);
-    el.append(fig);
+    const ev = document.createElement('span');
+    ev.className = 'sw-hyp-ev';
+    ev.textContent = r.curto;
+    row.append(id, name, pill, ev);
+    el.append(row);
   });
 });
 </script>
