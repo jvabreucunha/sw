@@ -4,12 +4,12 @@ Guia para quem (pessoa ou agente) for criar ou mudar telas do Partiu. Tudo aqui 
 
 ## Princípios
 
-1. **Monocromático e claro.** O app é preto, branco e cinzas, no estilo iOS. Não há cor de marca: o destaque é sempre `--ink` (quase preto) sobre `--surface` (branco). Cor só aparece em fotos/ilustrações e no mapa.
+1. **Litoral, vidro e azul-marinho.** A identidade vem de fotos reais do litoral em tela cheia, com controles de vidro fosco por cima. O destaque é o azul-marinho `--brand`; o texto é grafite `--ink` sobre branco. Referências: apps de viagem com foto grande, cartões de foto com local e seta, barra de navegação escura flutuante.
 2. **Um celular de 390 × 844.** Tudo é desenhado dentro de `.phone`. No desktop ele fica centralizado com moldura; abaixo de 500px ocupa a tela inteira.
-3. **Selecionado = invertido.** Um item escolhido troca para fundo `--ink` e texto `--surface`. Não use outra cor, sombra extra ou ícone de check para indicar seleção.
-4. **Pouca decoração.** Bordas finas de 1px, sombras suaves só no que flutua (cartões sobre o mapa, botões flutuantes, painéis). Nada de gradientes decorativos.
+3. **Selecionado = azul.** Um item escolhido troca para fundo `--brand` e texto branco. Não use outra cor, sombra extra ou ícone de check para indicar seleção.
+4. **Foto em primeiro lugar.** Sobre foto: degradê escuro embaixo para o texto branco e vidro fosco (`--glass`, `--glass-line`, `backdrop-filter: blur`) nos controles. Fora da foto: bordas finas de 1px e sombras suaves só no que flutua.
 5. **Toque confortável.** Toda área clicável tem no mínimo 44 × 44px (botões principais 56px de altura).
-6. **Movimento curto e com propósito.** Entradas deslizam ou sobem um pouco; tudo respeita `prefers-reduced-motion`.
+6. **Muito movimento, sempre suave.** Entradas em cascata, fotos que respiram (zoom lento), pinos que caem, toques com resposta. Fica em `css/motion.css` e tudo respeita `prefers-reduced-motion`.
 
 ## Cores
 
@@ -17,13 +17,17 @@ Os tokens ficam em `:root` no `css/base.css`. Use sempre a variável quando exis
 
 | Token | Valor | Uso |
 | --- | --- | --- |
-| `--bg` | `#E7E7EA` | fundo da página, atrás do celular |
+| `--bg` | `#EEF0F4` | fundo da página, atrás do celular |
 | `--surface` | `#FFFFFF` | fundo das telas, cartões, painéis |
-| `--fill` | `#F2F2F5` | fundos suaves: campo de busca, item ativo, miniaturas, trilho de progresso |
-| `--line` | `#E4E4E8` | divisórias, bordas de cartão, botão desativado |
-| `--ink` | `#1C1C1E` | texto principal, botão primário, estado selecionado |
-| `--sec` | `#6C6C72` | texto secundário, legendas, rótulos |
-| `--muted` | `#B4B4BA` | texto desativado (ex.: dias passados no calendário) |
+| `--fill` | `#F3F4F7` | fundos suaves: campo de busca, item ativo, miniaturas, trilho de progresso |
+| `--line` | `#E6E8ED` | divisórias, bordas de cartão, botão desativado |
+| `--ink` | `#1B1F27` | texto principal, barra de navegação flutuante |
+| `--brand` | `#134A8E` | botão primário, estado selecionado, destaque nos títulos, rota no mapa |
+| `--brand-deep` | `#0D3466` | hover do botão primário, fundos azuis escuros |
+| `--brand-soft` | `#E3ECF7` | selos e fundos azuis claros |
+| `--glass` / `--glass-line` | branco 16% / 34% | vidro fosco sobre foto (com `backdrop-filter: blur(14–16px)`) |
+| `--sec` | `#7E8492` | texto secundário, legendas, rótulos |
+| `--muted` | `#B9BEC8` | texto desativado (ex.: dias passados no calendário) |
 
 Cinzas auxiliares já usados (sem token; reutilize estes, não crie novos):
 
@@ -38,17 +42,19 @@ Cinzas auxiliares já usados (sem token; reutilize estes, não crie novos):
 | `#3A3A3C` | selo/contador secundário sobre fundo `--ink` |
 | `#101012` | moldura do celular |
 
-Categorias do orçamento usam três tons do mesmo cinza (`#1C1C1E`, `#6C6C72`, `#B4B4BA`), definidos em `ALLOC` no `js/core.js`.
+Categorias do orçamento usam três tons de azul (`#134A8E`, `#5B86C2`, `#B9CDE8`), definidos em `ALLOC` no `js/core.js`.
+
+Fotos ficam em `img/` (reduzidas, até 1000px) com créditos em `img/CREDITOS.md`; `photoFor(texto)` no `js/core.js` escolhe a foto pelo nome do lugar.
 
 O app só tem tema claro (`color-scheme: light`). Não adicione tema escuro sem combinar antes.
 
 ## Tipografia
 
-Fonte: **Inter** (400, 500, 600, 700) via Google Fonts, com fallback do sistema em `--font`.
+Fonte: **Plus Jakarta Sans** (400 a 800, itálico 700 e 800) via Google Fonts, com fallback do sistema em `--font`.
 
 | Papel | Tamanho | Peso | Extra |
 | --- | --- | --- | --- |
-| Título de tela (`h1`) | 30px | 700 | `letter-spacing: -0.7px`, `line-height: 1.15`, `text-wrap: balance` |
+| Título de tela (`h1`) | 30px (34px sobre foto) | 800 itálico | `letter-spacing: -0.8px`; a palavra-chave vai em `<em>` e fica em `--brand` |
 | Título secundário (carregando) | 24px | 700 | `letter-spacing: -0.5px` |
 | Título de seção / painel (`h2`) | 18–20px | 700 | `letter-spacing: -0.3px` a `-0.4px` |
 | Cabeçalho de tela, nome de cartão grande | 17–19px | 600–700 | |
@@ -78,11 +84,12 @@ Regras:
 
 | Raio | Onde |
 | --- | --- |
-| 46px | moldura do celular |
+| 48px | moldura do celular (branca) |
 | 28px | ilustração da apresentação |
 | 20–22px | painéis que sobem de baixo (`20px 20px 0 0`), cartões de deslizar, estados vazios |
 | 16–18px | cartões (bento, categorias, cartão da viagem) |
-| 14px | botões primário/secundário, cartões de lista, chips de dia |
+| 999px | botões primário, secundário e contornado (pílula) |
+| 14px | cartões de lista, chips de dia, miniaturas de foto |
 | 12px | botões de ícone, busca, miniaturas, chips de horário |
 | 8–10px | controles segmentados, etiquetas pequenas |
 | 50% / altura÷2 | pílulas, botões redondos, pins, pontos |
@@ -131,7 +138,7 @@ Reutilize estas classes antes de criar novas. As globais estão em `css/base.css
 - `.toast` — aviso escuro flutuante com ação "Desfazer" sublinhada.
 - `.map-note` — aviso curto escuro sobre o mapa.
 - Estados vazios (`.tl-empty`, `.disc-empty`, `.stage-done`) — caixa com borda tracejada `1.5px dashed #D0D0D5`, texto centralizado, título 17px/600 + explicação em `--sec` + ação.
-- `.tabbar` — 2 abas (Explorar e Roteiro) com ícone de 24px e rótulo de 11px; a atual em `--ink`/600.
+- `.tabbar` — barra escura (`--ink`) flutuante em pílula, com 2 abas (Explorar e Roteiro); a atual fica em pílula azul `--brand`.
 
 ## Ícones
 
@@ -143,7 +150,8 @@ Reutilize estas classes antes de criar novas. As globais estão em `css/base.css
 
 ## Movimento
 
-- Curva padrão: `cubic-bezier(.2, .8, .2, 1)`. Durações de 0,15s (hover/toque) a 0,4s (entradas).
+- Curva padrão: `cubic-bezier(.2, .8, .2, 1)`; mola para o que aparece: `cubic-bezier(.34, 1.56, .64, 1)`. Durações de 0,15s (toque) a 0,6s (entradas); o zoom lento das fotos leva 9–10s.
+- Animações de entrada usam `animation-fill-mode: backwards`, para não segurar `transform` depois (arrastar cartões, pinos do mapa).
 - **Troca de tela:** avançar desliza da direita (`enter-f`), voltar da esquerda (`enter-b`), a anterior some com leve redução (`leave`). Use `go(passo)` / `showScreen()` do `js/core.js`, nunca troque `hidden` na mão.
 - **Troca de etapa:** os filhos entram em cascata com 40ms de atraso entre eles (`step-f`/`step-b`), reiniciados com `replay(el, cls)`.
 - **Listas:** itens sobem 12px em cascata de 45ms (`--i` como índice).
@@ -179,8 +187,8 @@ Reutilize estas classes antes de criar novas. As globais estão em `css/base.css
 
 ## Antes de entregar uma tela
 
-- [ ] Só usei os tokens e cinzas listados acima.
-- [ ] Seleção é fundo `--ink` + texto branco, via `aria-pressed`/`aria-current`.
+- [ ] Só usei os tokens e cinzas listados acima; destaque sempre em `--brand`.
+- [ ] Seleção é fundo `--brand` + texto branco, via `aria-pressed`/`aria-current`.
 - [ ] Alvos de toque com 44px ou mais; uma única ação principal.
 - [ ] Números com `tabular-nums`; textos longos cortam com reticências.
 - [ ] Ícones no estilo de traço do `ICON`, com `aria-hidden` e `aria-label` no botão.

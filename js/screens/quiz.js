@@ -82,7 +82,7 @@ function renderQuiz() {
   replay(b, S.stepDir < 0 ? 'step-b' : 'step-f');
   if (S.step === 'dest') {
     b.innerHTML = `
-      <div class="q-title"><h1>Para onde você vai?</h1><p class="sub">Cidades do litoral catarinense.</p></div>
+      <div class="q-title"><h1>Para onde você <em>vai?</em></h1><p class="sub">Cidades do litoral catarinense.</p></div>
       <div class="group">
         <label class="label" for="destInput">Destino</label>
         <div class="search">${svg('search', 20, 2.2)}<input id="destInput" type="text" autocomplete="off" placeholder="Buscar cidade" value="${S.query}"></div>
@@ -91,12 +91,12 @@ function renderQuiz() {
     renderDestList();
   } else if (S.step === 'dates') {
     b.innerHTML = `
-      <div class="q-title"><h1>Quando é a viagem?</h1><p class="sub">Já chegou? Comece por hoje. Toque na ida e depois na volta.</p></div>
+      <div class="q-title"><h1>Quando é a <em>viagem?</em></h1><p class="sub">Já chegou? Comece por hoje. Toque na ida e depois na volta.</p></div>
       <div class="group" id="cal"></div>`;
     renderCal();
   } else if (S.step === 'budget') {
     b.innerHTML = `
-      <div class="q-title"><h1>Quanto quer gastar?</h1><p class="sub">Só uma referência para as sugestões. Dá para mudar depois.</p></div>
+      <div class="q-title"><h1>Quanto quer <em>gastar?</em></h1><p class="sub">Só uma referência para as sugestões. Dá para mudar depois.</p></div>
       <div class="ring">
         <svg viewBox="0 0 200 200" aria-hidden="true"><circle class="trk" cx="100" cy="100" r="86"/>${ALLOC.map((a) => `<circle class="seg" cx="100" cy="100" r="86" stroke="${a[2]}"/>`).join('')}</svg>
         <div class="ring-center">
@@ -117,7 +117,7 @@ function renderQuiz() {
     renderBudget(true);
   } else if (S.step === 'prefs') {
     b.innerHTML = `
-      <div class="q-title"><h1>O que você curte?</h1><p class="sub">Escolha quantos quiser.</p></div>
+      <div class="q-title"><h1>O que você <em>curte?</em></h1><p class="sub">Escolha quantos quiser.</p></div>
       <div class="group">
         <div class="group-head"><span class="label">Interesses</span><span class="label" id="intCount"></span></div>
         <div class="bento">${INTERESTS.map(([k, l]) => `

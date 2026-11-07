@@ -129,7 +129,7 @@ function extrasHTML(items, isToday) {
   const picks = isToday ? nowPicks() : [];
   const now = picks.length ? `<section class="now" aria-label="O que fazer agora">
       <div class="now-head"><strong>Agora, ${NOW}</strong><span>Aberto perto de você</span></div>
-      ${picks.map((p) => `<div class="now-item"><span class="now-ic">${svg(p.icon, 18)}</span>
+      ${picks.map((p) => `<div class="now-item"><span class="now-ic">${photoFor(p.name + ' ' + p.sub) ? `<img src="${photoFor(p.name + ' ' + p.sub)}" alt="">` : svg(p.icon, 18)}</span>
         <span class="stop-tx"><strong>${esc(p.name)}</strong><small>${esc(p.info)} · ${shortDist(p.m)}</small></span>
         <button class="pill now-go" data-now="${p.id}" aria-label="Ir agora para ${esc(p.name)}">Ir agora</button></div>`).join('')}
     </section>` : '';
@@ -190,7 +190,7 @@ function renderDay(fit) {
     markers[it.id] = L.marker(it.ll, { icon: pinIcon(i + 1, sel, it.title), title: it.title, keyboard: true, zIndexOffset: sel ? 1000 : 300 }).on('click', () => select(it.id, false)).addTo(map);
   });
   if (routeLine) routeLine.remove();
-  routeLine = L.polyline([hotel.ll, ...items.map((it) => it.ll)], { color: '#1C1C1E', weight: 3, opacity: 0.6, dashArray: '1 8', lineCap: 'round', interactive: false }).addTo(map);
+  routeLine = L.polyline([hotel.ll, ...items.map((it) => it.ll)], { color: '#134A8E', weight: 3, opacity: 0.7, dashArray: '1 8', lineCap: 'round', interactive: false }).addTo(map);
   if (fit) map.fitBounds(L.latLngBounds([hotel.ll, ...items.map((it) => it.ll)]), { paddingTopLeft: [36, TRIP_CARD_H + 12], paddingBottomRight: [36, curSheetH() + 24], maxZoom: 15 });
 }
 

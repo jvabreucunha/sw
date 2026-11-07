@@ -18,7 +18,7 @@
 .sheet.collapsed > :not(.grabber-btn):not(.places-head):not(.tabbar) { display: none; }
 .grabber-btn { flex: none; width: 100%; height: 22px; border: 0; background: none; display: grid; place-items: center; cursor: grab; touch-action: none; }
 .grabber-btn span { width: 36px; height: 5px; border-radius: 3px; background: #D1D1D6; }
-.map-note { position: absolute; z-index: 1001; top: 120px; left: 16px; right: 16px; margin: 0 auto; width: fit-content; max-width: calc(100% - 32px); padding: 8px 14px; border-radius: 12px; background: var(--ink); color: var(--surface); font-size: 13px; line-height: 1.4; text-align: center; box-shadow: 0 4px 16px rgba(0,0,0,.2); }
+.map-note { position: absolute; z-index: 1001; top: 120px; left: 16px; right: 16px; margin: 0 auto; width: fit-content; max-width: calc(100% - 32px); padding: 8px 14px; border-radius: 12px; background: var(--brand); color: var(--surface); font-size: 13px; line-height: 1.4; text-align: center; box-shadow: 0 4px 16px rgba(0,0,0,.2); }
 .grabber { width: 36px; height: 5px; border-radius: 3px; background: #D1D1D6; margin: 8px auto 0; }
 .places-head { flex: none; display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 20px; }
 .places-head div { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
@@ -30,7 +30,7 @@
 /* roteiro do dia: saída do hotel, paradas numeradas (iguais aos pins) e o trajeto entre elas */
 .rt-start { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 8px; font-size: 14px; color: var(--sec); }
 .rt-start b { font-weight: 600; color: var(--ink); }
-.rt-n { flex: none; width: 30px; height: 30px; border-radius: 50%; background: var(--ink); color: var(--surface); display: grid; place-items: center; font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.rt-n { flex: none; width: 30px; height: 30px; border-radius: 50%; background: var(--brand); color: var(--surface); display: grid; place-items: center; font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .rt-n.home { background: var(--fill); color: var(--ink); }
 .rt-leg { margin-left: 22px; padding: 4px 0 4px 21px; border-left: 2px dotted #C7C7CC; font-size: 12px; color: var(--sec); font-variant-numeric: tabular-nums; }
 .stop { width: 100%; min-height: 60px; display: flex; align-items: center; gap: 12px; padding: 8px; border: 0; border-radius: 14px; background: transparent; text-align: left; transition: background .15s; }
@@ -45,20 +45,21 @@
 .rt-empty strong { font-size: 17px; font-weight: 600; }
 .rt-empty p { font-size: 14px; color: var(--sec); }
 .rt-empty .btn-out { margin-top: 6px; }
-.tabbar { margin-top: auto; flex: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--line); padding: 4px 8px 26px; }
-.tabbar button { min-height: 50px; border: 0; background: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; font-weight: 500; color: var(--sec); }
-.tabbar button[aria-current="page"] { color: var(--ink); font-weight: 600; }
+.tabbar { margin: auto auto 22px; flex: none; display: flex; gap: 6px; padding: 6px; border-radius: 999px; background: var(--ink); box-shadow: 0 10px 30px rgba(19,40,80,.25); }
+.tabbar button { min-height: 48px; padding: 0 18px; border: 0; border-radius: 999px; background: none; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 600; color: #9AA0AB; }
+.tabbar button[aria-current="page"] { background: var(--brand); color: #fff; }
+.tabbar button svg path[stroke="#fff"] { stroke: var(--brand); }
 
 /* pins */
 .pin { width: 44px; height: 44px; display: grid; place-items: center; position: relative; }
 .pin-dot { width: 34px; height: 34px; border-radius: 50%; background: var(--surface); color: var(--ink); display: grid; place-items: center; box-shadow: 0 2px 8px rgba(0,0,0,.2); transition: all .15s; }
 .pin-dot { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .pin.home .pin-dot { width: 30px; height: 30px; background: var(--fill); border: 2px solid var(--surface); }
-.pin.sel .pin-dot { width: 44px; height: 44px; background: var(--ink); color: var(--surface); border: 3px solid var(--surface); }
+.pin.sel .pin-dot { width: 44px; height: 44px; background: var(--brand); color: var(--surface); border: 3px solid var(--surface); }
 .pin-label { position: absolute; top: 50px; left: 50%; transform: translateX(-50%); white-space: nowrap; background: var(--surface); border-radius: 8px; padding: 5px 10px; font-size: 13px; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
 .me { width: 18px; height: 18px; position: relative; }
-.me::before { content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--ink); animation: pulse 2s ease-out infinite; }
-.me::after { content: ""; position: absolute; inset: 2px; border-radius: 50%; background: var(--ink); border: 3px solid var(--surface); box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+.me::before { content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--brand); animation: pulse 2s ease-out infinite; }
+.me::after { content: ""; position: absolute; inset: 2px; border-radius: 50%; background: var(--brand); border: 3px solid var(--surface); box-shadow: 0 1px 4px rgba(0,0,0,.3); }
 @keyframes pulse { 0% { transform: scale(.6); opacity: .35; } 100% { transform: scale(2.4); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 
@@ -126,11 +127,12 @@
 .now-head strong { font-size: 16px; font-weight: 700; letter-spacing: -0.2px; font-variant-numeric: tabular-nums; }
 .now-head span { font-size: 13px; font-weight: 600; color: var(--sec); }
 .now-item { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 4px; }
-.now-ic { width: 40px; height: 40px; border-radius: 50%; background: var(--surface); display: grid; place-items: center; flex: none; }
+.now-ic { width: 48px; height: 48px; border-radius: 14px; overflow: hidden; background: var(--surface); display: grid; place-items: center; flex: none; }
+.now-ic img { width: 100%; height: 100%; object-fit: cover; }
 .now-go, .planb-go { flex: none; min-width: 44px; }
-.planb { display: flex; align-items: center; gap: 12px; padding: 12px; margin-bottom: 8px; border-radius: 16px; background: var(--ink); color: var(--surface); }
-.planb-ic { width: 40px; height: 40px; border-radius: 50%; background: #3A3A3C; display: grid; place-items: center; flex: none; }
+.planb { display: flex; align-items: center; gap: 12px; padding: 12px; margin-bottom: 8px; border-radius: 16px; background: var(--brand); color: var(--surface); }
+.planb-ic { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.16); display: grid; place-items: center; flex: none; }
 .planb-tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .planb-tx strong { font-size: 15px; font-weight: 600; }
-.planb-tx small { font-size: 13px; color: #C7C7CC; line-height: 1.35; }
-.planb-go { background: var(--surface); color: var(--ink); border-color: var(--surface); }
+.planb-tx small { font-size: 13px; color: rgba(255,255,255,.78); line-height: 1.35; }
+.planb-go { background: var(--surface); color: var(--brand); border-color: var(--surface); }

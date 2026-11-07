@@ -26,6 +26,15 @@ const ICON = {
   chuva: '<path d="M7 15.5h10a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.2 9 3.3 3.3 0 0 0 7 15.5z"/><path d="M9 18.5l-1 2M13 18.5l-1 2M17 18.5l-1 2"/>',
   relax: '<path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M17 11h1.5a2.5 2.5 0 0 1 0 5H17M8 3v3M12 3v3"/>',
 };
+// Fotos reais do litoral (img/, créditos em img/CREDITOS.md), escolhidas pelo nome do lugar.
+const PHOTOS = [
+  [/laranjeiras/i, 'laranjeiras'], [/unipraias|bondinho/i, 'unipraias'], [/cristo/i, 'cristo-luz'], [/praia central|orla/i, 'praia-central'],
+  [/p[oô]r do sol/i, 'por-do-sol'], [/meia praia|itapema/i, 'post1'], [/trilha|mirante|ilha|barco|grossa|ara[cç][aá]/i, 'post3'],
+  [/praia/i, 'manha-praia'], [/caf[eé]|padaria|sorvet|gr[aã]o/i, 'cafe'], [/cantina|pizz|italian/i, 'cantina'],
+  [/brasa|grelha/i, 'mar-brasa'], [/frutos do mar|peix|ostra|sushi|cais/i, 'frutos-mar'], [/jantar|bistr|restaurante|engenho|almo[cç]o|hamburg/i, 'jantar'],
+  [/hotel|pousada/i, 'hotel']
+];
+const photoFor = (text) => { const hit = PHOTOS.find(([re]) => re.test(text || '')); return hit ? `img/${hit[1]}.jpg` : null; };
 const svg = (name, size = 20, sw = 2) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[name]}</svg>`;
 
 // Dados de exemplo. Coordenadas aproximadas; restaurantes e hotéis são fictícios.
@@ -34,7 +43,7 @@ const MON = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out
 const QUIZ = ['dest', 'dates', 'budget', 'prefs'];
 const TODAY = 20261106;
 // Categorias do orçamento: ícone, nome e o tom usado na barra de distribuição.
-const ALLOC = [['dormir', 'Hospedagem', '#1C1C1E', '#FFFFFF'], ['comer', 'Alimentação', '#6C6C72', '#FFFFFF'], ['ver', 'Passeios', '#B4B4BA', '#1C1C1E']];
+const ALLOC = [['dormir', 'Hospedagem', '#134A8E', '#FFFFFF'], ['comer', 'Alimentação', '#5B86C2', '#FFFFFF'], ['ver', 'Passeios', '#B9CDE8', '#1B1F27']];
 const DEFAULT_SPLIT = [0.4, 0.35, 0.25];
 // [chave, nome, como aparece no texto de carregamento]
 const INTERESTS = [

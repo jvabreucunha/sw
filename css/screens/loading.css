@@ -16,7 +16,7 @@
 .load-steps li.done { color: var(--ink); }
 .load-steps .st { flex: none; width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--line); display: grid; place-items: center; transition: background .25s, border-color .25s; }
 .load-steps li.active .st { border-top-color: var(--ink); animation: spin .8s linear infinite; }
-.load-steps li.done .st { background: var(--ink); border-color: var(--ink); color: var(--surface); }
+.load-steps li.done .st { background: var(--brand); border-color: var(--brand); color: var(--surface); }
 .load-steps .st svg { opacity: 0; transform: scale(.4); transition: opacity .25s, transform .25s cubic-bezier(.3, 1.6, .5, 1); }
 .load-steps li.done .st svg { opacity: 1; transform: scale(1); }
 @keyframes spin { to { transform: rotate(360deg); } }

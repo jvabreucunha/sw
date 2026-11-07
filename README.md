@@ -8,6 +8,8 @@ O foco vem da pesquisa de rua de novembro de 2026 (`pesquisa/insights.md` e o da
 
 Não precisa de build. Abra `index.html` no navegador para ver todas as telas, ou `app.html` para seguir o fluxo do começo.
 
+A página de apresentação do projeto, com o modelo de negócio e o formulário para comércios, é a `landing.html`. Na Vercel ela abre na raiz do site (`vercel.json`), e o app fica em `/app`.
+
 Para evitar bloqueios do navegador com arquivos locais, dá para servir a pasta:
 
 ```bash
@@ -31,10 +33,13 @@ Cada tela também abre direto pelo endereço:
 ## Estrutura
 
 ```
+landing.html               página de apresentação (problema, solução, modelo de negócio)
 index.html                 página de desenvolvimento com a prévia de todas as telas
 app.html                   o app (marcação das telas)
+img/                       fotos do litoral usadas no app e na landing (créditos em img/CREDITOS.md)
 css/
   base.css                 cores, tipografia, botões e moldura do celular
+  motion.css               animações (entradas em cascata, fotos que respiram, toques)
   screens/                 um arquivo por tela: onboarding, quiz, loading, plan, map
 js/
   data.js                  cidades e lugares de exemplo

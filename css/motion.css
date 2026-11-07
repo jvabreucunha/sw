@@ -1,0 +1,193 @@
+/* Partiu — movimento. Entradas em cascata, fotos que respiram e toques com resposta.
+   Tudo usa a curva padrão e é desligado em movimento reduzido (fim do arquivo). */
+:root { --ease: cubic-bezier(.2, .8, .2, 1); --spring: cubic-bezier(.34, 1.56, .64, 1); }
+
+@keyframes m-rise { from { opacity: 0; transform: translateY(16px); } }
+@keyframes m-pop { from { opacity: 0; transform: scale(.9); } }
+@keyframes m-drop { 0% { opacity: 0; transform: translateY(-18px) scale(.6); } 70% { opacity: 1; transform: translateY(2px) scale(1.06); } 100% { transform: none; } }
+@keyframes m-slide-up { from { transform: translateY(100%); } }
+@keyframes m-kenburns { from { transform: scale(1.14) translate3d(-1.5%, 1%, 0); } to { transform: scale(1.02) translate3d(0, 0, 0); } }
+@keyframes m-arrows { 0%, 100% { transform: translateX(0); opacity: .7; } 50% { transform: translateX(5px); opacity: 1; } }
+@keyframes m-spin { to { transform: rotate(360deg); } }
+@keyframes m-shine { from { transform: translateX(-120%) skewX(-18deg); } to { transform: translateX(260%) skewX(-18deg); } }
+@keyframes m-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+@keyframes m-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+
+/* toques: tudo que é clicável responde */
+.btn-primary, .btn-sec, .btn-out, .pill, .icon-btn, .row-btn, .b, .day-chip, .time-chip, .stage, .stop, .round-act, .tabbar button, .now-go, .planb-go, .fab { transition: transform .18s var(--ease), background .2s, color .2s, box-shadow .2s, border-color .2s; }
+.btn-primary:not(:disabled):hover, .btn-sec:hover, .btn-out:hover { box-shadow: 0 10px 24px rgba(19, 74, 142, .22); transform: translateY(-1px); }
+.pill:active, .icon-btn:active, .row-btn:active, .b:active, .day-chip:active, .time-chip:active, .stage:active, .stop:active, .tabbar button:active, .now-go:active, .planb-go:active, .fab:active { transform: scale(.94); }
+.round-act:active { transform: scale(.88); }
+.pill[aria-pressed="true"], .b[aria-pressed="true"] { animation: m-pop .28s var(--spring); }
+
+/* apresentação: a foto respira a cada slide, o texto sobe e as setas chamam para frente */
+.illus.swap { animation: none; }
+.illus img { animation: m-kenburns 9s var(--ease) both; }
+.intro-text.swap > * { animation: m-rise .6s var(--ease) backwards; }
+.intro-text.swap > :nth-child(2) { animation-delay: .1s; }
+.intro-top { animation: m-rise .6s .1s var(--ease) backwards; }
+.intro-foot { animation: m-rise .7s .2s var(--ease) backwards; }
+#introNext .go-arr { animation: m-arrows 1.6s ease-in-out infinite; }
+#introNext .go-ic svg { animation: m-spin 12s linear infinite; }
+#introNext:hover { background: rgba(255, 255, 255, .24); }
+
+/* perguntas: listas, cartões e dias entram em cascata */
+.rows > *, .bento > *, .cat-rows > *, .cal-grid > * { animation: m-rise .45s var(--ease) backwards; }
+.rows > *:nth-child(1) { animation-delay: 0ms; }
+.rows > *:nth-child(2) { animation-delay: 45ms; }
+.rows > *:nth-child(3) { animation-delay: 90ms; }
+.rows > *:nth-child(4) { animation-delay: 135ms; }
+.rows > *:nth-child(5) { animation-delay: 180ms; }
+.rows > *:nth-child(6) { animation-delay: 225ms; }
+.rows > *:nth-child(7) { animation-delay: 270ms; }
+.rows > *:nth-child(8) { animation-delay: 315ms; }
+.bento > *:nth-child(1) { animation-delay: 0ms; }
+.bento > *:nth-child(2) { animation-delay: 50ms; }
+.bento > *:nth-child(3) { animation-delay: 100ms; }
+.bento > *:nth-child(4) { animation-delay: 150ms; }
+.bento > *:nth-child(5) { animation-delay: 200ms; }
+.bento > *:nth-child(6) { animation-delay: 250ms; }
+.bento > *:nth-child(7) { animation-delay: 300ms; }
+.bento > *:nth-child(8) { animation-delay: 350ms; }
+.cat-rows > *:nth-child(1) { animation-delay: 120ms; }
+.cat-rows > *:nth-child(2) { animation-delay: 180ms; }
+.cat-rows > *:nth-child(3) { animation-delay: 240ms; }
+.cat-rows > *:nth-child(4) { animation-delay: 300ms; }
+.cal-grid > * { animation-duration: .35s; }
+.cal-grid > *:nth-child(1) { animation-delay: 0ms; }
+.cal-grid > *:nth-child(2) { animation-delay: 8ms; }
+.cal-grid > *:nth-child(3) { animation-delay: 16ms; }
+.cal-grid > *:nth-child(4) { animation-delay: 24ms; }
+.cal-grid > *:nth-child(5) { animation-delay: 32ms; }
+.cal-grid > *:nth-child(6) { animation-delay: 40ms; }
+.cal-grid > *:nth-child(7) { animation-delay: 48ms; }
+.cal-grid > *:nth-child(8) { animation-delay: 56ms; }
+.cal-grid > *:nth-child(9) { animation-delay: 64ms; }
+.cal-grid > *:nth-child(10) { animation-delay: 72ms; }
+.cal-grid > *:nth-child(11) { animation-delay: 80ms; }
+.cal-grid > *:nth-child(12) { animation-delay: 88ms; }
+.cal-grid > *:nth-child(13) { animation-delay: 96ms; }
+.cal-grid > *:nth-child(14) { animation-delay: 104ms; }
+.cal-grid > *:nth-child(15) { animation-delay: 112ms; }
+.cal-grid > *:nth-child(16) { animation-delay: 120ms; }
+.cal-grid > *:nth-child(17) { animation-delay: 128ms; }
+.cal-grid > *:nth-child(18) { animation-delay: 136ms; }
+.cal-grid > *:nth-child(19) { animation-delay: 144ms; }
+.cal-grid > *:nth-child(20) { animation-delay: 152ms; }
+.cal-grid > *:nth-child(21) { animation-delay: 160ms; }
+.cal-grid > *:nth-child(22) { animation-delay: 168ms; }
+.cal-grid > *:nth-child(23) { animation-delay: 176ms; }
+.cal-grid > *:nth-child(24) { animation-delay: 184ms; }
+.cal-grid > *:nth-child(25) { animation-delay: 192ms; }
+.cal-grid > *:nth-child(26) { animation-delay: 200ms; }
+.cal-grid > *:nth-child(27) { animation-delay: 208ms; }
+.cal-grid > *:nth-child(28) { animation-delay: 216ms; }
+.cal-grid > *:nth-child(29) { animation-delay: 224ms; }
+.cal-grid > *:nth-child(30) { animation-delay: 232ms; }
+.cal-grid > *:nth-child(31) { animation-delay: 240ms; }
+.cal-grid > *:nth-child(32) { animation-delay: 248ms; }
+.cal-grid > *:nth-child(33) { animation-delay: 256ms; }
+.cal-grid > *:nth-child(34) { animation-delay: 264ms; }
+.cal-grid > *:nth-child(35) { animation-delay: 272ms; }
+.cal-grid > *:nth-child(36) { animation-delay: 280ms; }
+.cal-grid > *:nth-child(37) { animation-delay: 288ms; }
+.cal-grid > *:nth-child(38) { animation-delay: 296ms; }
+.cal-grid > *:nth-child(39) { animation-delay: 304ms; }
+.cal-grid > *:nth-child(40) { animation-delay: 312ms; }
+.cal-grid > *:nth-child(41) { animation-delay: 320ms; }
+.cal-grid > *:nth-child(42) { animation-delay: 328ms; }
+.ring svg { animation: m-pop .6s var(--spring) backwards; }
+.progress button i { transition: background .3s, transform .3s var(--ease); }
+.progress button.on i { transform: scaleY(1.25); }
+
+/* carregando */
+.load-ring { animation: m-breathe 2.4s ease-in-out infinite; }
+.load-steps li { animation: m-rise .4s var(--ease) backwards; }
+.load-steps li:nth-child(1) { animation-delay: 0ms; }
+.load-steps li:nth-child(2) { animation-delay: 80ms; }
+.load-steps li:nth-child(3) { animation-delay: 160ms; }
+.load-steps li:nth-child(4) { animation-delay: 240ms; }
+
+/* roteiro e escolha de lugares */
+.dcard.top { animation: m-pop .45s var(--spring) backwards; }
+.dcard .photo img { animation: m-kenburns 10s var(--ease) both; }
+.day-strip > *, .stages > *, .tray-row > * { animation: m-rise .4s var(--ease) backwards; }
+.day-strip > *:nth-child(1) { animation-delay: 0ms; }
+.day-strip > *:nth-child(2) { animation-delay: 40ms; }
+.day-strip > *:nth-child(3) { animation-delay: 80ms; }
+.day-strip > *:nth-child(4) { animation-delay: 120ms; }
+.day-strip > *:nth-child(5) { animation-delay: 160ms; }
+.day-strip > *:nth-child(6) { animation-delay: 200ms; }
+.day-strip > *:nth-child(7) { animation-delay: 240ms; }
+.day-strip > *:nth-child(8) { animation-delay: 280ms; }
+.day-strip > *:nth-child(9) { animation-delay: 320ms; }
+.day-strip > *:nth-child(10) { animation-delay: 360ms; }
+.stages > *:nth-child(1) { animation-delay: 0ms; }
+.stages > *:nth-child(2) { animation-delay: 50ms; }
+.stages > *:nth-child(3) { animation-delay: 100ms; }
+.stages > *:nth-child(4) { animation-delay: 150ms; }
+.stages > *:nth-child(5) { animation-delay: 200ms; }
+.stages > *:nth-child(6) { animation-delay: 250ms; }
+.tray-row > *:nth-child(1) { animation-delay: 0ms; }
+.tray-row > *:nth-child(2) { animation-delay: 40ms; }
+.tray-row > *:nth-child(3) { animation-delay: 80ms; }
+.tray-row > *:nth-child(4) { animation-delay: 120ms; }
+.tray-row > *:nth-child(5) { animation-delay: 160ms; }
+.tray-row > *:nth-child(6) { animation-delay: 200ms; }
+.tray-row > *:nth-child(7) { animation-delay: 240ms; }
+.tray-row > *:nth-child(8) { animation-delay: 280ms; }
+.tray-row > *:nth-child(9) { animation-delay: 320ms; }
+.tray-row > *:nth-child(10) { animation-delay: 360ms; }
+.disc-acts > * { animation: m-pop .5s var(--spring) backwards; }
+.disc-acts > :nth-child(2) { animation-delay: .06s; } .disc-acts > :nth-child(3) { animation-delay: .12s; }
+
+/* mapa: painel sobe, itens em cascata, pinos caem e a barra flutua */
+#main.enter-f .sheet, #main.enter-b .sheet { animation: m-slide-up .55s var(--ease) backwards; }
+.trip-card { animation: m-rise .6s .15s var(--ease) backwards; }
+.fab { animation: m-pop .5s var(--spring) backwards; }
+.fab-search { animation-delay: .25s; } #locate { animation-delay: .32s; }
+.pin-dot { animation: m-drop .55s var(--spring) backwards; }
+#list > * { animation: m-rise .45s var(--ease) backwards; }
+#list > *:nth-child(1) { animation-delay: 60ms; }
+#list > *:nth-child(2) { animation-delay: 100ms; }
+#list > *:nth-child(3) { animation-delay: 140ms; }
+#list > *:nth-child(4) { animation-delay: 180ms; }
+#list > *:nth-child(5) { animation-delay: 220ms; }
+#list > *:nth-child(6) { animation-delay: 260ms; }
+#list > *:nth-child(7) { animation-delay: 300ms; }
+#list > *:nth-child(8) { animation-delay: 340ms; }
+#list > *:nth-child(9) { animation-delay: 380ms; }
+#list > *:nth-child(10) { animation-delay: 420ms; }
+#list > *:nth-child(11) { animation-delay: 460ms; }
+#list > *:nth-child(12) { animation-delay: 500ms; }
+#list > *:nth-child(13) { animation-delay: 540ms; }
+#list > *:nth-child(14) { animation-delay: 580ms; }
+.now-item { animation: m-rise .45s var(--ease) backwards; }
+.now-item:nth-child(1) { animation-delay: 160ms; }
+.now-item:nth-child(2) { animation-delay: 230ms; }
+.now-item:nth-child(3) { animation-delay: 300ms; }
+.now-item:nth-child(4) { animation-delay: 370ms; }
+.now-ic img { transition: transform .4s var(--ease); }
+.now-item:hover .now-ic img { transform: scale(1.12); }
+.planb, .now { flex: none; }
+.planb { position: relative; overflow: hidden; }
+.planb::after { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 40%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .22), transparent); animation: m-shine 2.8s 1s ease-in-out infinite; pointer-events: none; }
+.planb-ic svg { animation: m-float 2.2s ease-in-out infinite; }
+.tabbar { animation: m-rise .6s .3s var(--ease) backwards; }
+.chips > * { animation: m-rise .4s var(--ease) backwards; }
+.chips > *:nth-child(1) { animation-delay: 0ms; }
+.chips > *:nth-child(2) { animation-delay: 35ms; }
+.chips > *:nth-child(3) { animation-delay: 70ms; }
+.chips > *:nth-child(4) { animation-delay: 105ms; }
+.chips > *:nth-child(5) { animation-delay: 140ms; }
+.chips > *:nth-child(6) { animation-delay: 175ms; }
+.chips > *:nth-child(7) { animation-delay: 210ms; }
+.chips > *:nth-child(8) { animation-delay: 245ms; }
+.chips > *:nth-child(9) { animation-delay: 280ms; }
+.chips > *:nth-child(10) { animation-delay: 315ms; }
+.found { animation: m-rise .45s var(--ease) backwards; }
+.toast { animation: m-rise .35s var(--spring) backwards; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

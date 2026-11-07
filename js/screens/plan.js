@@ -68,9 +68,11 @@ function distText(a, b) {
 }
 const distTag = (it, from, label) => `<span class="dist">${typeIcon(it, 13)}${distText(from, it.ll)}${label ? ` ${label}` : ''}</span>`;
 
-// Ilustração no lugar da foto do lugar (a foto real entra aqui quando houver).
+// Foto real do lugar quando houver (photoFor, em core.js); senão, uma ilustração.
 const SCENE_KIND = { praia: 'praia', comer: 'comer', ver: 'ver', compras: 'ver', pin: 'ver', natureza: 'natureza', aventura: 'natureza', noite: 'noite', relax: 'relax', dormir: 'relax' };
-function scene(icon) {
+function scene(icon, title) {
+  const ph = photoFor(title);
+  if (ph) return `<img src="${ph}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block">`;
   const k = SCENE_KIND[icon] || 'ver', night = k === 'noite', bg = night ? '#3A3A3F' : '#DEDEE2', st = '#9A9AA0', fl = night ? '#2C2C30' : '#CDCDD2';
   const art = {
     praia: `<circle cx="88" cy="28" r="10" fill="${fl}"/><path d="M0 46H120" stroke="${st}"/><path d="M0 56q10-5 20 0t20 0t20 0t20 0t20 0t20 0" stroke="${st}"/><path d="M0 66q10-5 20 0t20 0t20 0t20 0t20 0t20 0" stroke="${st}" opacity=".6"/>`,
@@ -128,7 +130,7 @@ function renderPlan(opts = {}) {
   $('trayTitle').textContent = `Para organizar (${pk.length})`;
   $('trayRow').innerHTML = pk.map((it) => `
     <button class="tcard" data-pick="${it.id}" aria-label="Escolher dia e horário para ${esc(it.title)}">
-      <span class="tph">${scene(it.icon)}</span><strong>${esc(it.title)}</strong>${distTag(it, h)}
+      <span class="tph">${scene(it.icon, it.title + ' ' + it.sub)}</span><strong>${esc(it.title)}</strong>${distTag(it, h)}
     </button>`).join('');
   const x = dayDate(curDay), items = dayItems(curDay);
   $('dayTitle').textContent = `${DAYNAME[x.getDay()]}, ${x.getDate()} ${MON[x.getMonth()]}`;
@@ -146,7 +148,7 @@ function renderPlan(opts = {}) {
         <div class="ev${it.id === flashId ? ' flash' : ''}" data-id="${it.id}" style="--i:${i * 2 + 1}">
           <button class="ev-time" data-time="${it.id}" aria-label="${it.time}, ${esc(it.title)}: mudar dia ou horário">${it.time}<small>${w ? w[2] : ''}</small></button>
           <div class="ev-card">
-            <span class="pph" role="img" aria-label="Foto de ${esc(it.title)}">${scene(it.icon)}</span>
+            <span class="pph" role="img" aria-label="Foto de ${esc(it.title)}">${scene(it.icon, it.title + ' ' + it.sub)}</span>
             <span class="tx"><strong>${esc(it.title)}</strong><span class="dist">${typeIcon(it, 13)}${esc(it.sub)}</span></span>
             <button class="rm" data-rm="${it.id}" aria-label="Tirar ${esc(it.title)} do dia">${svg('x', 15, 2.2)}</button>
             <span class="handle" data-drag="${it.id}" title="Arraste para reordenar">${svg('grip', 16, 2)}</span>
@@ -308,7 +310,7 @@ function renderWhen() {
     $('whenTitle').textContent = `Adicionar em ${dayShort(wh.day)}`;
     $('whenSub').textContent = 'O horário sugerido pode ser trocado depois, tocando nele.';
     b.innerHTML = (opts.length
-      ? `<div class="fit-list">${opts.map(({ it, t }) => `<button class="fit-row" data-fit="${it.id}" data-t="${t || ''}" ${t ? '' : 'disabled'}><span class="pph">${scene(it.icon)}</span><span class="tx"><strong>${esc(it.title)}</strong>${distTag(it, h, 'do hotel')}</span><em>${t || 'Sem horário'}</em></button>`).join('')}</div>`
+      ? `<div class="fit-list">${opts.map(({ it, t }) => `<button class="fit-row" data-fit="${it.id}" data-t="${t || ''}" ${t ? '' : 'disabled'}><span class="pph">${scene(it.icon, it.title + ' ' + it.sub)}</span><span class="tx"><strong>${esc(it.title)}</strong>${distTag(it, h, 'do hotel')}</span><em>${t || 'Sem horário'}</em></button>`).join('')}</div>`
       : '<p class="when-empty">Você ainda não tem lugares para organizar.</p>') +
       '<button class="btn-out" data-more>Escolher mais lugares</button>';
     return;
@@ -348,7 +350,7 @@ function openDiscover() {
 function closeDiscover() { $('disc').hidden = true; renderPlan(); }
 function cardHTML(it, cls) {
   return `<div class="dcard ${cls}" data-id="${it.id}">
-    <span class="photo" role="img" aria-label="Foto de ${esc(it.title)}">${scene(it.icon)}</span>
+    <span class="photo" role="img" aria-label="Foto de ${esc(it.title)}">${scene(it.icon, it.title + ' ' + it.sub)}</span>
     <span class="stamp yes">QUERO IR</span><span class="stamp no">PULAR</span>
     <div class="body">
       <span class="cicon" role="img" aria-label="${TYPES[it.type].hint}">${svg(TYPES[it.type].icon, 20, 2)}</span>

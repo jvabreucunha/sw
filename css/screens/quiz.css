@@ -5,9 +5,9 @@
 .progress button { height: 20px; padding: 0; border: 0; background: none; display: flex; align-items: center; }
 .progress button:disabled { cursor: default; }
 .progress button i { display: block; width: 100%; height: 4px; border-radius: 2px; background: var(--line); transition: background .25s; }
-.progress button.on i { background: var(--ink); }
+.progress button.on i { background: var(--brand); }
 .progress button:not(:disabled):hover i { background: var(--sec); }
-.progress button.on:hover i { background: var(--ink); }
+.progress button.on:hover i { background: var(--brand); }
 .q-body { flex: 1; min-height: 0; overflow-y: auto; padding: 28px 24px 16px; display: flex; flex-direction: column; gap: 24px; }
 .q-title { display: flex; flex-direction: column; gap: 8px; }
 .q-foot { flex: none; padding: 12px 24px 34px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 12px; }
@@ -35,7 +35,7 @@
 .day.in { background: var(--fill); }
 .day.s.both { background: linear-gradient(to right, transparent 50%, var(--fill) 50%); }
 .day.e.both { background: linear-gradient(to right, var(--fill) 50%, transparent 50%); }
-.day.s span, .day.e span { background: var(--ink); color: var(--surface); font-weight: 600; }
+.day.s span, .day.e span { background: var(--brand); color: var(--surface); font-weight: 600; }
 .day:disabled { cursor: default; }
 .day.today:not(.s):not(.e) span { box-shadow: inset 0 0 0 1.5px #D4D4D9; font-weight: 600; }
 .q-skip { min-width: 44px; min-height: 44px; }
@@ -71,7 +71,7 @@
 
 .pills { display: flex; flex-wrap: wrap; gap: 8px; }
 .pill { flex: none; min-height: 40px; padding: 0 16px; border-radius: 20px; border: 1px solid #D4D4D9; background: var(--surface); font-size: 15px; font-weight: 500; white-space: nowrap; }
-.pill[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: var(--surface); }
+.pill[aria-pressed="true"] { border-color: var(--brand); background: var(--brand); color: var(--surface); }
 .seg { display: grid; padding: 2px; gap: 2px; background: #EEEEF0; border-radius: 10px; }
 .seg button { min-height: 40px; border: 0; border-radius: 8px; background: transparent; font-size: 14px; font-weight: 500; }
 .seg button[aria-pressed="true"] { background: var(--surface); font-weight: 600; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
@@ -84,7 +84,7 @@
 .b.tall { grid-row: span 2; }
 .b:hover { border-color: #C9C9CF; }
 .b:active { transform: scale(.97); }
-.b[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--surface); }
+.b[aria-pressed="true"] { background: var(--brand); border-color: var(--brand); color: var(--surface); }
 .b b { position: relative; z-index: 1; font-size: 15px; font-weight: 600; }
 .b small { position: relative; z-index: 1; font-size: 12px; color: var(--sec); transition: color .3s; }
 .b[aria-pressed="true"] small { color: #C7C7CC; }
