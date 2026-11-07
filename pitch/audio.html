@@ -2,13 +2,15 @@
 <html lang="pt-BR">
 <head><meta charset="utf-8"><title>Partiu trilha</title></head>
 <body>
-<script src="timeline.js"></script>
+<script>document.write(`<script src="${new URLSearchParams(location.search).get('tl') || 'timeline.js'}"><\/script>`);</script>
 <script>
 /* Trilha e efeitos do pitch v2, sintetizados com Web Audio (OfflineAudioContext).
    buildMusic() e buildSfx() devolvem WAVs em base64 (lidos pelo mix.py). */
 const SR = 48000;
 const BEAT = 60 / TL.bpm, BAR = BEAT * 4;
-const DROP = 22.5;                       // impacto da revelação cai num tempo forte
+// marcos da trilha: o v2/v3 usa os valores padrão; o v4 define TL.audio
+const AU = Object.assign({ drop: 22.5, riser: 20.3, outro: 50.8, final: 53.5 }, TL.audio || {});
+const DROP = AU.drop;                    // impacto da revelação cai num tempo forte
 const GRID0 = DROP - Math.ceil(DROP / BAR) * BAR;   // começo da grade de compassos (negativo)
 
 // gerador pseudoaleatório determinístico
@@ -67,12 +69,12 @@ async function buildMusic(voice) {
   tone.frequency.setValueAtTime(1800, 0);
   tone.frequency.linearRampToValueAtTime(2500, S.chaos);
   tone.frequency.linearRampToValueAtTime(5000, S.n1);
-  tone.frequency.linearRampToValueAtTime(7000, 20.3);
-  tone.frequency.linearRampToValueAtTime(1200, 22.3);
+  tone.frequency.linearRampToValueAtTime(7000, AU.riser);
+  tone.frequency.linearRampToValueAtTime(1200, DROP - .2);
   tone.frequency.setValueAtTime(16000, DROP);
-  tone.frequency.setValueAtTime(16000, 50.8);
-  tone.frequency.linearRampToValueAtTime(2200, 51.6);
-  tone.frequency.linearRampToValueAtTime(14000, 53.5);
+  tone.frequency.setValueAtTime(16000, AU.outro);
+  tone.frequency.linearRampToValueAtTime(2200, AU.outro + .8);
+  tone.frequency.linearRampToValueAtTime(14000, AU.final);
 
   const pad = bus(ctx, tone, { rev: .5, revNode: rev }); pad.gain.value = .3;
   const pluck = bus(ctx, tone, { rev: .45, revNode: rev }); pluck.gain.value = .3;
@@ -82,13 +84,13 @@ async function buildMusic(voice) {
   for (let bar = 0; GRID0 + bar * BAR < TL.duration; bar++) {
     const t = GRID0 + bar * BAR, ch = CHORDS[((bar % 4) + 4) % 4];
     if (t + BAR < 0) continue;
-    const quiet = t > 21.9 && t < DROP - .01;   // respiro antes do impacto
+    const quiet = t > DROP - .6 && t < DROP - .01;   // respiro antes do impacto
     // pad: osciladores levemente desafinados
-    if (t < 53.4 && !quiet) for (const n of ch.notes.slice(0, 4)) for (const det of [-7, 7]) {
+    if (t < AU.final - .1 && !quiet) for (const n of ch.notes.slice(0, 4)) for (const det of [-7, 7]) {
       const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.value = mtof(n); o.detune.value = det;
       const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 1400;
       const g = ctx.createGain(); const st = Math.max(0, t);
-      const end = Math.min(t + BAR + .3, t > 20 && t < DROP ? DROP - .3 : 99);
+      const end = Math.min(t + BAR + .3, t > DROP - 2.5 && t < DROP ? DROP - .3 : 99);
       g.gain.setValueAtTime(0.0001, st); g.gain.linearRampToValueAtTime(.13, st + .5); g.gain.setValueAtTime(.13, end - .4); g.gain.linearRampToValueAtTime(0.0001, end);
       o.connect(f); f.connect(g); g.connect(pad); o.start(st); o.stop(end + .1);
     }
@@ -96,8 +98,8 @@ async function buildMusic(voice) {
     if (t >= S.chaos - .1 && !quiet) {
       const pat = [0, 2, 1, 3, 4, 3, 2, 1];
       for (let i = 0; i < 8; i++) {
-        const nt = t + i * BEAT / 2; if (nt < 0 || nt >= 56) continue;
-        if (nt > 21.6 && nt < DROP) continue;
+        const nt = t + i * BEAT / 2; if (nt < 0 || nt >= AU.final + 2.5) continue;
+        if (nt > DROP - .9 && nt < DROP) continue;
         const n = ch.notes[pat[i]] + 12;
         const o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.value = mtof(n);
         const o2 = ctx.createOscillator(); o2.type = 'sine'; o2.frequency.value = mtof(n) * 2;
@@ -106,10 +108,10 @@ async function buildMusic(voice) {
       }
     }
     // baixo: semínimas a partir dos números, colcheias depois do impacto
-    if (t >= S.n1 - .5 && t < 50.8 && !quiet) {
+    if (t >= S.n1 - .5 && t < AU.outro && !quiet) {
       const steps = t >= DROP ? 8 : 4;
       for (let i = 0; i < steps; i++) {
-        const nt = t + i * BAR / steps; if (nt > 21.6 && nt < DROP) continue;
+        const nt = t + i * BAR / steps; if (nt > DROP - .9 && nt < DROP) continue;
         const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = mtof(ch.bass + (t >= DROP && i % 2 ? 12 : 0));
         const o2 = ctx.createOscillator(); o2.type = 'triangle'; o2.frequency.value = mtof(ch.bass);
         const g = ctx.createGain(); env(g, nt, .006, .9, BAR / steps * .9);
@@ -120,7 +122,7 @@ async function buildMusic(voice) {
     // bateria
     for (let b = 0; b < 4; b++) {
       const bt = t + b * BEAT; if (bt < 0) continue;
-      const full = bt >= DROP && bt < 50.8, light = bt >= S.n1 - .05 && bt < 21.6;
+      const full = bt >= DROP && bt < AU.outro, light = bt >= S.n1 - .05 && bt < DROP - .9;
       const hatsOnly = bt >= S.chaos && bt < S.n1 - .05;
       if (full || light) kick(ctx, drums, bt, light ? .55 : .9);
       if (full && (b === 1 || b === 3)) clap(ctx, drums, bt, NOISE, bt >= S.app ? .5 : .38);
@@ -128,17 +130,18 @@ async function buildMusic(voice) {
     }
   }
   // acorde final
+  const F = AU.final, END = TL.duration;
   for (const n of [48, 55, 60, 64, 67, 72, 76]) {
     const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.value = mtof(n);
-    const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.setValueAtTime(5000, 53.5); f.frequency.exponentialRampToValueAtTime(700, 57.8);
-    const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, 53.48); g.gain.linearRampToValueAtTime(.14, 53.55); g.gain.exponentialRampToValueAtTime(0.0001, 57.9);
-    o.connect(f); f.connect(g); g.connect(pad); o.start(53.48); o.stop(58);
+    const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.setValueAtTime(5000, F); f.frequency.exponentialRampToValueAtTime(700, END - .2);
+    const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, F - .02); g.gain.linearRampToValueAtTime(.14, F + .05); g.gain.exponentialRampToValueAtTime(0.0001, END - .1);
+    o.connect(f); f.connect(g); g.connect(pad); o.start(F - .02); o.stop(END);
   }
   // fade final
   const fade = ctx.createGain();
   master.disconnect(); master.connect(fade); fade.connect(ctx.destination);
   fade.gain.setValueAtTime(0, 0); fade.gain.linearRampToValueAtTime(1, .4);
-  fade.gain.setValueAtTime(1, 56.6); fade.gain.linearRampToValueAtTime(0, 57.95);
+  fade.gain.setValueAtTime(1, END - 1.4); fade.gain.linearRampToValueAtTime(0, END - .05);
   return toWav(await ctx.startRendering());
 }
 function kick(ctx, out, t, v) {
