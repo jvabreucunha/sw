@@ -2,6 +2,7 @@
 
   python3 -I mix.py [video.mp4] [saida.mp4]
   TL=timeline4.js python3 -I mix.py ...      (v4: usa timeline4.js, narration4.json e audio/voice4/)
+  TL=timeline5.js python3 -I mix.py ...      (v5: usa timeline5.js, narration5.json e audio/voice5/)
 """
 import base64, json, os, subprocess, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -10,7 +11,7 @@ from cdp import Chrome
 
 AUD = os.path.join(HERE, 'audio')
 TLFILE = os.environ.get('TL', 'timeline.js')
-SUF = '4' if TLFILE == 'timeline4.js' else ''
+SUF = {'timeline4.js': '4', 'timeline5.js': '5'}.get(TLFILE, '')
 voice = json.load(open(os.path.join(HERE, f'narration{SUF}.json')))['durations']
 
 c = Chrome(400, 300, 1)

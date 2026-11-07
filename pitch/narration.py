@@ -1,14 +1,14 @@
 """Gera a narração (uma faixa por fala) com o Piper e grava as durações em narration.json.
 
-  python3 -I narration.py [voz] [velocidade] [versão]   voz: faber | cadu | jeff (padrão faber); versão: v2 | v4 (padrão v4)
+  python3 -I narration.py [voz] [velocidade] [versão]   voz: faber | cadu | jeff (padrão faber); versão: v2 | v4 | v5 (padrão v5)
 """
 import json, os, subprocess, sys, wave
 HERE = os.path.dirname(os.path.abspath(__file__))
 TTS = os.path.join(HERE, 'tts')
 VOICE = sys.argv[1] if len(sys.argv) > 1 else 'faber'
 SPEED = sys.argv[2] if len(sys.argv) > 2 else '0.95'   # length_scale (<1 = mais rápido)
-VERSION = sys.argv[3] if len(sys.argv) > 3 else 'v4'  # v2 (usada também no v3) ou v4
-SUFFIX = '' if VERSION == 'v2' else '4'
+VERSION = sys.argv[3] if len(sys.argv) > 3 else 'v5'  # v2 (usada também no v3), v4 ou v5
+SUFFIX = {'v2': '', 'v4': '4', 'v5': '5'}[VERSION]
 
 # id, texto falado (números por extenso para a pronúncia sair certa)
 LINES_V4 = [
@@ -18,6 +18,23 @@ LINES_V4 = [
     ('chaos2', 'E chegando lá, você perde o dia decidindo.'),
     ('n1', 'Antes de reservar, visitamos duzentas e setenta e sete páginas. São cinco horas de pesquisa.'),
     ('n2', 'E quase metade planeja pelas redes sociais, que não mostram preço, distância nem horário.'),
+    ('reveal', 'Conheça o Partiu.'),
+    ('quiz', 'Diga quanto quer gastar e o que você curte.'),
+    ('load', 'O Partiu mostra só o que cabe no seu bolso.'),
+    ('swipe', 'Deslize e escolha o que vale a pena.'),
+    ('plan', 'O roteiro sai pronto, dia a dia.'),
+    ('map', 'Com o gasto de cada dia, no mapa.'),
+    ('market', 'E o litoral catarinense recebeu sessenta por cento mais turistas estrangeiros.'),
+    ('end', 'Com o Partiu, você chega sabendo o que fazer, onde comer e quanto vai gastar.'),
+]
+# v5: baseada na pesquisa de rua (pesquisa/insights.md): reservar é fácil, decidir o que fazer não
+LINES_V5 = [
+    ('hook', 'Sábado de manhã. Você acabou de chegar no litoral.'),
+    ('hook2', 'A hospedagem está garantida. Mas onde comer, o que fazer, e quanto vai gastar?'),
+    ('chaos', 'Aí começa a busca: Google, Instagram, a dica do amigo, o grupo da viagem.'),
+    ('chaos2', 'E o dia passa enquanto você decide.'),
+    ('n1', 'Fomos para a rua e ouvimos vinte e nove viajantes. Para sessenta e oito por cento, reservar foi fácil.'),
+    ('n2', 'O problema é decidir. Cinquenta e nove por cento tiveram imprevistos, mesmo pesquisando em várias fontes.'),
     ('reveal', 'Conheça o Partiu.'),
     ('quiz', 'Diga quanto quer gastar e o que você curte.'),
     ('load', 'O Partiu mostra só o que cabe no seu bolso.'),
@@ -42,7 +59,7 @@ LINES_V2 = [
     ('end', 'Partiu. Planeje menos. Viaje mais.'),
 ]
 
-LINES = LINES_V4 if VERSION == 'v4' else LINES_V2
+LINES = {'v2': LINES_V2, 'v4': LINES_V4, 'v5': LINES_V5}[VERSION]
 out = os.path.join(HERE, 'audio', 'voice' + SUFFIX)
 os.makedirs(out, exist_ok=True)
 meta = {}

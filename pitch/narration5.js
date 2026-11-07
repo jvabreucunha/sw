@@ -1,0 +1,1 @@
+window.NARR = {"hook": 2.984, "hook2": 4.889, "chaos": 4.43, "chaos2": 2.119, "n1": 6.108, "n2": 5.991, "reveal": 1.167, "quiz": 2.456, "load": 2.247, "swipe": 2.166, "plan": 1.91, "map": 2.119, "market": 4.232, "end": 4.29};
