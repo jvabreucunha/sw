@@ -75,8 +75,8 @@ const rangeLabel = () => {
 const plural = (n, one, many) => n + ' ' + (n === 1 ? one : many);
 
 /* ---------- navegação, com transição entre telas ---------- */
-const FLOW = ['intro', 'dest', 'dates', 'budget', 'prefs', 'loading', 'plan', 'main'];
-const SCREENS = ['intro', 'quiz', 'loading', 'plan', 'main'];
+const FLOW = ['login', 'intro', 'dest', 'dates', 'budget', 'prefs', 'loading', 'plan', 'main'];
+const SCREENS = ['login', 'intro', 'quiz', 'loading', 'plan', 'main'];
 let loadTimer, loadRaf, shown = null;
 // Avançar desliza a tela nova da direita; voltar, da esquerda. A anterior some por baixo.
 function showScreen(id, dir) {
@@ -100,7 +100,8 @@ function go(step) {
   S.stepDir = FLOW.indexOf(step) < FLOW.indexOf(S.step) ? -1 : 1;
   S.step = step;
   const dir = S.stepDir;
-  if (step === 'intro') { showScreen('intro', dir); renderIntro(); }
+  if (step === 'login') { showScreen('login', dir); renderLogin(); }
+  else if (step === 'intro') { showScreen('intro', dir); renderIntro(); }
   else if (QUIZ.includes(step)) { S.maxStep = Math.max(S.maxStep, QUIZ.indexOf(step)); showScreen('quiz', dir); renderQuiz(); }
   else if (step === 'loading') { showScreen('loading', dir); startLoading(); }
   else if (step === 'plan') { showScreen('plan', dir); ensurePlan(); renderPlan({ enter: true }); }

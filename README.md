@@ -20,6 +20,7 @@ Cada tela também abre direto pelo endereço:
 
 | Endereço | Tela |
 | --- | --- |
+| `app.html#login` | Entrar (redes sociais ou e-mail; `demo@partiu.app` já tem viagem) |
 | `app.html#intro` | Apresentação |
 | `app.html#dest` | Destino |
 | `app.html#dates` | Datas |

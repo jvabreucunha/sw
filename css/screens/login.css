@@ -1,0 +1,35 @@
+/* ---------- login: foto do litoral no topo e painel claro com as opções ---------- */
+#login { background: var(--surface); }
+.lg-hero { position: relative; flex: none; height: clamp(150px, 30%, 300px); border-radius: 0 0 40px 40px; overflow: hidden; color: #fff; isolation: isolate; }
+.lg-hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
+.lg-hero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(6,22,48,.35), rgba(6,22,48,0) 40%, rgba(6,22,48,.55)); }
+.lg-top { position: absolute; left: 16px; right: 16px; top: 48px; display: flex; align-items: center; justify-content: space-between; }
+.lg-brand { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; font-weight: 800; font-size: 16px; letter-spacing: -0.3px; background: var(--glass); border: 1px solid var(--glass-line); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+#loginBack { color: #fff; background: var(--glass); border: 1px solid var(--glass-line); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+.lg-place { position: absolute; left: 20px; bottom: 18px; display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; }
+.lg-body { flex: 1; min-height: 0; overflow-y: auto; padding: 20px 24px 26px; display: flex; flex-direction: column; gap: 16px; }
+@media (max-height: 760px) { .lg-hero { height: 22%; } .lg-social { gap: 8px; } .lg-soc { min-height: 46px; } .lg-body { gap: 12px; } }
+.lg-title { display: flex; flex-direction: column; gap: 6px; }
+.lg-title .sub { font-size: 15px; }
+.lg-social { display: flex; flex-direction: column; gap: 10px; }
+.lg-soc { min-height: 52px; display: flex; align-items: center; justify-content: center; gap: 10px; border-radius: 999px; border: 1px solid #D4D4D9; background: var(--surface); font-size: 15px; font-weight: 600; transition: transform .18s cubic-bezier(.2, .8, .2, 1), background .2s; }
+.lg-soc:hover { background: var(--fill); }
+.lg-soc:active { transform: scale(.97); }
+.lg-soc.apple { background: var(--ink); border-color: var(--ink); color: #fff; }
+.lg-soc.busy { opacity: .7; pointer-events: none; }
+.lg-or { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--sec); }
+.lg-or::before, .lg-or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.lg-form { display: flex; flex-direction: column; gap: 12px; }
+.lg-field { border-radius: 999px; padding: 0 18px; }
+.lg-field:focus-within { box-shadow: 0 0 0 2px var(--brand); }
+.lg-err { font-size: 13px; color: #C4302B; padding-left: 18px; }
+.lg-hint { font-size: 13px; color: var(--sec); text-align: center; }
+.lg-hint .text-btn { color: var(--brand); font-weight: 600; }
+.lg-forgot { align-self: center; font-size: 15px; }
+.lg-who { display: flex; align-items: center; gap: 12px; padding: 10px 14px 10px 10px; border-radius: 999px; background: var(--fill); align-self: flex-start; max-width: 100%; }
+.lg-who span:last-child { display: flex; flex-direction: column; min-width: 0; }
+.lg-who strong { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lg-who small { font-size: 12px; color: var(--sec); }
+.lg-av { width: 36px; height: 36px; border-radius: 50%; background: var(--brand); color: #fff; display: grid; place-items: center; font-weight: 800; flex: none; }
+.lg-av.new { background: var(--brand-soft); color: var(--brand); }
+.lg-hint .text-btn { border: 0; background: none; min-height: 0; padding: 0; font: inherit; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }

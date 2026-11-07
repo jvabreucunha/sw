@@ -6,20 +6,35 @@
 <title>Partiu</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700;1,800&display=swap">
-<link rel="stylesheet" href="css/base.css?v=2">
-<link rel="stylesheet" href="css/screens/onboarding.css?v=2">
-<link rel="stylesheet" href="css/screens/quiz.css?v=2">
-<link rel="stylesheet" href="css/screens/loading.css?v=2">
-<link rel="stylesheet" href="css/screens/plan.css?v=2">
-<link rel="stylesheet" href="css/screens/map.css?v=2">
-<link rel="stylesheet" href="css/motion.css?v=2">
+<link rel="stylesheet" href="css/base.css?v=4">
+<link rel="stylesheet" href="css/screens/onboarding.css?v=4">
+<link rel="stylesheet" href="css/screens/quiz.css?v=4">
+<link rel="stylesheet" href="css/screens/loading.css?v=4">
+<link rel="stylesheet" href="css/screens/plan.css?v=4">
+<link rel="stylesheet" href="css/screens/map.css?v=4">
+<link rel="stylesheet" href="css/screens/login.css?v=4">
+<link rel="stylesheet" href="css/motion.css?v=4">
 </head>
 <body>
 <a class="dev-link" href="index.html">← Todas as telas</a>
 <div class="phone">
 
+  <!-- Login (MVP): redes sociais ou e-mail; conta existente vai para a viagem, conta nova para o cadastro -->
+  <section id="login" class="screen" aria-label="Entrar" hidden>
+    <div class="lg-hero">
+      <img src="img/post1.jpg" alt="">
+      <div class="lg-top">
+        <button class="icon-btn" id="loginBack" aria-label="Voltar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <span class="lg-brand"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.1 7-11.5A7 7 0 0 0 5 9.5C5 14.9 12 21 12 21z"/></svg>Partiu</span>
+        <span style="width:44px"></span>
+      </div>
+      <span class="lg-place"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.1 7-11.5A7 7 0 0 0 5 9.5C5 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Meia Praia, Itapema</span>
+    </div>
+    <div class="lg-body" id="loginBody"></div>
+  </section>
+
   <!-- Onboarding -->
-  <section id="intro" class="screen" aria-label="Apresentação">
+  <section id="intro" class="screen" aria-label="Apresentação" hidden>
     <div class="intro-top">
       <span class="brand">Partiu</span>
       <button class="link" id="skip">Pular</button>
@@ -148,14 +163,15 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<script src="js/data.js?v=2"></script>
-<script src="js/core.js?v=2"></script>
-<script src="js/ui/hnav.js?v=2"></script>
-<script src="js/screens/intro.js?v=2"></script>
-<script src="js/screens/quiz.js?v=2"></script>
-<script src="js/screens/loading.js?v=2"></script>
-<script src="js/screens/plan.js?v=2"></script>
-<script src="js/screens/map.js?v=2"></script>
-<script src="js/main.js?v=2"></script>
+<script src="js/data.js?v=4"></script>
+<script src="js/core.js?v=4"></script>
+<script src="js/ui/hnav.js?v=4"></script>
+<script src="js/screens/intro.js?v=4"></script>
+<script src="js/screens/quiz.js?v=4"></script>
+<script src="js/screens/loading.js?v=4"></script>
+<script src="js/screens/plan.js?v=4"></script>
+<script src="js/screens/map.js?v=4"></script>
+<script src="js/screens/login.js?v=4"></script>
+<script src="js/main.js?v=4"></script>
 </body>
 </html>

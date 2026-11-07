@@ -1,6 +1,6 @@
 // Inicialização e navegação de desenvolvimento (abrir uma tela pelo endereço).
 /* ---------- navegação de desenvolvimento: abrir qualquer tela pelo endereço (#plan, #main…) ---------- */
-const DEV_ROUTES = ['intro', 'dest', 'dates', 'budget', 'prefs', 'loading', 'discover', 'organize', 'main'];
+const DEV_ROUTES = ['login', 'intro', 'dest', 'dates', 'budget', 'prefs', 'loading', 'discover', 'organize', 'main'];
 // Exemplo para abrir "Organizar" já com lugares escolhidos e alguns horários preenchidos.
 function seedDemo() {
   const take = (ty, n) => S.plan.sugg.filter((s) => s.type === ty).slice(0, n);
@@ -13,7 +13,8 @@ function seedDemo() {
 }
 function route() {
   const r = location.hash.slice(1);
-  if (!DEV_ROUTES.includes(r)) return go('intro');
+  // Sem endereço, o app começa pelo login.
+  if (!DEV_ROUTES.includes(r)) return go('login');
   if (r === 'discover' || r === 'organize') {
     ensurePlan();
     if (r === 'organize' && !chosen().length) seedDemo();
