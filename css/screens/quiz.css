@@ -37,6 +37,8 @@
 .day.e.both { background: linear-gradient(to right, var(--fill) 50%, transparent 50%); }
 .day.s span, .day.e span { background: var(--ink); color: var(--surface); font-weight: 600; }
 .day:disabled { cursor: default; }
+.day.today:not(.s):not(.e) span { box-shadow: inset 0 0 0 1.5px #D4D4D9; font-weight: 600; }
+.q-skip { min-width: 44px; min-height: 44px; }
 .day:disabled span { color: var(--muted); }
 
 .amount { display: flex; align-items: center; justify-content: space-between; gap: 8px; }

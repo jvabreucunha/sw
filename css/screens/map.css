@@ -119,3 +119,18 @@
 .found-top small { font-size: 14px; color: var(--sec); }
 .found-meta { font-size: 13px; color: var(--sec); font-variant-numeric: tabular-nums; }
 .found-act { width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+
+/* Decidir no destino: "Agora" e plano B (pesquisa de rua, nov. 2026) */
+.now { display: flex; flex-direction: column; gap: 2px; padding: 12px; margin-bottom: 8px; border-radius: 16px; background: var(--fill); }
+.now-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 0 4px 4px; }
+.now-head strong { font-size: 16px; font-weight: 700; letter-spacing: -0.2px; font-variant-numeric: tabular-nums; }
+.now-head span { font-size: 13px; font-weight: 600; color: var(--sec); }
+.now-item { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 4px; }
+.now-ic { width: 40px; height: 40px; border-radius: 50%; background: var(--surface); display: grid; place-items: center; flex: none; }
+.now-go, .planb-go { flex: none; min-width: 44px; }
+.planb { display: flex; align-items: center; gap: 12px; padding: 12px; margin-bottom: 8px; border-radius: 16px; background: var(--ink); color: var(--surface); }
+.planb-ic { width: 40px; height: 40px; border-radius: 50%; background: #3A3A3C; display: grid; place-items: center; flex: none; }
+.planb-tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.planb-tx strong { font-size: 15px; font-weight: 600; }
+.planb-tx small { font-size: 13px; color: #C7C7CC; line-height: 1.35; }
+.planb-go { background: var(--surface); color: var(--ink); border-color: var(--surface); }

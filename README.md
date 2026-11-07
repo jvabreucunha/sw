@@ -1,6 +1,8 @@
 # Partiu
 
-Protótipo navegável de um app para organizar viagens pelo litoral catarinense: a pessoa responde algumas perguntas, escolhe lugares deslizando cartões e organiza tudo numa linha do tempo por dia.
+Protótipo navegável de um app para decidir o que fazer no litoral catarinense quando você já está no destino: a pessoa responde algumas perguntas, escolhe lugares deslizando cartões e organiza tudo numa linha do tempo por dia. No mapa, o bloco "Agora" mostra o que está aberto perto dela e, com previsão de chuva, um plano B troca a praia por um lugar coberto.
+
+O foco vem da pesquisa de rua de novembro de 2026 (`pesquisa/insights.md` e o dashboard em `pesquisa/dashboard/`): reservar já é fácil para a maioria; a dor é decidir o que fazer no destino, com informação espalhada e imprevistos durante a viagem. Por isso o orçamento virou uma referência opcional.
 
 ## Como abrir
 

@@ -44,7 +44,8 @@ const INTERESTS = [
 ];
 const S = {
   step: 'intro', slide: 0, city: 'bc', query: 'Balneário Camboriú', monthOff: 0,
-  start: 20261112, end: 20261118, budget: 4000, alloc: [1600, 1400, 1000], maxStep: 0,
+  // Exemplo: quem já chegou e decide no destino (pesquisa de rua, nov. 2026): começa hoje, fim de semana prolongado.
+  start: 20261106, end: 20261109, budget: 2000, alloc: [800, 700, 500], maxStep: 0,
   interests: new Set(['praia', 'comida']),
   filter: 'all', sel: null
 };

@@ -70,6 +70,8 @@ function updateFoot() {
   $('qNote').textContent = note;
   $('qNext').disabled = !canNext();
   $('qNext').textContent = S.step === 'prefs' ? 'Ver meu roteiro' : 'Continuar';
+  // Orçamento é opcional: na pesquisa, preço pesou pouco na decisão.
+  $('qSkip').style.visibility = S.step === 'budget' ? 'visible' : 'hidden';
 }
 function renderQuiz() {
   const i = QUIZ.indexOf(S.step);
@@ -89,12 +91,12 @@ function renderQuiz() {
     renderDestList();
   } else if (S.step === 'dates') {
     b.innerHTML = `
-      <div class="q-title"><h1>Quando é a viagem?</h1><p class="sub">Toque na ida e depois na volta.</p></div>
+      <div class="q-title"><h1>Quando é a viagem?</h1><p class="sub">Já chegou? Comece por hoje. Toque na ida e depois na volta.</p></div>
       <div class="group" id="cal"></div>`;
     renderCal();
   } else if (S.step === 'budget') {
     b.innerHTML = `
-      <div class="q-title"><h1>Qual o seu orçamento?</h1><p class="sub">Sem contar as passagens.</p></div>
+      <div class="q-title"><h1>Quanto quer gastar?</h1><p class="sub">Só uma referência para as sugestões. Dá para mudar depois.</p></div>
       <div class="ring">
         <svg viewBox="0 0 200 200" aria-hidden="true"><circle class="trk" cx="100" cy="100" r="86"/>${ALLOC.map((a) => `<circle class="seg" cx="100" cy="100" r="86" stroke="${a[2]}"/>`).join('')}</svg>
         <div class="ring-center">
@@ -148,8 +150,8 @@ function renderCal() {
   for (let i = 0; i < first; i++) cells += '<span></span>';
   for (let d = 1; d <= dim; d++) {
     const k = keyOf(y, m, d);
-    const cls = ['day', k === S.start && 's', k === S.end && 'e', both && 'both', both && k > S.start && k < S.end && 'in'].filter(Boolean).join(' ');
-    const extra = k === S.start ? ', ida' : k === S.end ? ', volta' : '';
+    const cls = ['day', k === TODAY && 'today', k === S.start && 's', k === S.end && 'e', both && 'both', both && k > S.start && k < S.end && 'in'].filter(Boolean).join(' ');
+    const extra = (k === TODAY ? ', hoje' : '') + (k === S.start ? ', ida' : k === S.end ? ', volta' : '');
     cells += `<button class="${cls}" data-act="day" data-k="${k}" ${k < TODAY ? 'disabled' : ''} aria-label="${d} de ${MONTHS[m]}${extra}"><span>${d}</span></button>`;
   }
   $('cal').innerHTML = `
@@ -276,6 +278,7 @@ $('qProg').onclick = (e) => {
   if (j > QUIZ.indexOf(S.step) && !canNext()) return;
   go(QUIZ[j]);
 };
+$('qSkip').onclick = () => { if (S.step === 'budget') go('prefs'); };
 $('qBack').onclick = () => {
   const i = QUIZ.indexOf(S.step);
   if (i === 0) { S.slide = 2; go('intro'); } else go(QUIZ[i - 1]);

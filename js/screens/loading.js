@@ -8,8 +8,8 @@ function startLoading() {
   // [enquanto roda, quando termina]
   const steps = [
     [`Buscando ${likes} em ${c.name}`, `${c.places.length - 1} lugares encontrados`],
-    ['Comparando avaliações e distâncias', 'Os mais bem avaliados separados'],
-    ['Filtrando pelo seu orçamento', `Tudo dentro de ${money(perDay())} por dia`],
+    ['Juntando mapas, avaliações e dicas locais', 'Tudo num lugar só'],
+    ['Vendo o que está aberto perto de você', `Dentro de ${money(perDay())} por dia`],
     ['Separando as melhores opções', `${found} sugestões prontas para você`]
   ];
   // Cada etapa leva entre 0,7 s e 1,5 s, para não parecer mecânico.

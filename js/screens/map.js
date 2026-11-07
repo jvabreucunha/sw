@@ -14,7 +14,7 @@ const pinIcon = (n, sel, title) => L.divIcon({
 const homeIcon = () => L.divIcon({ className: '', iconSize: [44, 44], iconAnchor: [22, 22], html: `<div class="pin home"><span class="pin-dot">${svg('dormir', 18)}</span></div>` });
 
 // Previsão do tempo de exemplo (fictícia): muda por cidade e por dia.
-const WX = [['sol', 'Ensolarado', 29, 21], ['parcial', 'Sol e nuvens', 27, 20], ['sol', 'Ensolarado', 30, 22], ['nublado', 'Nublado', 25, 20], ['chuva', 'Chuva à tarde', 23, 19], ['parcial', 'Sol e nuvens', 26, 20]];
+const WX = [['sol', 'Ensolarado', 29, 21], ['chuva', 'Chuva à tarde', 23, 19], ['parcial', 'Sol e nuvens', 27, 20], ['sol', 'Ensolarado', 30, 22], ['nublado', 'Nublado', 25, 20], ['parcial', 'Sol e nuvens', 26, 20]];
 const wxFor = (d) => WX[(Math.max(0, CITIES.findIndex((c) => c.id === S.city)) + d) % WX.length];
 
 // Onde a pessoa está: GPS quando o navegador permite; senão, o Shopping Russi & Russi (Itapema).
@@ -105,7 +105,36 @@ function seedTrip() {
   }));
 }
 
-let mapDay = 0, mapPlan = null, homeMarker;
+let mapDay = 0, mapPlan = null, homeMarker, curB = null;
+
+/* ---------- decidir no destino (pesquisa de rua, nov. 2026) ---------- */
+// "Agora": o que está aberto perto de você no horário atual (horário de exemplo fixo).
+const NOW = '15:30';
+const fitsNow = (ty) => TYPES[ty].windows.some(([a, b]) => toMin(NOW) >= toMin(a) && toMin(NOW) <= toMin(b));
+const asItem = (p) => ({ title: p.name, sub: p.sub, icon: p.icon === 'pin' ? 'ver' : p.icon, type: typeFor(p), ll: p.ll, id: 'it' + planSeq++ });
+const nowPicks = () => searchPool().filter((p) => !['dormir', 'pin', 'compras'].includes(p.icon) && !inPlan(p) && fitsNow(typeFor(p))).slice(0, 3);
+// Plano B: com previsão de chuva, sugere trocar a praia do dia por um lugar coberto perto do hotel.
+function planB(items) {
+  const [ic, wx] = wxFor(mapDay);
+  if (ic !== 'chuva') return null;
+  const beach = items.slice().reverse().find((x) => x.type === 'praia');
+  const alt = beach && searchPool().find((p) => p.icon === 'relax' && !inPlan(p));
+  return alt ? { beach, alt, wx } : null;
+}
+function extrasHTML(items, isToday) {
+  curB = planB(items);
+  const b = curB ? `<div class="planb" role="status"><span class="planb-ic">${svg('chuva', 20)}</span>
+      <span class="planb-tx"><strong>${esc(curB.wx)} · plano B</strong><small>Trocar ${esc(curB.beach.title)} por ${esc(curB.alt.name)}, coberto e perto</small></span>
+      <button class="pill planb-go" data-swap>Trocar</button></div>` : '';
+  const picks = isToday ? nowPicks() : [];
+  const now = picks.length ? `<section class="now" aria-label="O que fazer agora">
+      <div class="now-head"><strong>Agora, ${NOW}</strong><span>Aberto perto de você</span></div>
+      ${picks.map((p) => `<div class="now-item"><span class="now-ic">${svg(p.icon, 18)}</span>
+        <span class="stop-tx"><strong>${esc(p.name)}</strong><small>${esc(p.info)} · ${shortDist(p.m)}</small></span>
+        <button class="pill now-go" data-now="${p.id}" aria-label="Ir agora para ${esc(p.name)}">Ir agora</button></div>`).join('')}
+    </section>` : '';
+  return b + now;
+}
 function showMain() {
   initMap();
   ensurePlan();
@@ -138,10 +167,10 @@ function renderDay(fit) {
   const left = S.plan.picked.length;
   const edit = `<button class="text-btn rt-edit" data-edit>${left ? `Editar roteiro · ${plural(left, 'lugar', 'lugares')} para organizar` : 'Editar roteiro'}</button>`;
   if (!items.length) {
-    $('list').innerHTML = `<div class="rt-empty"><strong>Dia livre</strong><p>Nada marcado para este dia ainda.</p><button class="btn-out" data-edit>Organizar roteiro</button></div>`;
+    $('list').innerHTML = extrasHTML(items, isToday) + `<div class="rt-empty"><strong>Dia livre</strong><p>Nada marcado para este dia ainda.</p><button class="btn-out" data-edit>Organizar roteiro</button></div>`;
   } else {
     let prev = hotel.ll;
-    $('list').innerHTML = `<div class="rt-start"><span class="rt-n home">${svg('dormir', 16)}</span><span>Saída de <b>${esc(hotel.name)}</b></span></div>` +
+    $('list').innerHTML = extrasHTML(items, isToday) + `<div class="rt-start"><span class="rt-n home">${svg('dormir', 16)}</span><span>Saída de <b>${esc(hotel.name)}</b></span></div>` +
       items.map((it, i) => {
         const leg = `<div class="rt-leg">${distText(prev, it.ll)}</div>`;
         prev = it.ll;
@@ -175,6 +204,22 @@ function select(id, fromList) {
 }
 $('list').addEventListener('click', (e) => {
   if (e.target.closest('[data-edit]')) { curDay = mapDay; return go('plan'); }
+  const nowBtn = e.target.closest('[data-now]');
+  if (nowBtn) {
+    const p = searchPool().find((x) => x.id === nowBtn.dataset.now), it = asItem(p), t = suggestTime(it, mapDay, toMin(NOW));
+    if (t) { it.time = t; S.plan.days[mapDay].push(it); S.sel = it.id; showNote(`${p.name} entrou no seu dia às ${t}`); }
+    else { S.plan.picked.push(it); showNote(`${p.name} foi para "Para organizar"`); }
+    return renderDay(true);
+  }
+  if (e.target.closest('[data-swap]') && curB) {
+    const { beach, alt } = curB, it = asItem(alt), list = S.plan.days[mapDay];
+    it.time = beach.time;
+    list.splice(list.indexOf(beach), 1, it);
+    S.plan.sugg.push(beach);
+    S.sel = it.id;
+    showNote(`Plano B: ${alt.name} às ${it.time}`);
+    return renderDay(true);
+  }
   const t = e.target.closest('.stop'); if (t) select(t.dataset.id, true);
 });
 $('mapDays').addEventListener('click', (e) => {
