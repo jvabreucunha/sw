@@ -31,7 +31,7 @@ const gray = (k) => `rgb(${lerp(29, 134, k)},${lerp(29, 134, k)},${lerp(31, 139,
 
 const S = TL.scenes, A = TL.app, K = TL.K, D = TL.duration;
 const SCENES = [['hook', S.hook, S.chaos], ['chaos', S.chaos, S.n1], ['nums', S.n1, S.reveal + .2], ['reveal', S.reveal, S.app + .2],
-  ['app', S.app - .4, S.market + .5], ['market', S.market, S.end + .3], ['end', S.end, D]];
+  ['app', S.app - .4, S.market + .5], ['end', S.end, D]];
 
 /* ---------- caos: fragmentos (mesmos do v3) ---------- */
 const ICON = {

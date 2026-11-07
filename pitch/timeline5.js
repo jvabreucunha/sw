@@ -1,6 +1,6 @@
-// Linha do tempo do pitch v5 (roteiro com os dados da pesquisa de rua). Usada por video5.html, audio.html?tl=timeline5.js e mix.py.
+// Linha do tempo do pitch v5 (roteiro com os dados da pesquisa de rua; sem a cena de mercado). Usada por video5.html, audio.html?tl=timeline5.js e mix.py.
 const TL = (() => {
-  const S = { hook: 0, chaos: 8.5, n1: 15.6, n2: 22.0, reveal: 28.2, app: 31.7, market: 47.9, end: 52.8 };
+  const S = { hook: 0, chaos: 8.5, n1: 15.6, n2: 22.0, reveal: 28.2, app: 31.7, market: 49.7, end: 47.9 }  // market marca o fim do app (a cena de mercado saiu);
   const app = { dest: 32.3, dates: 33.2, budget: 34.1, prefs: 35.0, loading: 35.9, discover: 38.6, sw1: 39.7, sw2: 40.6, sw3: 41.5, organize: 42.3, main: 44.9 };
   // momentos-chave dentro das cenas
   const K = {
@@ -10,16 +10,16 @@ const TL = (() => {
     srcs: 26.9,                             // "várias fontes"
     gaps: [26.9, 26.9, 26.9],               // mantido por compatibilidade com o código do v4
     impact: 28.6,                           // revelação do logo
-    a1: 54.8, a2: 55.6, a3: 56.35,          // respostas no fim
-    logo: 57.6,
+    a1: 49.9, a2: 50.7, a3: 51.45,          // respostas no fim
+    logo: 52.7,
   };
   const pops = (t0, n, gap) => Array.from({ length: n }, (_, i) => [+(t0 + i * gap).toFixed(2), 'pop', .35 + (i % 3) * .1]);
   return {
-    duration: 60,
+    duration: 55.1,
     bpm: 100,
     scenes: S, app, K,
     audio: { drop: K.impact, riser: K.impact - 2.2, outro: S.end - .2, final: K.logo },
-    voice: { hook: .3, hook2: 3.45, chaos: 8.6, chaos2: 13.2, n1: 15.7, n2: 22.1, reveal: 28.9, quiz: 32.2, load: 36.0, swipe: 38.7, plan: 42.4, map: 45.0, market: 48.1, end: 53.0 },
+    voice: { hook: .3, hook2: 3.45, chaos: 8.6, chaos2: 13.2, n1: 15.7, n2: 22.1, reveal: 28.9, quiz: 32.2, load: 36.0, swipe: 38.7, plan: 42.4, map: 45.0, end: 48.1 },
     captions: {
       hook: 'Sábado de manhã.|Você acabou de chegar no litoral.',
       hook2: 'A hospedagem está garantida. Mas onde comer,|o que fazer, e quanto vai gastar?',
@@ -33,7 +33,6 @@ const TL = (() => {
       swipe: 'Deslize e escolha o que vale a pena.',
       plan: 'O roteiro sai pronto, dia a dia.',
       map: 'Com o gasto de cada dia, no mapa.',
-      market: 'E o litoral catarinense recebeu|60% mais turistas estrangeiros.',
       end: 'Com o Partiu, você chega sabendo o que fazer,|onde comer e quanto vai gastar.',
     },
     sfx: [
@@ -51,7 +50,6 @@ const TL = (() => {
       [app.discover, 'whoosh', .5], [app.sw1, 'swipe', .8], [app.sw1 + .15, 'check', .5], [app.sw2, 'swipe', .8], [app.sw2 + .15, 'check', .5], [app.sw3, 'swipe', .8], [app.sw3 + .15, 'check', .5],
       [app.organize, 'swoosh', .7], [app.organize + .8, 'pop', .45], [app.organize + 1.2, 'pop', .45], [app.organize + 1.6, 'pop', .45],
       [app.main, 'swoosh', .7], ...[.6, .8, 1.0, 1.2, 1.4, 1.6].map((d) => [app.main + d, 'pop', .35]), [app.main + 2.2, 'pop', .5],
-      [S.market - .2, 'swoosh', .9], [S.market + .3, 'ticks', 1.2],
       [S.end - .3, 'swoosh', .8], [K.a1, 'check', .6], [K.a2, 'check', .6], [K.a3, 'check', .7],
       [K.logo, 'impact', .7], [K.logo + .05, 'shimmer', 1],
     ],
