@@ -77,6 +77,7 @@ function renderQuiz() {
   $('qProg').innerHTML = QUIZ.map((q, j) => `<button data-step="${j}" class="${j <= i ? 'on' : ''}" ${j > S.maxStep ? 'disabled' : ''} aria-label="Ir para a etapa ${j + 1}"${j === i ? ' aria-current="step"' : ''}><i></i></button>`).join('');
   const b = $('qBody');
   b.scrollTop = 0;
+  replay(b, S.stepDir < 0 ? 'step-b' : 'step-f');
   if (S.step === 'dest') {
     b.innerHTML = `
       <div class="q-title"><h1>Para onde você vai?</h1><p class="sub">Cidades do litoral catarinense.</p></div>

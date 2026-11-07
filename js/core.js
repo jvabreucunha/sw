@@ -60,18 +60,41 @@ const rangeLabel = () => {
 };
 const plural = (n, one, many) => n + ' ' + (n === 1 ? one : many);
 
-/* ---------- navegação ---------- */
-let loadTimer, loadRaf;
+/* ---------- navegação, com transição entre telas ---------- */
+const FLOW = ['intro', 'dest', 'dates', 'budget', 'prefs', 'loading', 'plan', 'main'];
+const SCREENS = ['intro', 'quiz', 'loading', 'plan', 'main'];
+let loadTimer, loadRaf, shown = null;
+// Avançar desliza a tela nova da direita; voltar, da esquerda. A anterior some por baixo.
+function showScreen(id, dir) {
+  const next = $(id), prev = shown;
+  if (!prev) SCREENS.forEach((s) => { $(s).hidden = s !== id; });
+  if (prev === next) return;
+  next.hidden = false;
+  next.classList.remove('enter-f', 'enter-b', 'leave');
+  void next.offsetWidth;
+  next.classList.add(dir < 0 ? 'enter-b' : 'enter-f');
+  if (prev) {
+    prev.classList.remove('enter-f', 'enter-b');
+    prev.classList.add('leave');
+    setTimeout(() => { if (shown !== prev) { prev.hidden = true; prev.classList.remove('leave'); } }, 260);
+  }
+  shown = next;
+}
 function go(step) {
   clearTimeout(loadTimer);
   cancelAnimationFrame(loadRaf);
+  S.stepDir = FLOW.indexOf(step) < FLOW.indexOf(S.step) ? -1 : 1;
   S.step = step;
-  ['intro', 'quiz', 'loading', 'plan', 'main'].forEach((id) => { $(id).hidden = true; });
-  if (step === 'intro') { $('intro').hidden = false; renderIntro(); }
-  else if (QUIZ.includes(step)) { S.maxStep = Math.max(S.maxStep, QUIZ.indexOf(step)); $('quiz').hidden = false; renderQuiz(); }
-  else if (step === 'loading') {
-    $('loading').hidden = false;
-    startLoading();
-  } else if (step === 'plan') { $('plan').hidden = false; ensurePlan(); renderPlan(); }
-  else { $('main').hidden = false; showMain(); }
+  const dir = S.stepDir;
+  if (step === 'intro') { showScreen('intro', dir); renderIntro(); }
+  else if (QUIZ.includes(step)) { S.maxStep = Math.max(S.maxStep, QUIZ.indexOf(step)); showScreen('quiz', dir); renderQuiz(); }
+  else if (step === 'loading') { showScreen('loading', dir); startLoading(); }
+  else if (step === 'plan') { showScreen('plan', dir); ensurePlan(); renderPlan({ enter: true }); }
+  else { showScreen('main', dir); showMain(); }
+}
+// Reinicia uma animação de entrada num elemento (usada nas trocas de etapa e de slide).
+function replay(el, cls) {
+  el.classList.remove('step-f', 'step-b', 'swap');
+  void el.offsetWidth;
+  el.classList.add(cls);
 }

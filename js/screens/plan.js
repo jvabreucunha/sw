@@ -1,19 +1,18 @@
-// Roteiro: escolher lugares por categoria e organizar na linha do tempo.
+// Roteiro: escolher lugares por categoria e organizar numa linha do tempo livre.
 /* ---------- roteiro: escolher lugares por categoria e depois organizar ---------- */
 const WEEK = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
 const DAYNAME = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
-const TL_SLOTS = ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'];
-const SLOT_LABEL = { '08:00': 'Café da manhã', '10:00': 'Manhã', '12:00': 'Almoço', '14:00': 'Tarde', '16:00': 'Tarde', '18:00': 'Fim de tarde', '20:00': 'Jantar', '22:00': 'Noite' };
-const MEAL_SLOTS = ['12:00', '20:00'];
-// Tipos de lugar, na ordem em que a pessoa escolhe; cada um só entra nos horários que fazem sentido.
+// Tipos de lugar, na ordem em que a pessoa escolhe. Cada um tem janelas de horário em que faz sentido;
+// dentro delas, qualquer horário de 30 em 30 minutos vale.
 const TYPES = {
-  refeicao: { stage: 'Restaurantes', hint: 'Almoço ou jantar', icon: 'comer', slots: ['12:00', '20:00'] },
-  cafe: { stage: 'Cafés', hint: 'Café da manhã ou da tarde', icon: 'relax', slots: ['08:00', '16:00'] },
-  praia: { stage: 'Praias', hint: 'Melhor durante o dia', icon: 'praia', slots: ['08:00', '10:00', '14:00', '16:00', '18:00'] },
-  passeio: { stage: 'Pontos turísticos', hint: 'De manhã ou à tarde', icon: 'ver', slots: ['08:00', '10:00', '14:00', '16:00', '18:00'] },
-  noite: { stage: 'Vida noturna', hint: 'Para a noite', icon: 'noite', slots: ['20:00', '22:00'] }
+  refeicao: { stage: 'Restaurantes', hint: 'Almoço ou jantar', icon: 'comer', windows: [['11:30', '14:30', 'Almoço'], ['19:00', '22:30', 'Jantar']], prefer: ['12:30', '20:00', '13:00', '19:30'] },
+  cafe: { stage: 'Cafés', hint: 'Café da manhã ou da tarde', icon: 'relax', windows: [['07:00', '10:30', 'Café da manhã'], ['15:00', '17:30', 'Café da tarde']], prefer: ['08:30', '16:00'] },
+  praia: { stage: 'Praias', hint: 'Melhor durante o dia', icon: 'praia', windows: [['07:00', '18:30', 'Durante o dia']], prefer: ['09:30', '14:30', '16:00'] },
+  passeio: { stage: 'Pontos turísticos', hint: 'De manhã ou à tarde', icon: 'ver', windows: [['08:00', '18:30', 'Durante o dia']], prefer: ['10:00', '15:00', '16:30'] },
+  noite: { stage: 'Vida noturna', hint: 'Para a noite', icon: 'noite', windows: [['19:00', '23:30', 'Noite']], prefer: ['21:00', '22:00', '20:30'] }
 };
 const STAGES = Object.keys(TYPES);
+const MIN_GAP = 60; // minutos mínimos entre dois lugares no mesmo dia
 // Atividades sugeridas a partir dos interesses (exemplos): [nome, detalhe, ícone da foto, tipo]
 const GENERIC = {
   praia: [['Manhã de praia', 'Praia', 'praia', 'praia'], ['Pôr do sol na orla', 'Passeio · fim de tarde', 'praia', 'praia']],
@@ -31,11 +30,34 @@ let planSig = '', planSeq = 0, flashId = null, curDay = 0, stage = STAGES[0];
 const dayDate = (d) => { const x = dateOf(S.start); x.setDate(x.getDate() + d); return x; };
 const dayShort = (d) => { const x = dayDate(d); return `${WEEK[x.getDay()]}, ${x.getDate()} ${MON[x.getMonth()]}`; };
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const filled = (d) => Object.keys(S.plan.days[d]).length;
-const chosen = () => [...S.plan.picked, ...S.plan.days.flatMap((d) => Object.values(d))];
-const fits = (it, t) => TYPES[it.type].slots.includes(t);
+const chosen = () => [...S.plan.picked, ...S.plan.days.flat()];
 const hotelLL = () => city().places[0].ll;
 const typeIcon = (it, size = 14) => svg(TYPES[it.type].icon, size, 2);
+const toMin = (t) => +t.slice(0, 2) * 60 + +t.slice(3, 5);
+const toTime = (m) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
+const dayItems = (d) => S.plan.days[d].slice().sort((a, b) => a.time.localeCompare(b.time));
+const windowOf = (it, t) => TYPES[it.type].windows.find(([a, b]) => toMin(t) >= toMin(a) && toMin(t) <= toMin(b));
+const timesOf = ([a, b]) => { const out = []; for (let m = toMin(a); m <= toMin(b); m += 30) out.push(toTime(m)); return out; };
+const allTimes = (it) => TYPES[it.type].windows.flatMap(timesOf);
+
+// Um horário não serve se fica a menos de 1 h de outro lugar do dia, ou se já existe uma
+// refeição no mesmo período (ninguém almoça duas vezes no mesmo dia).
+function conflict(it, d, t, ignore) {
+  const others = S.plan.days[d].filter((x) => x !== ignore && x !== it);
+  const near = others.find((x) => Math.abs(toMin(x.time) - toMin(t)) < MIN_GAP);
+  if (near) return `Perto de ${near.title}`;
+  if (it.type === 'refeicao') {
+    const w = windowOf(it, t), dup = others.find((x) => x.type === 'refeicao' && windowOf(x, x.time) === w);
+    if (dup) return `Já tem ${w[2].toLowerCase()}`;
+  }
+  return null;
+}
+// Sugere um horário livre: depois de "afterMin", se informado; senão, os horários mais comuns do tipo.
+function suggestTime(it, d, afterMin) {
+  const all = allTimes(it);
+  const order = afterMin != null ? [...all.filter((t) => toMin(t) >= afterMin), ...all] : [...TYPES[it.type].prefer, ...all];
+  return order.find((t) => !conflict(it, d, t)) || null;
+}
 
 // Distância e tempo estimado: a pé até ~2 km, de carro acima disso.
 function distText(a, b) {
@@ -75,20 +97,30 @@ function ensurePlan() {
   const sugg = cp.slice(1).map((p) => ({ title: p.name, sub: p.sub, icon: p.cat, type: placeType(p), ll: p.ll }));
   INTERESTS.forEach(([k]) => { if (S.interests.has(k)) (GENERIC[k] || []).forEach(([t, s, ic, ty], i) => sugg.push({ title: t, sub: s, icon: ic, type: ty, ll: near(ty, sugg.length + i) })); });
   const D = Math.max(2, Math.min(10, nights() + 1));
-  S.plan = { days: Array.from({ length: D }, () => ({})), sugg: sugg.map((s) => ({ ...s, id: 'it' + planSeq++ })), skipped: [], picked: [] };
+  S.plan = { days: Array.from({ length: D }, () => []), sugg: sugg.map((s) => ({ ...s, id: 'it' + planSeq++ })), skipped: [], picked: [] };
   curDay = 0;
   stage = STAGES[0];
 }
 
 function dayChipsHTML(sel, attr) {
-  return S.plan.days.map((slots, d) => {
-    const x = dayDate(d), n = Object.keys(slots).length;
+  return S.plan.days.map((items, d) => {
+    const x = dayDate(d), n = items.length;
     return `<button class="day-chip${d === sel ? ' on' : ''}" ${attr}="${d}" aria-pressed="${d === sel}" aria-label="${DAYNAME[x.getDay()]}, ${x.getDate()} de ${MONTHS[x.getMonth()]}: ${plural(n, 'atividade', 'atividades')}"><span>${WEEK[x.getDay()]}</span><b>${x.getDate()}</b><i class="${n ? 'has' : ''}">${n}</i></button>`;
   }).join('');
 }
 
-/* ---------- etapa 2: linha do tempo ---------- */
-function renderPlan() {
+/* ---------- etapa 2: linha do tempo livre ---------- */
+// Reposiciona os cartões com animação quando a ordem muda (técnica FLIP).
+function flip(update) {
+  const before = new Map([...document.querySelectorAll('#timeline .ev')].map((el) => [el.dataset.id, el.getBoundingClientRect().top]));
+  update();
+  document.querySelectorAll('#timeline .ev').forEach((el) => {
+    const b = before.get(el.dataset.id);
+    const dy = b == null ? 0 : b - el.getBoundingClientRect().top;
+    if (dy) el.animate([{ transform: `translateY(${dy}px)` }, { transform: 'none' }], { duration: 340, easing: 'cubic-bezier(.2,.8,.2,1)' });
+  });
+}
+function renderPlan(opts = {}) {
   $('planMeta').textContent = `${city().name} · ${rangeLabel()}`;
   $('dayStrip').innerHTML = dayChipsHTML(curDay, 'data-day');
   const pk = S.plan.picked, h = hotelLL();
@@ -98,41 +130,54 @@ function renderPlan() {
     <button class="tcard" data-pick="${it.id}" aria-label="Escolher dia e horário para ${esc(it.title)}">
       <span class="tph">${scene(it.icon)}</span><strong>${esc(it.title)}</strong>${distTag(it, h)}
     </button>`).join('');
-  const x = dayDate(curDay), slots = S.plan.days[curDay];
+  const x = dayDate(curDay), items = dayItems(curDay);
   $('dayTitle').textContent = `${DAYNAME[x.getDay()]}, ${x.getDate()} ${MON[x.getMonth()]}`;
-  $('dayCount').textContent = `${filled(curDay)}/${TL_SLOTS.length}`;
-  let prev = null;
-  $('timeline').innerHTML = TL_SLOTS.map((t) => {
-    const it = slots[t];
-    if (!it) {
-      const fitTypes = [...new Set(pk.filter((p) => fits(p, t)).map((p) => p.type))];
-      return `<div class="tl-row"><span class="tl-time">${t}<small>${SLOT_LABEL[t]}</small></span><button class="tl-free${fitTypes.length ? ' fit' : ''}" data-free="${t}" aria-label="${t} livre${fitTypes.length ? ': há lugares escolhidos que combinam' : ''}">${svg('plus', 14, 2.4)}${fitTypes.map((ty) => svg(TYPES[ty].icon, 16, 2)).join('')}</button></div>`;
-    }
-    const tag = distTag(it, prev ? prev.ll : h, prev ? 'da anterior' : 'do hotel');
-    prev = it;
-    return `<div class="tl-row"><span class="tl-time">${t}<small>${SLOT_LABEL[t]}</small></span>
-      <div class="tl-card${it.id === flashId ? ' flash' : ''}">
-        <span class="pph" role="img" aria-label="Foto de ${esc(it.title)}">${scene(it.icon)}</span>
-        <span class="tx"><strong>${esc(it.title)}</strong>${tag}</span>
-        <button class="rm" data-move="${t}" aria-label="Mudar dia ou horário de ${esc(it.title)}">${svg('move', 16, 2)}</button>
-        <button class="rm" data-rm="${t}" aria-label="Tirar ${esc(it.title)} deste horário">${svg('x', 16, 2.2)}</button>
-      </div></div>`;
-  }).join('');
+  $('dayCount').textContent = items.length ? plural(items.length, 'lugar', 'lugares') : 'Dia livre';
+  const tl = $('timeline');
+  if (!items.length) {
+    tl.innerHTML = `<div class="tl-empty"><strong>Nada planejado ainda</strong>
+      <p>${pk.length ? 'Coloque aqui o que você escolheu, no horário que quiser.' : 'Escolha lugares para montar este dia.'}</p>
+      <div class="acts">${pk.length ? '<button class="btn-out" data-add="end">Adicionar lugar</button><button class="btn-primary sm" data-auto>Organizar automático</button>' : '<button class="btn-primary sm" data-discover>Escolher lugares</button>'}</div></div>`;
+  } else {
+    let prev = null, html = '';
+    items.forEach((it, i) => {
+      const w = windowOf(it, it.time);
+      html += `<div class="leg" style="--i:${i * 2}">${distTag(it, prev ? prev.ll : h, prev ? '' : 'do hotel')}</div>
+        <div class="ev${it.id === flashId ? ' flash' : ''}" data-id="${it.id}" style="--i:${i * 2 + 1}">
+          <button class="ev-time" data-time="${it.id}" aria-label="${it.time}, ${esc(it.title)}: mudar dia ou horário">${it.time}<small>${w ? w[2] : ''}</small></button>
+          <div class="ev-card">
+            <span class="pph" role="img" aria-label="Foto de ${esc(it.title)}">${scene(it.icon)}</span>
+            <span class="tx"><strong>${esc(it.title)}</strong><span class="dist">${typeIcon(it, 13)}${esc(it.sub)}</span></span>
+            <button class="rm" data-rm="${it.id}" aria-label="Tirar ${esc(it.title)} do dia">${svg('x', 15, 2.2)}</button>
+            <span class="handle" data-drag="${it.id}" title="Arraste para reordenar">${svg('grip', 16, 2)}</span>
+          </div>
+        </div>
+        ${i < items.length - 1 ? `<button class="ins" data-add="${toMin(it.time)}" style="--i:${i * 2 + 1}" aria-label="Adicionar um lugar depois de ${esc(it.title)}"><span>${svg('plus', 13, 2.4)}</span></button>` : ''}`;
+      prev = it;
+    });
+    html += `<button class="ins end" data-add="${toMin(items[items.length - 1].time)}" style="--i:${items.length * 2}">${svg('plus', 14, 2.4)}Adicionar</button>`;
+    tl.innerHTML = html;
+  }
+  if (opts.enter) { tl.classList.remove('enter'); void tl.offsetWidth; tl.classList.add('enter'); } else tl.classList.remove('enter');
   flashId = null;
   const left = S.plan.sugg.length + S.plan.skipped.length;
   $('openDiscover').innerHTML = `${svg('cards', 18, 2)}Escolher${left ? `<i>${left}</i>` : ''}`;
   $('openDiscover').setAttribute('aria-label', `Escolher lugares: ${plural(left, 'sugestão', 'sugestões')}`);
 }
-$('dayStrip').addEventListener('click', (e) => { const c = e.target.closest('[data-day]'); if (c) { curDay = +c.dataset.day; renderPlan(); } });
+$('dayStrip').addEventListener('click', (e) => { const c = e.target.closest('[data-day]'); if (c && +c.dataset.day !== curDay) { curDay = +c.dataset.day; renderPlan({ enter: true }); } });
 $('trayRow').addEventListener('click', (e) => {
   const c = e.target.closest('[data-pick]');
-  if (c) openWhen({ mode: 'place', item: S.plan.picked.find((p) => p.id === c.dataset.pick), day: curDay });
+  if (c) openWhen({ mode: 'time', item: S.plan.picked.find((p) => p.id === c.dataset.pick), day: curDay });
 });
+let dragJustEnded = false;
 $('timeline').addEventListener('click', (e) => {
-  const f = e.target.closest('[data-free]'), r = e.target.closest('[data-rm]'), m = e.target.closest('[data-move]');
-  if (f) openWhen({ mode: 'fill', day: curDay, slot: f.dataset.free });
-  if (r) unplace(curDay, r.dataset.rm);
-  if (m) openWhen({ mode: 'place', item: S.plan.days[curDay][m.dataset.move], day: curDay, from: { d: curDay, t: m.dataset.move } });
+  if (dragJustEnded) { dragJustEnded = false; return; }
+  const t = e.target.closest('[data-time]'), r = e.target.closest('[data-rm]'), add = e.target.closest('[data-add]');
+  if (t) openWhen({ mode: 'time', item: S.plan.days[curDay].find((x) => x.id === t.dataset.time), day: curDay });
+  else if (r) unplace(r.dataset.rm);
+  else if (add) openWhen({ mode: 'add', day: curDay, after: add.dataset.add === 'end' ? null : +add.dataset.add + MIN_GAP });
+  else if (e.target.closest('[data-auto]')) autoOrganize();
+  else if (e.target.closest('[data-discover]')) openDiscover();
 });
 
 let toastT, lastUndo = null;
@@ -147,73 +192,144 @@ function toast(msg, undo) {
 }
 $('undo').onclick = () => { if (lastUndo) lastUndo(); lastUndo = null; $('toast').hidden = true; };
 
-function placeItem(it, d, t, from) {
-  if (from) delete S.plan.days[from.d][from.t];
-  else S.plan.picked = S.plan.picked.filter((p) => p.id !== it.id);
-  S.plan.days[d][t] = it;
+// Coloca um lugar (escolhido ou já no roteiro) num dia e horário.
+function placeItem(it, d, t) {
+  S.plan.picked = S.plan.picked.filter((p) => p !== it);
+  S.plan.days.forEach((list, i) => { S.plan.days[i] = list.filter((x) => x !== it); });
+  it.time = t;
+  S.plan.days[d].push(it);
   flashId = it.id;
+  const sameDay = d === curDay;
   curDay = d;
-  renderPlan();
+  if (sameDay) flip(() => renderPlan()); else renderPlan({ enter: true });
 }
-// Tirar do horário devolve o lugar para "Para organizar".
-function unplace(d, t) {
-  const it = S.plan.days[d][t];
-  delete S.plan.days[d][t];
-  S.plan.picked.unshift(it);
-  renderPlan();
-  toast('Voltou para "Para organizar"', () => { S.plan.picked = S.plan.picked.filter((p) => p !== it); S.plan.days[d][t] = it; renderPlan(); });
+// Tirar do dia devolve o lugar para "Para organizar".
+function unplace(id) {
+  const d = S.plan.days.findIndex((list) => list.some((x) => x.id === id)), it = S.plan.days[d].find((x) => x.id === id);
+  flip(() => { S.plan.days[d] = S.plan.days[d].filter((x) => x !== it); S.plan.picked.unshift(it); renderPlan(); });
+  toast('Voltou para "Para organizar"', () => placeItem(it, d, it.time));
 }
-// Distribui os escolhidos pelos dias, respeitando os horários de cada tipo e espalhando tipos iguais.
+// Distribui os escolhidos pelos dias, respeitando as janelas de horário e espalhando tipos iguais.
 function autoOrganize() {
-  const snap = { days: S.plan.days.map((o) => ({ ...o })), picked: [...S.plan.picked] };
+  const snap = { days: S.plan.days.map((l) => l.map((x) => ({ x, t: x.time }))), picked: [...S.plan.picked] };
   const left = [];
   for (const it of S.plan.picked) {
-    const same = (d) => Object.values(S.plan.days[d]).filter((x) => x.type === it.type).length;
-    const order = S.plan.days.map((_, d) => d).sort((a, b) => same(a) - same(b) || filled(a) - filled(b) || a - b);
-    const d = order.find((dd) => TYPES[it.type].slots.some((t) => !S.plan.days[dd][t]));
+    const same = (d) => S.plan.days[d].filter((x) => x.type === it.type).length;
+    const order = S.plan.days.map((_, d) => d).sort((a, b) => same(a) - same(b) || S.plan.days[a].length - S.plan.days[b].length || a - b);
+    const d = order.find((dd) => suggestTime(it, dd));
     if (d == null) { left.push(it); continue; }
-    S.plan.days[d][TYPES[it.type].slots.find((t) => !S.plan.days[d][t])] = it;
+    it.time = suggestTime(it, d);
+    S.plan.days[d].push(it);
   }
   const placed = S.plan.picked.length - left.length;
   S.plan.picked = left;
-  renderPlan();
+  renderPlan({ enter: true });
   toast(left.length ? `${plural(placed, 'lugar organizado', 'lugares organizados')} · ${left.length} sem horário livre` : plural(placed, 'lugar organizado', 'lugares organizados'),
-    () => { S.plan.days = snap.days; S.plan.picked = snap.picked; renderPlan(); });
+    () => { S.plan.days = snap.days.map((l) => l.map(({ x, t }) => { x.time = t; return x; })); S.plan.picked = snap.picked; renderPlan({ enter: true }); });
 }
 $('autoPlace').onclick = autoOrganize;
 
-/* ---------- painel: dia e horário de um lugar / o que fazer num horário ---------- */
+// Arrastar pelo puxador: solte entre dois lugares para reordenar (o horário se ajusta) ou
+// num dia da faixa de cima para levar o lugar para aquele dia.
+let drag = null;
+$('timeline').addEventListener('pointerdown', (e) => {
+  const h = e.target.closest('[data-drag]');
+  if (!h) return;
+  e.preventDefault();
+  const ev = h.closest('.ev'), card = ev.querySelector('.ev-card'), r = card.getBoundingClientRect();
+  const ghost = card.cloneNode(true);
+  ghost.classList.add('ghost');
+  Object.assign(ghost.style, { width: r.width + 'px', left: r.left + 'px', top: r.top + 'px' });
+  document.body.appendChild(ghost);
+  ev.classList.add('dragging');
+  drag = { id: ev.dataset.id, ghost, oy: e.clientY, ox: e.clientX, target: null };
+  window.addEventListener('pointermove', onDrag);
+  window.addEventListener('pointerup', endDrag, { once: true });
+  window.addEventListener('pointercancel', endDrag, { once: true });
+});
+function onDrag(e) {
+  drag.ghost.style.transform = `translate(${e.clientX - drag.ox}px, ${e.clientY - drag.oy}px) rotate(1.5deg) scale(1.02)`;
+  document.querySelector('#timeline .drop-line')?.remove();
+  document.querySelectorAll('.day-chip.drop').forEach((c) => c.classList.remove('drop'));
+  const chip = document.elementFromPoint(e.clientX, e.clientY)?.closest('#dayStrip [data-day]');
+  if (chip) { chip.classList.add('drop'); drag.target = { day: +chip.dataset.day }; return; }
+  const evs = [...document.querySelectorAll('#timeline .ev:not(.dragging)')];
+  let idx = evs.length;
+  for (let i = 0; i < evs.length; i++) { const b = evs[i].getBoundingClientRect(); if (e.clientY < b.top + b.height / 2) { idx = i; break; } }
+  const line = document.createElement('div');
+  line.className = 'drop-line';
+  if (evs[idx]) evs[idx].before(line); else (evs[evs.length - 1] || $('timeline').firstChild)?.after(line);
+  drag.target = { idx };
+  const tl = $('timeline'), tr = tl.getBoundingClientRect();
+  if (e.clientY > tr.bottom - 40) tl.scrollTop += 10; else if (e.clientY < tr.top + 40) tl.scrollTop -= 10;
+}
+function endDrag() {
+  window.removeEventListener('pointermove', onDrag);
+  if (!drag) return;
+  const { id, ghost, target } = drag;
+  drag = null;
+  ghost.remove();
+  document.querySelector('#timeline .drop-line')?.remove();
+  document.querySelectorAll('.day-chip.drop').forEach((c) => c.classList.remove('drop'));
+  document.querySelector('#timeline .ev.dragging')?.classList.remove('dragging');
+  dragJustEnded = true;
+  setTimeout(() => { dragJustEnded = false; }, 0);
+  const it = S.plan.days[curDay].find((x) => x.id === id);
+  if (!it || !target) return;
+  if (target.day != null) {
+    if (target.day === curDay) return;
+    const t = conflict(it, target.day, it.time) ? suggestTime(it, target.day) : it.time;
+    if (!t) return toast(`Sem horário livre para ${it.title} nesse dia`);
+    placeItem(it, target.day, t);
+    return toast(`${it.title} foi para ${dayShort(target.day)}, ${t}`);
+  }
+  // Reordenar: procura o horário permitido mais próximo do meio entre os vizinhos.
+  const rest = dayItems(curDay).filter((x) => x !== it), before = rest[target.idx - 1], after = rest[target.idx];
+  const lo = before ? toMin(before.time) + MIN_GAP : 0, hi = after ? toMin(after.time) - MIN_GAP : 24 * 60;
+  const mid = (lo + hi) / 2, ok = allTimes(it).filter((t) => toMin(t) >= lo && toMin(t) <= hi && !conflict(it, curDay, t));
+  if (!ok.length) {
+    const el = document.querySelector(`#timeline .ev[data-id="${id}"]`);
+    el?.classList.add('shake');
+    setTimeout(() => el?.classList.remove('shake'), 400);
+    return toast(`${TYPES[it.type].hint}: não cabe nesse ponto do dia`);
+  }
+  const t = ok.sort((a, b) => Math.abs(toMin(a) - mid) - Math.abs(toMin(b) - mid))[0];
+  if (t !== it.time) placeItem(it, curDay, t);
+}
+
+/* ---------- painel: dia e horário de um lugar / adicionar num ponto do dia ---------- */
 let wh = null;
 function openWhen(o) { wh = o; $('when').hidden = false; renderWhen(); }
 function closeWhen() { $('when').hidden = true; wh = null; }
 function renderWhen() {
   const b = $('whenBody'), h = hotelLL();
-  if (wh.mode === 'fill') {
-    const fit = S.plan.picked.filter((it) => fits(it, wh.slot));
-    $('whenTitle').textContent = `${dayShort(wh.day)} · ${wh.slot}`;
-    $('whenSub').textContent = SLOT_LABEL[wh.slot];
-    b.innerHTML = (fit.length
-      ? `<div class="fit-list">${fit.map((it) => `<button class="fit-row" data-fit="${it.id}"><span class="pph">${scene(it.icon)}</span><span class="tx"><strong>${esc(it.title)}</strong>${distTag(it, h, 'do hotel')}</span>${svg('plus', 18, 2.4)}</button>`).join('')}</div>`
-      : '<p class="when-empty">Nenhum lugar escolhido combina com este horário.</p>') +
+  if (wh.mode === 'add') {
+    const opts = S.plan.picked.map((it) => ({ it, t: suggestTime(it, wh.day, wh.after) })).sort((a, b) => (a.t ? 0 : 1) - (b.t ? 0 : 1));
+    $('whenTitle').textContent = `Adicionar em ${dayShort(wh.day)}`;
+    $('whenSub').textContent = 'O horário sugerido pode ser trocado depois, tocando nele.';
+    b.innerHTML = (opts.length
+      ? `<div class="fit-list">${opts.map(({ it, t }) => `<button class="fit-row" data-fit="${it.id}" data-t="${t || ''}" ${t ? '' : 'disabled'}><span class="pph">${scene(it.icon)}</span><span class="tx"><strong>${esc(it.title)}</strong>${distTag(it, h, 'do hotel')}</span><em>${t || 'Sem horário'}</em></button>`).join('')}</div>`
+      : '<p class="when-empty">Você ainda não tem lugares para organizar.</p>') +
       '<button class="btn-out" data-more>Escolher mais lugares</button>';
     return;
   }
-  const it = wh.item, slots = S.plan.days[wh.day];
+  const it = wh.item, placed = S.plan.days.some((l) => l.includes(it));
   $('whenTitle').textContent = it.title;
   $('whenSub').innerHTML = `${typeIcon(it, 16)}${TYPES[it.type].hint}`;
-  b.innerHTML = `<div class="day-strip" data-wdays>${dayChipsHTML(wh.day, 'data-wday')}</div>
-    <div class="slot-grid">${TL_SLOTS.map((t) => {
-      const occ = slots[t], self = wh.from && wh.from.d === wh.day && wh.from.t === t, ok = fits(it, t);
-      const status = self ? 'Horário atual' : occ ? esc(occ.title) : ok ? 'Livre' : MEAL_SLOTS.includes(t) ? 'Só refeições' : 'Não combina';
-      return `<button class="slot${ok && !occ ? ' rec' : ''}" data-slot="${t}" ${(occ && !self) || !ok ? 'disabled' : ''} ${self ? 'aria-current="true"' : ''}><b>${t}</b><small>${SLOT_LABEL[t]}</small><span>${status}</span></button>`;
-    }).join('')}</div>`;
+  b.innerHTML = `<div class="day-strip" data-wdays>${dayChipsHTML(wh.day, 'data-wday')}</div>` +
+    TYPES[it.type].windows.map((w) => `<div class="time-win"><span>${w[2]}</span><div class="times">${timesOf(w).map((t) => {
+      const cur = placed && wh.day === S.plan.days.findIndex((l) => l.includes(it)) && t === it.time, why = conflict(it, wh.day, t, it);
+      return `<button class="time-chip" data-t="${t}" ${why && !cur ? `disabled title="${esc(why)}"` : ''} ${cur ? 'aria-current="true"' : ''}>${t}</button>`;
+    }).join('')}</div></div>`).join('') +
+    (placed ? '<button class="text-btn" data-unplace>Tirar do dia</button>' : '');
 }
 $('whenBody').addEventListener('click', (e) => {
-  const day = e.target.closest('[data-wday]'), slot = e.target.closest('[data-slot]'), fit = e.target.closest('[data-fit]'), more = e.target.closest('[data-more]');
+  const day = e.target.closest('[data-wday]'), chip = e.target.closest('.time-chip'), fit = e.target.closest('[data-fit]');
   if (day) { wh.day = +day.dataset.wday; renderWhen(); return; }
-  if (slot && !slot.disabled) { const o = wh; closeWhen(); placeItem(o.item, o.day, slot.dataset.slot, o.from); return; }
-  if (fit) { const o = wh; closeWhen(); placeItem(S.plan.picked.find((p) => p.id === fit.dataset.fit), o.day, o.slot); return; }
-  if (more) { closeWhen(); openDiscover(); }
+  if (chip && !chip.disabled) { const o = wh; closeWhen(); placeItem(o.item, o.day, chip.dataset.t); return; }
+  if (fit && !fit.disabled) { const o = wh; closeWhen(); placeItem(S.plan.picked.find((p) => p.id === fit.dataset.fit), o.day, fit.dataset.t); return; }
+  if (e.target.closest('[data-unplace]')) { const it = wh.item; closeWhen(); unplace(it.id); return; }
+  if (e.target.closest('[data-more]')) { closeWhen(); openDiscover(); }
 });
 $('whenClose').onclick = closeWhen;
 $('when').addEventListener('click', (e) => { if (e.target === $('when')) closeWhen(); });

@@ -17,6 +17,8 @@ function renderIntro() {
   [...$('dots').children].forEach((d, i) => d.classList.toggle('on', i === S.slide));
   $('introNext').textContent = S.slide < 2 ? 'Continuar' : 'Começar';
   $('skip').style.visibility = S.slide < 2 ? 'visible' : 'hidden';
+  replay($('illus'), 'swap');
+  replay($('introTitle').parentElement, 'swap');
 }
 $('introNext').onclick = () => { if (S.slide < 2) { S.slide++; renderIntro(); } else go('dest'); };
 $('skip').onclick = () => go('dest');
