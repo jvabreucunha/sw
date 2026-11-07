@@ -2,12 +2,13 @@
 
 Vídeo de até 1 minuto (1920×1080, 30 fps) com narração, trilha e efeitos, gerado a partir de páginas HTML renderizadas quadro a quadro no Chrome.
 
-Versão atual: `partiu-pitch-v4.mp4` (60 s), com a dor do viajante no centro: o gancho mostra as três dúvidas (onde comer, o que fazer, quanto gastar), cada passo do app responde a uma delas e o fim fecha com as respostas. As anteriores (`v1` a `v3`) ficam de referência.
+Versão atual: `partiu-pitch-v5.mp4` (60 s), refeita com os dados da nossa pesquisa de rua (`../pesquisa/insights.md`): o gancho começa com o turista já no destino, a validação mostra que 68% acharam fácil reservar e que 59% tiveram imprevistos, e o vídeo ganhou mais movimento (câmera em cada cena, fundo vivo, elementos flutuando). As anteriores (`v1` a `v4`) ficam de referência.
 
 ## Arquivos
 
 | Arquivo | O que é |
 | --- | --- |
+| `timeline5.js`, `video5.html`, `video5.js` | v5: tempos, cenas e animação da versão atual |
 | `timeline4.js` | v4: tempos de cada cena, fala, legenda e efeito sonoro (fonte única de sincronia) |
 | `video4.html`, `video4.js` | v4: o vídeo. Abra no Chrome para a prévia em tempo real; `?t=30` começa do segundo 30 |
 | `timeline.js` | v2 e v3: tempos de cada cena, fala, legenda e efeito |
@@ -27,11 +28,11 @@ Precisa de Python 3, Google Chrome e ffmpeg.
 
 ```bash
 tts/download.sh                                   # Piper e vozes (uma vez, ~250 MB)
-python3 -I narration.py faber 0.9 v4              # narração
+python3 -I narration.py faber 0.86 v5             # narração (v4: faber 0.9 v4)
 python3 -m http.server 8000 --directory .. &      # serve o app para a captura
 python3 -I capture.py                             # telas do app
-PAGE=video4.html OUT=video4-mudo.mp4 python3 -I render.py video
-TL=timeline4.js python3 -I mix.py video4-mudo.mp4 partiu-pitch-v4.mp4
+PAGE=video5.html OUT=video5-mudo.mp4 python3 -I render.py video
+TL=timeline5.js python3 -I mix.py video5-mudo.mp4 partiu-pitch-v5.mp4
 ```
 
 Os blocos do mapa em `../tiles/` são imagens de aviso (o CARTO passou a exigir chave). Só na captura, `capture.py` troca por blocos do OpenStreetMap em escala de cinza.
