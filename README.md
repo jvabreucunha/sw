@@ -29,11 +29,17 @@ Cada tela também abre direto pelo endereço:
 ## Estrutura
 
 ```
-index.html                 página de desenvolvimento com todas as telas
+index.html                 página de desenvolvimento com a prévia de todas as telas
 app.html                   o app (marcação das telas)
-css/app.css                estilos
-js/data.js                 cidades e lugares de exemplo
-js/app.js                  lógica: onboarding, perguntas, roteiro, mapa
+css/
+  base.css                 cores, tipografia, botões e moldura do celular
+  screens/                 um arquivo por tela: onboarding, quiz, loading, plan, map
+js/
+  data.js                  cidades e lugares de exemplo
+  core.js                  ícones, estado, utilidades e troca de telas
+  ui/hnav.js               rolagem lateral com setas
+  screens/                 um arquivo por tela: intro, quiz, loading, plan, map
+  main.js                  inicialização e abertura de uma tela pelo endereço
 tiles/                     blocos do mapa (CARTO Positron), zoom 11 a 15
 scripts/download-tiles.js  baixa os blocos do mapa de novo
 explorations/              variações de design que ficaram de referência

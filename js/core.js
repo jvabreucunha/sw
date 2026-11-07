@@ -1,0 +1,77 @@
+// Partiu — base compartilhada: ícones, estado, utilidades e troca de telas.
+const $ = (id) => document.getElementById(id);
+const ICON = {
+  comer: '<path d="M7 3v18M4 3v5a3 3 0 0 0 6 0V3M17 21V3c-2.2 1-3.5 3.8-3.5 7.5V13H17"/>',
+  ver: '<path d="M3 9.5L12 4l9 5.5M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20.5h18"/>',
+  dormir: '<path d="M3 5v15M3 15h18M21 20v-6.5A3.5 3.5 0 0 0 17.5 10H11v5"/><circle cx="7" cy="11.5" r="1.8"/>',
+  pin: '<path d="M12 21s7-6.1 7-11.5A7 7 0 0 0 5 9.5C5 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+  check: '<path d="M5 12l5 5 9-10"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
+  chevL: '<path d="M15 5l-7 7 7 7"/>', chevR: '<path d="M9 5l7 7-7 7"/>', chevU: '<path d="M5 15l7-7 7 7"/>', chevD: '<path d="M5 9l7 7 7-7"/>',
+  minus: '<path d="M5 12h14"/>', plus: '<path d="M5 12h14M12 5v14"/>',
+  x: '<path d="M6 6l12 12M18 6L6 18"/>',
+  undo: '<path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',
+  cards: '<rect x="3" y="7" width="13" height="14" rx="2"/><path d="M8 3h11a2 2 0 0 1 2 2v12"/>',
+  move: '<path d="M7 8l5-5 5 5M7 16l5 5 5-5M12 3v18"/>',
+  more: '<circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/>',
+  grip: '<circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/>',
+  praia: '<path d="M3 12a9 9 0 0 1 18 0z"/><path d="M12 12v7a2 2 0 0 0 4 0"/>',
+  natureza: '<path d="M2.5 20l6.5-11 4.5 7 2.5-3.5 5.5 7.5z"/>',
+  noite: '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',
+  compras: '<path d="M5 8h14l-1 12H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',
+  aventura: '<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
+  relax: '<path d="M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M17 11h1.5a2.5 2.5 0 0 1 0 5H17M8 3v3M12 3v3"/>',
+};
+const svg = (name, size = 20, sw = 2) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[name]}</svg>`;
+
+// Dados de exemplo. Coordenadas aproximadas; restaurantes e hotéis são fictícios.
+const MONTHS = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+const MON = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+const QUIZ = ['dest', 'dates', 'budget', 'prefs'];
+const TODAY = 20261106;
+// Categorias do orçamento: ícone, nome e o tom usado na barra de distribuição.
+const ALLOC = [['dormir', 'Hospedagem', '#1C1C1E', '#FFFFFF'], ['comer', 'Alimentação', '#6C6C72', '#FFFFFF'], ['ver', 'Passeios', '#B4B4BA', '#1C1C1E']];
+const DEFAULT_SPLIT = [0.4, 0.35, 0.25];
+// [chave, nome, como aparece no texto de carregamento]
+const INTERESTS = [
+  ['praia', 'Praia', 'praias'], ['noite', 'Vida noturna', 'bares'], ['comida', 'Gastronomia', 'restaurantes'],
+  ['compras', 'Compras', 'lojas'], ['cultura', 'História', 'lugares históricos'], ['natureza', 'Natureza', 'mirantes'],
+  ['aventura', 'Aventura', 'aventuras'], ['relax', 'Descanso', 'cafés e spas']
+];
+const S = {
+  step: 'intro', slide: 0, city: 'bc', query: 'Balneário Camboriú', monthOff: 0,
+  start: 20261112, end: 20261118, budget: 4000, alloc: [1600, 1400, 1000], maxStep: 0,
+  interests: new Set(['praia', 'comida']),
+  filter: 'all', sel: null
+};
+
+const keyOf = (y, m, d) => y * 10000 + (m + 1) * 100 + d;
+const dateOf = (k) => new Date(Math.floor(k / 10000), Math.floor(k / 100) % 100 - 1, k % 100);
+const shortDate = (k) => { const d = dateOf(k); return d.getDate() + ' ' + MON[d.getMonth()]; };
+const money = (n) => 'R$ ' + Math.round(n).toLocaleString('pt-BR');
+const norm = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+const nights = () => (S.start && S.end ? Math.round((dateOf(S.end) - dateOf(S.start)) / 864e5) : 0);
+const perDay = () => S.budget / Math.max(1, nights());
+const city = () => CITIES.find((c) => c.id === S.city) || CITIES[0];
+const rangeLabel = () => {
+  if (!S.start || !S.end) return '';
+  const a = dateOf(S.start), z = dateOf(S.end);
+  return a.getMonth() === z.getMonth() ? `${a.getDate()}–${z.getDate()} ${MON[z.getMonth()]}` : `${shortDate(S.start)} – ${shortDate(S.end)}`;
+};
+const plural = (n, one, many) => n + ' ' + (n === 1 ? one : many);
+
+/* ---------- navegação ---------- */
+let loadTimer, loadRaf;
+function go(step) {
+  clearTimeout(loadTimer);
+  cancelAnimationFrame(loadRaf);
+  S.step = step;
+  ['intro', 'quiz', 'loading', 'plan', 'main'].forEach((id) => { $(id).hidden = true; });
+  if (step === 'intro') { $('intro').hidden = false; renderIntro(); }
+  else if (QUIZ.includes(step)) { S.maxStep = Math.max(S.maxStep, QUIZ.indexOf(step)); $('quiz').hidden = false; renderQuiz(); }
+  else if (step === 'loading') {
+    $('loading').hidden = false;
+    startLoading();
+  } else if (step === 'plan') { $('plan').hidden = false; ensurePlan(); renderPlan(); }
+  else { $('main').hidden = false; showMain(); }
+}

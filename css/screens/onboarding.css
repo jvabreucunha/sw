@@ -1,0 +1,12 @@
+/* ---------- onboarding ---------- */
+#intro { padding: 52px 24px 34px; }
+.intro-top { display: flex; align-items: center; justify-content: space-between; min-height: 44px; }
+.brand { font-weight: 700; font-size: 17px; letter-spacing: -0.2px; }
+.link { border: 0; background: none; color: var(--sec); font-size: 17px; font-weight: 500; min-height: 44px; padding: 0 4px; }
+.illus { margin-top: 20px; flex: 1 1 340px; max-height: 340px; min-height: 180px; border-radius: 28px; background: var(--fill); display: grid; place-items: center; }
+.illus svg { width: 70%; height: auto; max-height: 85%; }
+.intro-text { margin-top: 32px; display: flex; flex-direction: column; gap: 12px; }
+.intro-foot { margin-top: auto; padding-top: 24px; display: flex; flex-direction: column; align-items: center; gap: 24px; }
+.dots { display: flex; gap: 8px; }
+.dots span { display: block; height: 8px; width: 8px; border-radius: 4px; background: #D2D2D7; transition: width .2s, background .2s; }
+.dots span.on { width: 22px; background: var(--ink); }
