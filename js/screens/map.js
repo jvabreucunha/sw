@@ -7,15 +7,15 @@ function haversine(a, b) {
   const h = Math.sin(dLat / 2) ** 2 + Math.cos(a[0] * r) * Math.cos(b[0] * r) * Math.sin(dLng / 2) ** 2;
   return 2 * R * Math.asin(Math.sqrt(h));
 }
-function distLabel(p, hotel) {
-  if (p === hotel) return 'Sua base';
-  const m = haversine(hotel.ll, p.ll);
-  return m < 1500 ? `${Math.max(1, Math.round(m / 80))} min a pé` : `${(m / 1000).toFixed(1).replace('.', ',')} km`;
-}
-const pinIcon = (p, sel) => L.divIcon({
+const pinIcon = (n, sel, title) => L.divIcon({
   className: '', iconSize: [44, 44], iconAnchor: [22, 22],
-  html: `<div class="pin${sel ? ' sel' : ''}"><span class="pin-dot">${svg(p.cat, sel ? 20 : 18)}</span>${sel ? `<span class="pin-label">${p.name}</span>` : ''}</div>`
+  html: `<div class="pin${sel ? ' sel' : ''}"><span class="pin-dot">${n}</span>${sel ? `<span class="pin-label">${esc(title)}</span>` : ''}</div>`
 });
+const homeIcon = () => L.divIcon({ className: '', iconSize: [44, 44], iconAnchor: [22, 22], html: `<div class="pin home"><span class="pin-dot">${svg('dormir', 18)}</span></div>` });
+
+// Previsão do tempo de exemplo (fictícia): muda por cidade e por dia.
+const WX = [['sol', 'Ensolarado', 29, 21], ['parcial', 'Sol e nuvens', 27, 20], ['sol', 'Ensolarado', 30, 22], ['nublado', 'Nublado', 25, 20], ['chuva', 'Chuva à tarde', 23, 19], ['parcial', 'Sol e nuvens', 26, 20]];
+const wxFor = (d) => WX[(Math.max(0, CITIES.findIndex((c) => c.id === S.city)) + d) % WX.length];
 
 // Onde a pessoa está: GPS quando o navegador permite; senão, o Shopping Russi & Russi (Itapema).
 const FALLBACK_ME = { ll: [-27.12853, -48.60103], name: 'Shopping Russi & Russi, em Itapema' };
@@ -49,9 +49,6 @@ function setSheet(state) {
   sheetState = state;
   $('main').style.setProperty('--sheet-h', sheetHeights()[state] + 'px');
   $('placesSheet').classList.toggle('collapsed', state === 'collapsed');
-  const full = state === 'full';
-  $('sheetToggle').innerHTML = svg(full ? 'chevD' : 'chevU', 20, 2.2);
-  $('sheetToggle').setAttribute('aria-label', full ? 'Minimizar a lista' : 'Maximizar a lista');
   $('grabber').setAttribute('aria-expanded', state !== 'collapsed');
 }
 let sd = null, justDragged = false;
@@ -85,7 +82,6 @@ $('grabber').addEventListener('click', () => {
   if (justDragged) { justDragged = false; return; }
   setSheet({ collapsed: 'half', half: 'full', full: 'collapsed' }[sheetState]);
 });
-$('sheetToggle').onclick = () => setSheet(sheetState === 'full' ? 'collapsed' : 'full');
 window.addEventListener('resize', () => { if (!$('main').hidden) setSheet(sheetState); });
 
 // Centraliza um ponto na parte do mapa que fica visível entre o cartão do topo e o painel.
@@ -95,68 +91,98 @@ function flyVisible(ll, zoom) {
   map.flyTo(map.unproject(pt, z), z, { duration: 0.6 });
 }
 
-function showMain() {
-  initMap();
-  const c = city();
-  $('tripCity').textContent = c.name;
-  $('tripMeta').textContent = `${rangeLabel()} · ${plural(nights(), 'noite', 'noites')} · ${money(S.budget)}`;
-  setSheet(sheetState);
-  if (!map) { renderPlaces(); return; }
-  map.invalidateSize();
-  if (mapCity !== c.id) {
-    mapCity = c.id; S.sel = null; S.filter = 'all';
-    Object.values(markers).forEach((m) => m.remove()); markers = {};
-    c.places.forEach((p) => {
-      markers[p.id] = L.marker(p.ll, { icon: pinIcon(p, false), title: p.name, keyboard: true }).on('click', () => select(p.id, false)).addTo(map);
-    });
-    map.fitBounds(L.latLngBounds(c.places.map((p) => p.ll)), { paddingTopLeft: [36, TRIP_CARD_H + 12], paddingBottomRight: [36, curSheetH() + 24], maxZoom: 15 });
-  }
-  renderPlaces();
+// Sem nada no roteiro (ex.: abrindo #main direto), monta um exemplo espalhando as sugestões pelos dias.
+function seedTrip() {
+  if (chosen().length) return;
+  const order = ['cafe', 'praia', 'refeicao', 'passeio', 'noite'];
+  // Um lugar de cada tipo por dia, na ordem do dia, até acabarem as sugestões.
+  S.plan.days.forEach((list, d) => order.forEach((ty) => {
+    const it = S.plan.sugg.find((x) => x.type === ty), t = it && suggestTime(it, d);
+    if (!t) return;
+    it.time = t;
+    list.push(it);
+    S.plan.sugg = S.plan.sugg.filter((x) => x !== it);
+  }));
 }
 
-function renderPlaces() {
-  const c = city(), hotel = c.places[0];
-  const cats = [['all', 'Todos'], ['comer', 'Restaurantes'], ['ver', 'Passeios'], ['dormir', 'Hospedagem']];
-  $('filters').innerHTML = cats.map(([k, l]) => `<button class="pill" data-k="${k}" aria-pressed="${S.filter === k}">${l}</button>`).join('');
-  const visible = c.places.filter((p) => S.filter === 'all' || p.cat === S.filter);
-  $('placesMeta').textContent = `${plural(visible.length, 'lugar', 'lugares')} em ${c.name} · ${money(perDay())} por dia`;
-  $('list').innerHTML = visible.map((p) => `
-    <button class="place" data-id="${p.id}" aria-pressed="${p.id === S.sel}">
-      <span class="thumb">${svg(p.cat, 22, 1.8)}</span>
-      <span class="tx">
-        <strong>${p.name}</strong>
-        <small>${p.sub}</small>
-        <span class="meta"><svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.5l1.3-6.6L2.5 9.3l6.6-.8z" fill="currentColor"/></svg><b>${p.rating}</b><em>· ${distLabel(p, hotel)} · ${p.price}</em></span>
-      </span>
-      <span style="color:#C7C7CC">${svg('chevR', 16, 2.4)}</span>
-    </button>`).join('');
-  if (!map) return;
-  c.places.forEach((p) => {
-    const m = markers[p.id]; if (!m) return;
-    const show = visible.includes(p);
-    if (show && !map.hasLayer(m)) m.addTo(map);
-    if (!show && map.hasLayer(m)) m.remove();
-    m.setIcon(pinIcon(p, p.id === S.sel));
-    m.setZIndexOffset(p.id === S.sel ? 1000 : 0);
-  });
-  if (routeLine) { routeLine.remove(); routeLine = null; }
-  const sel = c.places.find((p) => p.id === S.sel);
-  if (sel && sel !== hotel && visible.includes(sel)) {
-    routeLine = L.polyline([hotel.ll, sel.ll], { color: '#1C1C1E', weight: 3, opacity: 0.6, dashArray: '1 8', lineCap: 'round', interactive: false }).addTo(map);
+let mapDay = 0, mapPlan = null, homeMarker;
+function showMain() {
+  initMap();
+  ensurePlan();
+  seedTrip();
+  if (mapPlan !== S.plan) {
+    mapPlan = S.plan; S.sel = null;
+    const first = S.plan.days.findIndex((l) => l.length);
+    mapDay = first < 0 ? 0 : first;
   }
+  $('tripCity').textContent = city().name;
+  setSheet(sheetState);
+  if (map) map.invalidateSize();
+  renderDay(true);
+}
+
+// Painel: dias da viagem, a ordem do dia (saindo do hotel) e o tempo entre um lugar e outro.
+function renderDay(fit) {
+  const hotel = city().places[0], items = dayItems(mapDay), [ic, wx, max, min] = wxFor(mapDay);
+  const x = dayDate(mapDay);
+  $('tripWx').innerHTML = `${svg(ic, 22, 1.8)}<span><b>${max}°</b><small>${wx}</small></span>`;
+  $('tripWx').setAttribute('aria-label', `Previsão para ${dayShort(mapDay)}: ${wx.toLowerCase()}, máxima de ${max}° e mínima de ${min}°`);
+  // Na ilha do topo: o dia que está sendo visto ("Hoje" quando for o dia de hoje).
+  const isToday = keyOf(x.getFullYear(), x.getMonth(), x.getDate()) === TODAY;
+  $('tripMeta').textContent = `${isToday ? 'Hoje · ' : ''}${DAYNAME[x.getDay()]}, ${x.getDate()} ${MON[x.getMonth()]}`;
+  $('placesMeta').textContent = items.length ? plural(items.length, 'lugar', 'lugares') : 'Dia livre';
+  $('mapDays').innerHTML = S.plan.days.map((_, d) => {
+    const y = dayDate(d);
+    return `<button class="pill day-pill" data-d="${d}" aria-pressed="${d === mapDay}">${svg(wxFor(d)[0], 16, 1.8)}${WEEK[y.getDay()]} ${y.getDate()}</button>`;
+  }).join('');
+  const left = S.plan.picked.length;
+  const edit = `<button class="text-btn rt-edit" data-edit>${left ? `Editar roteiro · ${plural(left, 'lugar', 'lugares')} para organizar` : 'Editar roteiro'}</button>`;
+  if (!items.length) {
+    $('list').innerHTML = `<div class="rt-empty"><strong>Dia livre</strong><p>Nada marcado para este dia ainda.</p><button class="btn-out" data-edit>Organizar roteiro</button></div>`;
+  } else {
+    let prev = hotel.ll;
+    $('list').innerHTML = `<div class="rt-start"><span class="rt-n home">${svg('dormir', 16)}</span><span>Saída de <b>${esc(hotel.name)}</b></span></div>` +
+      items.map((it, i) => {
+        const leg = `<div class="rt-leg">${distText(prev, it.ll)}</div>`;
+        prev = it.ll;
+        return `${leg}<button class="stop" data-id="${it.id}" aria-pressed="${it.id === S.sel}">
+          <span class="rt-n">${i + 1}</span>
+          <span class="stop-tx"><strong>${esc(it.title)}</strong><small><b>${it.time}</b> · ${esc(it.sub)}</small></span>
+          <span class="stop-go">${svg('chevR', 16, 2.4)}</span>
+        </button>`;
+      }).join('') + edit;
+  }
+  if (!map) return;
+  Object.values(markers).forEach((m) => m.remove()); markers = {};
+  if (!homeMarker) homeMarker = L.marker(hotel.ll, { icon: homeIcon(), title: hotel.name, keyboard: false, zIndexOffset: 200 }).addTo(map);
+  homeMarker.setLatLng(hotel.ll);
+  items.forEach((it, i) => {
+    const sel = it.id === S.sel;
+    markers[it.id] = L.marker(it.ll, { icon: pinIcon(i + 1, sel, it.title), title: it.title, keyboard: true, zIndexOffset: sel ? 1000 : 300 }).on('click', () => select(it.id, false)).addTo(map);
+  });
+  if (routeLine) routeLine.remove();
+  routeLine = L.polyline([hotel.ll, ...items.map((it) => it.ll)], { color: '#1C1C1E', weight: 3, opacity: 0.6, dashArray: '1 8', lineCap: 'round', interactive: false }).addTo(map);
+  if (fit) map.fitBounds(L.latLngBounds([hotel.ll, ...items.map((it) => it.ll)]), { paddingTopLeft: [36, TRIP_CARD_H + 12], paddingBottomRight: [36, curSheetH() + 24], maxZoom: 15 });
 }
 
 function select(id, fromList) {
-  S.sel = id;
+  S.sel = S.sel === id && fromList ? null : id;
   if (!fromList && sheetState === 'collapsed') setSheet('half');
-  renderPlaces();
-  const p = city().places.find((x) => x.id === id);
-  if (map && fromList) flyVisible(p.ll, Math.max(map.getZoom(), 15));
+  renderDay(false);
+  const it = dayItems(mapDay).find((x) => x.id === id);
+  if (map && fromList && S.sel) flyVisible(it.ll, Math.max(map.getZoom(), 15));
   if (!fromList) { const el = $('list').querySelector(`[data-id="${id}"]`); if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
 }
-$('list').addEventListener('click', (e) => { const t = e.target.closest('.place'); if (t) select(t.dataset.id, true); });
-$('filters').addEventListener('click', (e) => { const t = e.target.closest('[data-k]'); if (t) { S.filter = t.dataset.k; renderPlaces(); } });
-$('editTrip').onclick = () => go('dest');
+$('list').addEventListener('click', (e) => {
+  if (e.target.closest('[data-edit]')) { curDay = mapDay; return go('plan'); }
+  const t = e.target.closest('.stop'); if (t) select(t.dataset.id, true);
+});
+$('mapDays').addEventListener('click', (e) => {
+  const t = e.target.closest('[data-d]'); if (!t) return;
+  mapDay = +t.dataset.d; S.sel = null;
+  renderDay(true);
+  replay($('list'), 'swap');
+});
 
 function showNote(msg) {
   const n = $('mapNote');
@@ -178,3 +204,106 @@ $('locate').onclick = () => {
   if (!navigator.geolocation) return fallback();
   navigator.geolocation.getCurrentPosition((pos) => placeMe([pos.coords.latitude, pos.coords.longitude]), fallback, { timeout: 4000, maximumAge: 60000 });
 };
+
+/* ---------- busca de lugares e empresas ---------- */
+// Empresas de exemplo (fictícias), perto do hotel de cada cidade: [ícone, nome, tipo, nota, horário, deslocamento lat, lng]
+const BIZ = [
+  ['comer', 'Pizzaria Bella Onda', 'Pizzaria', '4,5', 'Aberto até 23h', 0.0021, -0.0018],
+  ['comer', 'Sushi Maré', 'Japonesa', '4,6', 'Aberto até 22h30', -0.0034, 0.0012],
+  ['comer', 'Hamburgueria do Porto', 'Hambúrguer', '4,4', 'Aberto até 23h', 0.0046, 0.0009],
+  ['relax', 'Café Grão da Ilha', 'Cafeteria', '4,7', 'Aberto até 19h', -0.0012, -0.0027],
+  ['relax', 'Sorveteria Brisa', 'Sorveteria', '4,6', 'Aberto até 22h', 0.0008, 0.0024],
+  ['compras', 'Farmácia Saúde Mais', 'Farmácia', '4,3', 'Aberto 24 horas', -0.0026, -0.0006],
+  ['compras', 'Mercado Bom Preço', 'Supermercado', '4,2', 'Aberto até 22h', 0.0032, -0.0031],
+  ['compras', 'Surf Point', 'Loja de surfe', '4,8', 'Aberto até 20h', -0.0041, 0.0021],
+  ['aventura', 'Pedala Bike', 'Aluguel de bicicletas', '4,7', 'Aberto até 18h', 0.0015, 0.0036],
+  ['aventura', 'Mar Aberto Passeios', 'Passeio de barco', '4,8', 'Saídas às 9h e 14h', -0.0052, -0.0019],
+  ['noite', 'Bar Sereia', 'Bar · música ao vivo', '4,5', 'Abre às 18h', 0.0039, 0.0027],
+  ['dormir', 'Pousada Vento Sul', 'Pousada', '4,6', 'Recepção 24 horas', -0.0019, 0.0042],
+  ['pin', 'Posto Rota Litoral', 'Posto de combustível', '4,1', 'Aberto 24 horas', 0.0058, -0.0012],
+  ['pin', 'Lavanderia Express', 'Lavanderia', '4,4', 'Aberto até 20h', -0.0007, 0.0051]
+];
+const SEARCH_CATS = [['all', 'Tudo'], ['comer', 'Comer'], ['relax', 'Cafés'], ['compras', 'Compras'], ['ver', 'Passeios'], ['dormir', 'Hospedagem'], ['pin', 'Serviços']];
+const catGroup = (ic) => (['aventura', 'noite', 'praia', 'natureza'].includes(ic) ? 'ver' : ic);
+let searchCat = 'all', found = null, foundMarker;
+
+function searchPool() {
+  const c = city(), h = c.places[0].ll;
+  const own = c.places.map((p) => ({ id: p.id, icon: p.cat, name: p.name, sub: p.sub, rating: p.rating, info: p.price, ll: p.ll }));
+  const biz = BIZ.map(([icon, name, sub, rating, info, a, b], i) => ({ id: c.id + 'b' + i, icon, name, sub, rating, info, ll: [h[0] + a, h[1] + b] }));
+  return [...own, ...biz].map((p) => ({ ...p, m: haversine(h, p.ll) })).sort((a, b) => a.m - b.m);
+}
+const shortDist = (m) => (m < 1000 ? `${Math.max(50, Math.round(m / 50) * 50)} m` : `${(m / 1000).toFixed(1).replace('.', ',')} km`);
+
+function renderSearch() {
+  const raw = $('searchInput').value.trim(), q = norm(raw);
+  $('searchCats').innerHTML = SEARCH_CATS.map(([k, l]) => `<button class="pill" data-cat="${k}" aria-pressed="${k === searchCat}">${l}</button>`).join('');
+  const list = searchPool().filter((p) => (searchCat === 'all' || catGroup(p.icon) === searchCat) && (!q || norm(p.name + ' ' + p.sub).includes(q)));
+  const head = q || searchCat !== 'all' ? plural(list.length, 'resultado', 'resultados') : `Perto do seu hotel em ${city().name}`;
+  $('searchList').innerHTML = `<p class="label sv-label">${head}</p>` + (list.length ? list.map((p) => `
+    <button class="row-btn sv-row" data-res="${p.id}">
+      <span class="ic">${svg(p.icon, 20, 1.8)}</span>
+      <span class="tx"><strong>${esc(p.name)}</strong><small>${esc(p.sub)} · ${shortDist(p.m)}</small></span>
+      <span class="sv-rate">★ ${p.rating}</span>
+    </button>`).join('') : `<p class="empty">Nada encontrado para “${esc(raw)}”. Tente outro nome ou categoria.</p>`);
+}
+function openSearch() {
+  closeFound();
+  $('searchView').hidden = false;
+  $('searchInput').value = '';
+  searchCat = 'all';
+  renderSearch();
+  setTimeout(() => $('searchInput').focus(), 50);
+}
+function closeSearch() { $('searchView').hidden = true; }
+
+// Resultado escolhido: aparece no mapa com um cartão e a opção de entrar no roteiro.
+const typeFor = (p) => p.icon === 'comer' ? 'refeicao' : p.icon === 'relax' ? 'cafe' : p.icon === 'noite' ? 'noite' : /praia/i.test(p.sub) ? 'praia' : 'passeio';
+const inPlan = (p) => chosen().some((x) => x.title === p.name);
+function showFound(p) {
+  found = p;
+  closeSearch();
+  setSheet('collapsed');
+  $('main').classList.add('has-found');
+  renderFound();
+  if (!map) return;
+  if (foundMarker) foundMarker.remove();
+  foundMarker = L.marker(p.ll, { icon: L.divIcon({ className: '', iconSize: [44, 44], iconAnchor: [22, 22], html: `<div class="pin sel"><span class="pin-dot">${svg(p.icon, 20)}</span><span class="pin-label">${esc(p.name)}</span></div>` }), zIndexOffset: 2000, keyboard: false }).addTo(map);
+  flyVisible(p.ll, 16);
+}
+function renderFound() {
+  const p = found, added = inPlan(p);
+  $('found').hidden = false;
+  $('found').innerHTML = `
+    <div class="found-top">
+      <span class="ic">${svg(p.icon, 22, 1.8)}</span>
+      <span class="tx"><strong>${esc(p.name)}</strong><small>${esc(p.sub)} · ★ ${p.rating}</small></span>
+      <button class="icon-btn" data-found="close" aria-label="Fechar">${svg('x', 18, 2.2)}</button>
+    </div>
+    <p class="found-meta">${esc(p.info)} · ${distText(city().places[0].ll, p.ll)} do hotel</p>
+    ${p.icon === 'dormir' ? '' : added
+      ? `<button class="btn-out found-act" data-found="plan">${svg('check', 18, 2.4)} No roteiro · organizar</button>`
+      : `<button class="btn-primary sm found-act" data-found="add">${svg('plus', 18, 2.4)} Adicionar ao roteiro</button>`}`;
+}
+function closeFound() {
+  if (!found) return;
+  found = null;
+  $('found').hidden = true;
+  $('main').classList.remove('has-found');
+  if (foundMarker) { foundMarker.remove(); foundMarker = null; }
+  setSheet('half');
+}
+$('found').addEventListener('click', (e) => {
+  const a = e.target.closest('[data-found]'); if (!a) return;
+  if (a.dataset.found === 'close') return closeFound();
+  if (a.dataset.found === 'plan') { curDay = mapDay; return go('plan'); }
+  if (!inPlan(found)) S.plan.picked.push({ title: found.name, sub: found.sub, icon: found.icon === 'pin' ? 'ver' : found.icon, type: typeFor(found), ll: found.ll, id: 'it' + planSeq++ });
+  renderFound();
+  renderDay(false);
+});
+$('openSearch').onclick = openSearch;
+$('searchClose').onclick = closeSearch;
+$('searchInput').addEventListener('input', renderSearch);
+$('searchInput').addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSearch(); });
+$('searchCats').addEventListener('click', (e) => { const t = e.target.closest('[data-cat]'); if (t) { searchCat = t.dataset.cat; renderSearch(); } });
+$('searchList').addEventListener('click', (e) => { const t = e.target.closest('[data-res]'); if (t) showFound(searchPool().find((p) => p.id === t.dataset.res)); });

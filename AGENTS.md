@@ -131,7 +131,7 @@ Reutilize estas classes antes de criar novas. As globais estão em `css/base.css
 - `.toast` — aviso escuro flutuante com ação "Desfazer" sublinhada.
 - `.map-note` — aviso curto escuro sobre o mapa.
 - Estados vazios (`.tl-empty`, `.disc-empty`, `.stage-done`) — caixa com borda tracejada `1.5px dashed #D0D0D5`, texto centralizado, título 17px/600 + explicação em `--sec` + ação.
-- `.tabbar` — 4 abas com ícone de 24px e rótulo de 11px; a atual em `--ink`/600.
+- `.tabbar` — 2 abas (Explorar e Roteiro) com ícone de 24px e rótulo de 11px; a atual em `--ink`/600.
 
 ## Ícones
 
