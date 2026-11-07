@@ -1,0 +1,13 @@
+# Piper e vozes (baixados por tts/download.sh, ~250 MB)
+tts/*
+!tts/download.sh
+# intermediários que os scripts regeram
+photos/cand/
+photos/cand.json
+stills/
+check/
+video*-mudo.mp4
+audio/music.wav
+audio/sfx.wav
+audio/mix.wav
+__pycache__/

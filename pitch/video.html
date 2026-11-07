@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Partiu — pitch</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=block">
+<style>
+  :root {
+    --bg: #F3F3F0; --ink: #141416; --sec: #6C6C72; --muted: #B4B4BA; --line: #DEDEDA;
+    --dark: #0E0E10; --accent: #FF5A36;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--dark); }
+  body { font-family: 'Inter', sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; }
+  #stage { position: absolute; inset: 0; overflow: hidden; background: var(--bg); }
+  .scene { position: absolute; inset: 0; visibility: hidden; }
+  .dark { background: var(--dark); color: #fff; }
+  .light { background: var(--bg); }
+  .abs { position: absolute; will-change: transform, opacity; }
+  .center { left: 0; right: 0; text-align: center; }
+  .acc { color: var(--accent); }
+  .eyebrow { font-size: 22px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: var(--sec); }
+  .dark .eyebrow { color: #8A8A90; }
+  h1 { font-size: 92px; font-weight: 800; letter-spacing: -3.5px; line-height: 1.02; }
+  h2 { font-size: 64px; font-weight: 700; letter-spacing: -2px; line-height: 1.08; }
+  .src { font-size: 18px; color: var(--sec); }
+  .dark .src { color: #7A7A80; }
+
+  /* palavras que sobem */
+  .w { display: inline-block; will-change: transform, opacity; }
+  .line { display: block; overflow: hidden; padding-bottom: .08em; }
+
+  /* capítulo e progresso */
+  #chapter { position: absolute; left: 80px; top: 64px; z-index: 20; font-size: 20px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; display: flex; gap: 14px; align-items: center; }
+  #chapter b { font-weight: 800; }
+  #chapter i { width: 36px; height: 2px; background: currentColor; display: inline-block; opacity: .5; }
+  #bar { position: absolute; left: 0; bottom: 0; height: 6px; background: var(--accent); z-index: 20; }
+
+  /* abertura */
+  .logo { font-size: 200px; font-weight: 800; letter-spacing: -9px; display: flex; align-items: center; gap: 28px; }
+  .pin { width: 150px; height: 150px; }
+
+  /* problema: fragmentos */
+  .frag { background: #fff; border-radius: 24px; box-shadow: 0 18px 50px rgba(0,0,0,.10), 0 0 0 1px rgba(0,0,0,.04); padding: 24px 30px; font-size: 27px; display: flex; gap: 16px; align-items: center; white-space: nowrap; }
+  .frag .ic { width: 52px; height: 52px; border-radius: 14px; background: #F0F0EE; display: grid; place-items: center; flex: none; }
+  .frag small { display: block; font-size: 19px; color: var(--sec); margin-top: 4px; }
+  .frag strong { font-weight: 700; }
+  .tabs { display: flex; gap: 6px; }
+  .tabs span { width: 46px; height: 30px; border-radius: 8px 8px 0 0; background: #E6E6E2; }
+  .tabs span:nth-child(3n) { background: #D6D6D2; }
+
+  /* validação */
+  .stat { position: absolute; left: 160px; right: 160px; top: 300px; display: grid; grid-template-columns: 760px 1fr; align-items: center; gap: 60px; }
+  .num { font-size: 250px; font-weight: 800; letter-spacing: -12px; line-height: .9; font-variant-numeric: tabular-nums; }
+  .num small { font-size: 110px; letter-spacing: -4px; }
+  .stat p { font-size: 46px; font-weight: 600; letter-spacing: -1.2px; line-height: 1.18; }
+  .stat p em { font-style: normal; color: var(--sec); font-weight: 500; }
+  .stat .src { margin-top: 26px; font-size: 20px; }
+  .dots { position: absolute; left: 160px; bottom: 120px; display: flex; gap: 10px; }
+  .dots span { width: 44px; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+  .dots span i { display: block; height: 100%; width: 0; background: var(--ink); }
+
+  /* solução */
+  .steps { position: absolute; left: 160px; right: 160px; top: 560px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
+  .step { background: #1A1A1D; border-radius: 28px; padding: 36px 32px; height: 290px; display: flex; flex-direction: column; }
+  .step .n { font-size: 20px; font-weight: 700; color: var(--accent); letter-spacing: 1px; }
+  .step svg { margin: 26px 0 auto; }
+  .step strong { font-size: 32px; font-weight: 700; letter-spacing: -.8px; line-height: 1.15; }
+  .step span { font-size: 20px; color: #9A9AA0; margin-top: 8px; }
+
+  /* telas */
+  .phone { position: absolute; width: 410px; height: 887px; border-radius: 62px; background: #0B0B0C; padding: 12px; box-shadow: 0 50px 100px rgba(0,0,0,.25), inset 0 0 0 2px #2A2A2E; }
+  .phone .scr { position: relative; width: 100%; height: 100%; border-radius: 50px; overflow: hidden; background: #fff; }
+  .phone .scr img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; will-change: transform, opacity; }
+  .phone .isl { position: absolute; left: 50%; top: 24px; width: 118px; height: 34px; margin-left: -59px; border-radius: 20px; background: #0B0B0C; z-index: 5; }
+  .cap { position: absolute; left: 160px; top: 330px; width: 760px; }
+  .cap .k { font-size: 22px; font-weight: 700; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; }
+  .cap h2 { margin-top: 22px; }
+  .cap p { margin-top: 26px; font-size: 30px; line-height: 1.4; color: var(--sec); max-width: 680px; }
+  .side { opacity: .0; }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- 1. Abertura -->
+  <section class="scene dark" id="s1">
+    <div class="abs center" id="s1q" style="top:440px"><h1><span class="line"><span class="w">Pra onde</span> <span class="w">a gente</span> <span class="w acc">vai?</span></span></h1></div>
+    <div class="abs" id="s1logo" style="left:0;right:0;top:380px;display:flex;justify-content:center">
+      <div class="logo">
+        <svg class="pin" viewBox="0 0 24 24" fill="none" stroke="#FF5A36" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path id="pinPath" d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle id="pinDot" cx="12" cy="9.5" r="2.4" fill="#FF5A36" stroke="none"/></svg>
+        <span id="s1word">Partiu</span>
+      </div>
+    </div>
+    <div class="abs center" id="s1tag" style="top:640px;font-size:40px;font-weight:500;color:#A8A8AE;letter-spacing:-.5px">Sua viagem inteira em um só lugar.</div>
+  </section>
+
+  <!-- 2. Problema -->
+  <section class="scene light" id="s2">
+    <div class="abs" id="s2h" style="left:160px;top:180px;width:1100px">
+      <h1><span class="line"><span class="w">Planejar uma viagem</span></span><span class="line"><span class="w">pro litoral ainda é um</span></span><span class="line"><span class="w acc">quebra-cabeça.</span></span></h1>
+    </div>
+    <div id="frags"></div>
+    <div class="abs center" id="s2end" style="top:430px"><h2 style="font-size:76px;letter-spacing:-2.6px">Inspiração num app. Preço em outro.<br><span class="acc">Roteiro em lugar nenhum.</span></h2></div>
+  </section>
+
+  <!-- 3. Validação -->
+  <section class="scene light" id="s3">
+    <div class="abs" id="s3h" style="left:160px;top:180px"><h2 style="font-size:44px;letter-spacing:-1px;color:var(--sec)">Os números confirmam.</h2></div>
+    <div class="stat" data-i="0">
+      <div class="num"><span data-count="277">0</span></div>
+      <div><p>páginas visitadas antes de reservar uma viagem <em>— cerca de 5 horas de pesquisa.</em></p><div class="src">Expedia, Path to Purchase 2023 (via Travel Market Report, 2024)</div></div>
+    </div>
+    <div class="stat" data-i="1">
+      <div class="num"><span data-count="49">0</span><small>%</small></div>
+      <div><p>dos brasileiros entrevistados têm as redes sociais como principal fonte para planejar viagens. <em>Só 21% usam sites especializados.</em></p><div class="src">Ministério do Turismo / Nexus, ago. 2025 — 2.503 entrevistas</div></div>
+    </div>
+    <div class="stat" data-i="2">
+      <div class="num"><span data-count="62">0</span><small>%</small></div>
+      <div><p>preferem turismo de <span class="acc">sol e praia</span> <em>— o destino mais desejado do país.</em></p><div class="src">Ministério do Turismo / Nexus, ago. 2025</div></div>
+    </div>
+    <div class="stat" data-i="3">
+      <div class="num"><span data-count="617">0</span><small> mil</small></div>
+      <div><p>chegadas internacionais em Santa Catarina de jan. a out. de 2025 <em>— alta de 60%.</em></p><div class="src">Embratur, MTur e Polícia Federal (via NSC Total, nov. 2025)</div></div>
+    </div>
+    <div class="dots"><span><i></i></span><span><i></i></span><span><i></i></span><span><i></i></span></div>
+  </section>
+
+  <!-- 4. Solução -->
+  <section class="scene dark" id="s4">
+    <div class="abs" id="s4h" style="left:160px;top:180px;width:1500px">
+      <h1><span class="line"><span class="w"><span class="acc">Partiu</span> leva você do</span></span><span class="line"><span class="w">“pra onde?” ao roteiro pronto.</span></span></h1>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="n">01</div>
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>
+        <strong>4 perguntas</strong><span>Destino, datas, orçamento e interesses</span></div>
+      <div class="step"><div class="n">02</div>
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="16" rx="2.5" transform="rotate(8 12 11)"/><path d="M8 21l-4-4M20 7l-2 2"/></svg>
+        <strong>Desliza e escolhe</strong><span>Lugares que cabem no seu bolso</span></div>
+      <div class="step"><div class="n">03</div>
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4M7 14h4M7 17h7"/></svg>
+        <strong>Roteiro por dia</strong><span>Horários e deslocamentos organizados</span></div>
+      <div class="step"><div class="n">04</div>
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></svg>
+        <strong>Tudo no mapa</strong><span>Com o orçamento de cada dia</span></div>
+    </div>
+    <div class="abs" id="s4note" style="left:160px;top:930px;font-size:24px;color:#9A9AA0"><span class="acc" style="font-weight:700">66%</span> dos viajantes brasileiros querem usar IA para montar roteiro e orçamento. <span class="src" style="font-size:18px;margin-left:10px">Booking.com, 2025</span></div>
+  </section>
+
+  <!-- 5. Telas -->
+  <section class="scene light" id="s5">
+    <div class="cap" id="cap"><div class="k" id="capK"></div><h2 id="capH"></h2><p id="capP"></p></div>
+    <div class="phone" id="phone" style="left:1250px;top:96px"><div class="scr" id="scr"></div></div>
+  </section>
+
+  <!-- 6. Fechamento -->
+  <section class="scene dark" id="s6">
+    <div class="abs" id="s6logo" style="left:0;right:0;top:330px;display:flex;justify-content:center">
+      <div class="logo" style="font-size:170px;letter-spacing:-8px">
+        <svg class="pin" style="width:128px;height:128px" viewBox="0 0 24 24" fill="none" stroke="#FF5A36" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.4" fill="#FF5A36" stroke="none"/></svg>
+        <span>Partiu</span>
+      </div>
+    </div>
+    <div class="abs center" id="s6tag" style="top:580px"><h2 style="font-size:58px">Planeje menos. <span class="acc">Viaje mais.</span></h2></div>
+    <div class="abs center" id="s6meta" style="top:720px;font-size:24px;color:#8A8A90">Protótipo navegável · Litoral catarinense · Balneário Camboriú, Itapema, Porto Belo e Tijucas</div>
+  </section>
+
+  <div id="chapter"><b id="chN"></b><i></i><span id="chT"></span></div>
+  <div id="bar"></div>
+</div>
+
+<script>
+/* ---------- utilidades de animação ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, k) => a + (b - a) * k;
+const E = {
+  lin: (t) => t,
+  out: (t) => 1 - Math.pow(1 - t, 3),
+  out5: (t) => 1 - Math.pow(1 - t, 5),
+  in: (t) => t * t * t,
+  io: (t) => (t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2),
+  back: (t) => { const c = 1.6; return 1 + (c + 1) * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2); },
+};
+// progresso de 0 a 1 entre t0 e t0+d, com easing
+const P = (t, t0, d, e = 'out') => E[e](clamp((t - t0) / d));
+function css(el, { o, x = 0, y = 0, s = 1, r = 0, b }) {
+  if (o !== undefined) el.style.opacity = o;
+  el.style.transform = `translate(${x}px, ${y}px) scale(${s}) rotate(${r}deg)`;
+  if (b !== undefined) el.style.filter = b > 0.05 ? `blur(${b}px)` : 'none';
+}
+// entrada (subindo) e saída (sumindo) de um elemento
+function inout(el, t, tin, tout, { dy = 60, din = .8, dout = .5, e = 'out5', blur = 0 } = {}) {
+  const a = P(t, tin, din, e), z = P(t, tout, dout, 'in');
+  css(el, { o: a * (1 - z), y: (1 - a) * dy - z * 30, b: blur ? (1 - a) * blur : undefined });
+}
+// palavras de uma frase entram em cascata
+function words(root, t, tin, gap = .09, d = .9) {
+  $$('.w', root).forEach((w, i) => { const a = P(t, tin + i * gap, d, 'out5'); css(w, { o: a, y: (1 - a) * 110 }); });
+}
+
+/* ---------- cenas ---------- */
+const SCENES = [
+  { id: 's1', a: 0, b: 7.5 },
+  { id: 's2', a: 7, b: 22.5, ch: ['01', 'O problema'] },
+  { id: 's3', a: 22, b: 44.5, ch: ['02', 'Validação'] },
+  { id: 's4', a: 44, b: 57, ch: ['03', 'Solução'] },
+  { id: 's5', a: 56.5, b: 89, ch: ['04', 'O app'] },
+  { id: 's6', a: 88.5, b: 97 },
+];
+const DURATION = 97;
+
+// transição: a nova cena entra por um recorte circular que cresce
+function reveal(el, t, a, cx = '50%', cy = '50%') {
+  const k = P(t, a, .9, 'io');
+  el.style.clipPath = k < 1 ? `circle(${k * 120}% at ${cx} ${cy})` : 'none';
+}
+
+/* 2. fragmentos do problema */
+const FRAGS = [
+  { x: 1300, y: 150, r: -4, html: `<div class="ic">${ico('insta')}</div><div><strong>47 posts salvos</strong><small>“praias secretas SC”</small></div>` },
+  { x: 1330, y: 350, r: 3, html: `<div><div class="tabs"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div><small style="margin-top:12px">14 abas abertas · hotéis, passeios, restaurantes</small></div>` },
+  { x: 1110, y: 560, r: -2, html: `<div class="ic">${ico('sheet')}</div><div><strong>roteiro_final_v3.xlsx</strong><small>editado há 2 semanas</small></div>` },
+  { x: 1240, y: 760, r: 4, html: `<div class="ic">${ico('chat')}</div><div><strong>Grupo da viagem</strong><small>“e aí, onde a gente vai comer?” · 128 mensagens</small></div>` },
+  { x: 230, y: 760, r: 3, html: `<div class="ic">${ico('pin')}</div><div><strong>23 lugares marcados</strong><small>no mapa, sem ordem nenhuma</small></div>` },
+  { x: 700, y: 850, r: -3, html: `<div class="ic">${ico('money')}</div><div><strong>Quanto vai custar?</strong><small>R$ ??? por dia</small></div>` },
+];
+function ico(k) {
+  const p = {
+    insta: '<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="#141416"/>',
+    sheet: '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16M10 3v18"/>',
+    chat: '<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>',
+    pin: '<path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.4"/>',
+    money: '<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/>',
+  }[k];
+  return `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#141416" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+}
+$('#frags').innerHTML = FRAGS.map((f) => `<div class="abs frag" style="left:${f.x}px;top:${f.y}px">${f.html}</div>`).join('');
+
+/* 5. telas do app */
+const SHOTS = ['intro', 'dest', 'dates', 'budget', 'prefs', 'loading', 'discover', 'discover1', 'discover2', 'discover3', 'organize', 'main'];
+$('#scr').innerHTML = SHOTS.map((s) => `<img data-s="${s}" src="shots/${s}.png">`).join('');
+const IMG = Object.fromEntries($$('#scr img').map((i) => [i.dataset.s, i]));
+// telas mostradas, com horário de entrada (relativo à cena) e legenda
+const SEQ = [
+  { t: 0.6, s: 'dest', cap: 0 }, { t: 2.6, s: 'dates', cap: 0 }, { t: 4.4, s: 'budget', cap: 0 }, { t: 6.2, s: 'prefs', cap: 0 },
+  { t: 8.6, s: 'loading', cap: 1 },
+  { t: 11.4, s: 'discover', cap: 2 }, { t: 13.2, s: 'discover1', cap: 2, swipe: 'discover' }, { t: 14.6, s: 'discover2', cap: 2, swipe: 'discover1' }, { t: 16.0, s: 'discover3', cap: 2, swipe: 'discover2' },
+  { t: 18.6, s: 'organize', cap: 3 },
+  { t: 24.6, s: 'main', cap: 4 },
+];
+const CAPS = [
+  ['Passo 1 · Perguntas', 'Quatro perguntas<br>e pronto.', 'Destino, datas, orçamento e interesses. O app entende o tipo de viagem que você quer fazer.'],
+  ['Passo 2 · Busca', 'Lugares que cabem<br>no seu orçamento.', 'O Partiu separa os mais bem avaliados e filtra pelo quanto você quer gastar por dia.'],
+  ['Passo 3 · Escolha', 'Deslize para<br>escolher.', 'Restaurantes, praias e passeios, um de cada vez. Gostou? É só aceitar.'],
+  ['Passo 4 · Roteiro', 'Seu roteiro,<br>dia a dia.', 'Cada lugar ganha dia e horário, com a distância entre um ponto e outro. Ou organize tudo automaticamente.'],
+  ['Passo 5 · Mapa', 'A viagem inteira<br>no mapa.', 'Lugares sugeridos, sua hospedagem e o orçamento por dia, sempre à mão durante a viagem.'],
+];
+let capShown = -1;
+
+/* ---------- render: desenha o quadro do instante t (em segundos) ---------- */
+function render(t) {
+  for (const sc of SCENES) $('#' + sc.id).style.visibility = t >= sc.a && t < sc.b ? 'visible' : 'hidden';
+  const cur = [...SCENES].reverse().find((sc) => t >= sc.a);
+  // capítulo
+  const ch = cur.ch, chEl = $('#chapter');
+  if (ch) { $('#chN').textContent = ch[0]; $('#chT').textContent = ch[1]; }
+  const chIn = ch ? P(t, cur.a + .6, .6) * (1 - P(t, cur.b - .9, .4, 'in')) : 0;
+  chEl.style.opacity = chIn;
+  chEl.style.color = $('#' + cur.id).classList.contains('dark') ? '#fff' : '#141416';
+  $('#bar').style.width = (t / DURATION * 100) + '%';
+
+  /* 1. abertura */
+  if (t < 8) {
+    words($('#s1q'), t, .3, .22);
+    const qOut = P(t, 2.4, .5, 'in');
+    css($('#s1q'), { o: 1 - qOut, y: -qOut * 40, b: qOut * 8 });
+    const lg = P(t, 2.9, 1.1, 'out5');
+    css($('#s1logo'), { o: lg, s: lerp(.86, 1, lg), y: lerp(40, 0, lg) });
+    const path = $('#pinPath'), L = 60;
+    path.style.strokeDasharray = L; path.style.strokeDashoffset = L * (1 - P(t, 3.0, 1.2, 'io'));
+    const dot = P(t, 3.9, .5, 'back');
+    $('#pinDot').setAttribute('r', 2.4 * dot);
+    css($('#s1tag'), { o: P(t, 4.0, .8), y: (1 - P(t, 4.0, .9, 'out5')) * 30 });
+    const out = P(t, 6.6, .6, 'in');
+    if (out > 0) { css($('#s1logo'), { o: 1 - out, s: 1 + out * .06 }); css($('#s1tag'), { o: 1 - out }); }
+  }
+
+  /* 2. problema */
+  if (t >= 7 && t < 23) {
+    const s = $('#s2'); reveal(s, t, 7);
+    const u = t - 7;
+    const hOut = P(u, 9.3, .6, 'in');
+    words($('#s2h'), u, .5, .14);
+    css($('#s2h'), { o: 1 - hOut, y: -hOut * 40 });
+    $$('#frags .frag').forEach((f, i) => {
+      const d = FRAGS[i], a = P(u, 2.2 + i * .45, .8, 'back');
+      const fl = Math.sin((u + i) * 1.3) * 6;
+      // no fim, os fragmentos são puxados para o centro e somem
+      const z = P(u, 9.0, .9, 'in');
+      const cx = 960 - (d.x + 180), cy = 540 - (d.y + 40);
+      css(f, { o: clamp(a * 1.4) * (1 - z), x: cx * z, y: (1 - a) * 80 + fl + cy * z, s: lerp(.7, 1, a) * (1 - z * .6), r: d.r * a + Math.sin(u * .9 + i) * 1.2 + z * d.r * 4 });
+    });
+    const e = $('#s2end');
+    const ea = P(u, 10.2, 1, 'out5'), eo = P(u, 14.7, .5, 'in');
+    css(e, { o: ea * (1 - eo), y: (1 - ea) * 50, s: lerp(.96, 1, ea) + P(u, 10.2, 5, 'lin') * .04, b: (1 - ea) * 10 });
+  }
+
+  /* 3. validação */
+  if (t >= 22 && t < 45) {
+    const s = $('#s3'), u = t - 22;
+    s.style.clipPath = 'none';
+    css($('#s3h'), { o: P(u, .3, .6) * (1 - P(u, 21.6, .4, 'in')) });
+    $$('#s3 .stat').forEach((st, i) => {
+      const t0 = .6 + i * 5.3, t1 = t0 + 5.0;
+      const a = P(u, t0, .9, 'out5'), z = P(u, t1, .45, 'in');
+      const num = $('.num', st), txt = st.children[1];
+      css(num, { o: a * (1 - z), y: (1 - a) * 80 - z * 40 });
+      const ta = P(u, t0 + .35, .9, 'out5');
+      css(txt, { o: ta * (1 - z), x: (1 - ta) * 60, y: -z * 40 });
+      const c = $('[data-count]', st), n = +c.dataset.count;
+      c.textContent = Math.round(n * P(u, t0, 1.8, 'out')).toLocaleString('pt-BR');
+      $$('#s3 .dots i')[i].style.width = (P(u, t0, 5.3, 'lin') * 100) + '%';
+    });
+    css($('#s3 .dots'), { o: P(u, .6, .6) * (1 - P(u, 21.6, .4, 'in')) });
+  }
+
+  /* 4. solução */
+  if (t >= 44 && t < 58) {
+    const s = $('#s4'); reveal(s, t, 44, '50%', '100%');
+    const u = t - 44;
+    words($('#s4h'), u, .7, .2);
+    $$('#s4 .step').forEach((st, i) => {
+      const a = P(u, 2.4 + i * .35, .9, 'out5');
+      css(st, { o: a, y: (1 - a) * 120, s: lerp(.94, 1, a) });
+    });
+    css($('#s4note'), { o: P(u, 5.2, .8), y: (1 - P(u, 5.2, .8)) * 20 });
+    const out = P(u, 12.1, .5, 'in');
+    if (out > 0) ['#s4h', '.steps', '#s4note'].forEach((q) => { const el = $(q, s); el.style.opacity = (q === '#s4h' ? 1 : +el.style.opacity) * (1 - out); });
+  }
+
+  /* 5. telas */
+  if (t >= 56.5 && t < 89.5) {
+    const s = $('#s5'); reveal(s, t, 56.5, '70%', '50%');
+    const u = t - 56.5;
+    // celular entra
+    const pa = P(u, .2, 1.2, 'out5');
+    const ph = $('#phone');
+    const floatY = Math.sin(u * .8) * 6;
+    // no mapa o celular aproxima um pouco
+    const zoom = P(u, 25, 6, 'io');
+    css(ph, { o: pa, y: (1 - pa) * 300 + floatY, r: (1 - pa) * 8, s: lerp(1, 1.04, zoom) });
+    // tela atual (com fade + leve deslize)
+    let curI = 0;
+    SEQ.forEach((q, i) => { if (u >= q.t) curI = i; });
+    for (const k in IMG) IMG[k].style.opacity = 0;
+    const cur = SEQ[curI], prev = SEQ[curI - 1];
+    const k = P(u, cur.t, .45, 'out');
+    if (u < SEQ[0].t) { css(IMG.intro, { o: 1 }); }
+    else if (cur.swipe) {
+      // o cartão anterior sai deslizando para a direita
+      css(IMG[cur.s], { o: 1 });
+      const sw = IMG[cur.swipe];
+      const top = cur.swipe === 'discover' ? 19 : 19, bottom = cur.swipe === 'discover' ? 9 : 19;
+      sw.style.clipPath = `inset(${top}% 4% ${bottom}% 4% round 18px)`;
+      const m = P(u, cur.t, .55, 'in');
+      css(sw, { o: 1 - P(u, cur.t + .3, .25), x: m * 420, y: -m * 40, r: m * 16 });
+      sw.style.zIndex = 2;
+    } else {
+      $$('#scr img').forEach((im) => { im.style.clipPath = 'none'; im.style.zIndex = 0; });
+      if (prev) css(IMG[prev.s], { o: 1 - k, x: -k * 30 });
+      css(IMG[cur.s], { o: k, x: (1 - k) * 40 });
+      if (cur.s === 'organize' || cur.s === 'main') {
+        // leve movimento de câmera dentro da tela
+        const m = P(u, cur.t, 5.5, 'io');
+        css(IMG[cur.s], { o: k, x: (1 - k) * 40, s: lerp(1, 1.06, m), y: cur.s === 'organize' ? -m * 18 : m * 10 });
+      }
+    }
+    if (cur.swipe) $$('#scr img').forEach((im) => { if (im !== IMG[cur.swipe]) { im.style.clipPath = 'none'; im.style.zIndex = 0; } });
+    // legenda
+    const ci = u < SEQ[0].t ? 0 : cur.cap;
+    if (ci !== capShown) { const c = CAPS[ci]; $('#capK').textContent = c[0]; $('#capH').innerHTML = c[1]; $('#capP').textContent = c[2]; capShown = ci; }
+    const capStart = SEQ.find((q) => q.cap === ci).t;
+    const nextCap = SEQ.find((q) => q.cap === ci + 1);
+    const ca = P(u, Math.max(.5, capStart - .2), .8, 'out5');
+    const co = nextCap ? P(u, nextCap.t - .5, .35, 'in') : P(u, 31.6, .4, 'in');
+    [['#capK', 0], ['#capH', .08], ['#capP', .16]].forEach(([q, dl]) => {
+      const a = P(u, Math.max(.5, capStart - .2) + dl, .8, 'out5');
+      css($(q), { o: a * (1 - co), y: (1 - a) * 40 - co * 20 });
+    });
+    const out = P(u, 31.8, .6, 'in');
+    if (out > 0) css(ph, { o: pa * (1 - out), y: floatY + out * 80, s: lerp(1, 1.04, zoom) });
+  }
+
+  /* 6. fechamento */
+  if (t >= 88.5) {
+    const s = $('#s6'); reveal(s, t, 88.5);
+    const u = t - 88.5;
+    const a = P(u, .6, 1.2, 'out5');
+    css($('#s6logo'), { o: a, s: lerp(.9, 1, a), y: (1 - a) * 30 });
+    css($('#s6tag'), { o: P(u, 1.6, .8), y: (1 - P(u, 1.6, .9, 'out5')) * 30 });
+    css($('#s6meta'), { o: P(u, 2.6, .8) * .9 });
+    const out = P(u, 7.6, .9, 'in');
+    $('#stage').style.opacity = 1 - out;
+  } else $('#stage').style.opacity = 1;
+}
+
+/* modo prévia: toca em tempo real (?t=segundos para começar de um ponto) */
+window.ready = Promise.all([document.fonts.ready, ...$$('img').map((i) => i.decode().catch(() => {}))]);
+if (!location.search.includes('capture')) {
+  const q = new URLSearchParams(location.search), start = +(q.get('t') || 0);
+  ready.then(() => { const t0 = performance.now(); const loop = () => { const t = start + (performance.now() - t0) / 1000; render(t % DURATION); requestAnimationFrame(loop); }; loop(); });
+} else render(0);
+</script>
+</body>
+</html>
