@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>body { margin: 0; } [hidden] { display: none !important; }</style>
+<title>Variações de Orçamento</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: a dev board — four working phone screens side by side, wrapping to one column on small screens. */
+:root {
+  --bg: #E7E7EA;
+  --surface: #FFFFFF;
+  --fill: #F2F2F5;
+  --line: #E4E4E8;
+  --ink: #1C1C1E;
+  --sec: #6C6C72;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; scrollbar-width: none; }
+*::-webkit-scrollbar { display: none; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); -webkit-font-smoothing: antialiased; padding-block: 40px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+button { font: inherit; color: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+h1, h2, p { margin: 0; }
+
+.board { max-width: 1640px; margin: 0 auto; display: flex; flex-direction: column; gap: 36px; }
+.intro { display: flex; flex-direction: column; gap: 8px; max-width: 640px; }
+.intro h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; }
+.intro p { font-size: 16px; line-height: 1.5; color: var(--sec); }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 48px 32px; justify-items: center; }
+@media (max-width: 420px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+figure { margin: 0; display: flex; flex-direction: column; gap: 16px; width: 100%; max-width: 360px; }
+figcaption { display: flex; gap: 12px; align-items: flex-start; }
+figcaption .tag { flex: none; width: 32px; height: 32px; border-radius: 10px; background: var(--ink); color: var(--surface); display: grid; place-items: center; font-weight: 700; font-size: 15px; }
+figcaption strong { display: block; font-size: 16px; font-weight: 600; }
+figcaption span { display: block; font-size: 14px; line-height: 1.45; color: var(--sec); margin-top: 2px; }
+
+/* ---------- telefone ---------- */
+.phone { width: 100%; height: 760px; background: var(--surface); border-radius: 40px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 0 0 8px #101012, 0 30px 70px rgba(0,0,0,.18); }
+.p-head { padding: 22px 12px 0; display: flex; align-items: center; justify-content: space-between; }
+.p-head span { font-size: 15px; font-weight: 500; color: var(--sec); }
+.p-prog { margin: 2px 24px 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; padding-block: 8px; }
+.p-prog i { height: 4px; border-radius: 2px; background: var(--line); }
+.p-prog i.on { background: var(--ink); }
+.p-body { flex: 1; min-height: 0; overflow-y: auto; padding: 20px 24px 12px; display: flex; flex-direction: column; gap: 20px; }
+.p-body h2 { font-size: 26px; font-weight: 700; letter-spacing: -0.6px; line-height: 1.15; }
+.p-foot { flex: none; padding: 12px 24px 26px; }
+.cta { width: 100%; min-height: 54px; border: 0; border-radius: 14px; background: var(--ink); color: var(--surface); font-size: 17px; font-weight: 600; }
+.ib { width: 44px; height: 44px; flex: none; border: 0; border-radius: 12px; background: transparent; display: grid; place-items: center; }
+.ib.round { border: 1px solid #D4D4D9; border-radius: 50%; background: var(--surface); }
+.ib.sm { width: 36px; height: 36px; }
+.ib:disabled { opacity: .3; cursor: default; }
+.muted { font-size: 14px; color: var(--sec); font-variant-numeric: tabular-nums; }
+.center { text-align: center; }
+.lbl { font-size: 13px; font-weight: 600; color: var(--sec); }
+
+/* campo de dinheiro editável */
+.mi { display: inline-flex; align-items: baseline; gap: 4px; padding: 2px 6px; border-radius: 10px; cursor: text; transition: background .15s; }
+.mi:hover, .mi:focus-within { background: var(--fill); }
+.mi span { font-size: 15px; font-weight: 500; color: var(--sec); }
+.mi input { border: 0; outline: none; background: transparent; padding: 0; font: inherit; font-size: 17px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; min-width: 1ch; text-align: right; }
+.mi.xl span { font-size: 20px; }
+.mi.xl input { font-size: 40px; font-weight: 700; letter-spacing: -1px; text-align: left; }
+.mi.xxl span { font-size: 22px; }
+.mi.xxl input { font-size: 48px; font-weight: 700; letter-spacing: -1.4px; text-align: center; }
+.mi.md input { font-size: 32px; font-weight: 700; letter-spacing: -0.8px; text-align: center; }
+
+/* A — lista */
+.va-total { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+.va-total .mi { margin-left: -6px; }
+.va-list { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+.va-row { min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); }
+.va-row label { display: flex; flex-direction: column; gap: 2px; cursor: pointer; }
+.va-row b { font-size: 17px; font-weight: 500; }
+
+/* B — foco */
+.vb-tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-bottom: 1px solid var(--line); }
+.vb-tabs button { min-height: 44px; border: 0; background: none; font-size: 13px; font-weight: 500; color: var(--sec); border-bottom: 2px solid transparent; margin-bottom: -1px; padding: 0 2px; white-space: nowrap; }
+.vb-tabs button[aria-pressed="true"] { color: var(--ink); font-weight: 600; border-bottom-color: var(--ink); }
+.vb-main { margin-top: 36px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.vb-amount { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 4px; }
+.vb-line { margin-top: auto; display: flex; gap: 3px; height: 6px; border-radius: 3px; background: var(--fill); overflow: hidden; }
+.vb-line i { display: block; height: 100%; transition: width .3s, opacity .3s; }
+
+/* C — teclado */
+.vc-display { border: 0; background: none; padding: 0; text-align: left; display: flex; flex-direction: column; gap: 2px; }
+.vc-display strong { font-size: 40px; font-weight: 700; letter-spacing: -1px; font-variant-numeric: tabular-nums; display: flex; align-items: center; }
+.vc-display strong::after { content: ""; width: 2px; height: 36px; margin-left: 3px; background: var(--ink); animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.vc-fields { display: flex; flex-direction: column; gap: 2px; }
+.vc-fields button { min-height: 44px; border: 0; border-radius: 12px; background: none; display: flex; align-items: center; gap: 12px; padding: 0 12px; font-size: 15px; }
+.vc-fields button[aria-pressed="true"] { background: var(--fill); font-weight: 600; }
+.vc-fields i { flex: none; width: 10px; height: 10px; border-radius: 3px; }
+.vc-fields em { margin-left: auto; font-style: normal; font-weight: 600; font-variant-numeric: tabular-nums; }
+.vc-pad { margin-top: auto; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.vc-pad button { min-height: 46px; border: 0; border-radius: 12px; background: var(--fill); font-size: 20px; font-weight: 500; transition: background .1s; display: grid; place-items: center; }
+.vc-pad button:active { background: #E2E2E6; }
+
+/* D — anel */
+.vd-ring { position: relative; width: 210px; height: 210px; margin: 4px auto 0; }
+.vd-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.vd-ring circle { fill: none; stroke-width: 10; }
+.vd-ring .seg { stroke-linecap: round; transition: stroke-dasharray .35s ease, stroke-dashoffset .35s ease; }
+.vd-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
+.vd-rows { display: flex; flex-direction: column; gap: 4px; }
+.vd-row { min-height: 52px; display: flex; align-items: center; gap: 10px; }
+.vd-row i { flex: none; width: 10px; height: 10px; border-radius: 3px; }
+.vd-row b { flex: 1; font-size: 15px; font-weight: 500; }
+.vd-step { display: flex; align-items: center; gap: 2px; }
+.vd-step .mi input { width: 6ch; text-align: center; font-size: 15px; }
+</style>
+</head>
+<body>
+<main class="board">
+  <header class="intro">
+    <h1>Orçamento, 4 variações</h1>
+    <p>A etapa 3 do Partiu, mais enxuta. Todas deixam editar o total e cada categoria. Toque em qualquer valor para digitar.</p>
+  </header>
+  <div class="grid">
+    <figure>
+      <figcaption><span class="tag">A</span><div><strong>Lista</strong><span>Total grande no topo e uma linha por categoria, com o valor editável à direita.</span></div></figcaption>
+      <div class="phone" id="va"></div>
+    </figure>
+    <figure>
+      <figcaption><span class="tag">B</span><div><strong>Foco</strong><span>Um valor por vez. As abas escolhem o que editar, e uma linha fina mostra a divisão.</span></div></figcaption>
+      <div class="phone" id="vb"></div>
+    </figure>
+    <figure>
+      <figcaption><span class="tag">C</span><div><strong>Teclado</strong><span>Teclado numérico próprio, como em apps de pagamento. Toque num campo e digite.</span></div></figcaption>
+      <div class="phone" id="vc"></div>
+    </figure>
+    <figure>
+      <figcaption><span class="tag">D</span><div><strong>Anel</strong><span>O total dentro de um anel que mostra a divisão, com ajuste fino por categoria.</span></div></figcaption>
+      <div class="phone" id="vd"></div>
+    </figure>
+  </div>
+</main>
+
+<script>
+const CATS = [
+  { name: 'Hospedagem', color: '#1C1C1E' },
+  { name: 'Alimentação', color: '#7C7C82' },
+  { name: 'Passeios', color: '#C2C2C7' }
+];
+const NIGHTS = 6;
+const fmt = (n) => Math.round(n).toLocaleString('pt-BR');
+const money = (n) => 'R$ ' + fmt(n);
+const ICON = {
+  back: '<path d="M15 5l-7 7 7 7"/>', minus: '<path d="M5 12h14"/>', plus: '<path d="M5 12h14M12 5v14"/>',
+  del: '<path d="M9 5h11v14H9l-6-7z"/><path d="M12.5 9.5l5 5M17.5 9.5l-5 5"/>'
+};
+const svg = (n, s = 20, w = 2.2) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[n]}</svg>`;
+
+// Mesmo modelo para as 4 variações: categorias nunca passam do total.
+class Budget {
+  constructor() { this.total = 4000; this.alloc = [1600, 1400, 1000]; }
+  used() { return this.alloc.reduce((a, b) => a + b, 0); }
+  free() { return Math.max(0, this.total - this.used()); }
+  setTotal(v) {
+    v = Math.min(100000, Math.max(0, Math.round(v)));
+    const old = this.total;
+    if (v === old) return;
+    this.total = v;
+    if (old > 0 && this.used() > 0) this.alloc = this.alloc.map((a) => Math.floor(a * v / old / 10) * 10);
+    else this.alloc = [0.4, 0.35, 0.25].map((p) => Math.floor(v * p / 10) * 10);
+  }
+  setCat(i, v) {
+    const others = this.used() - this.alloc[i];
+    this.alloc[i] = Math.max(0, Math.min(this.total - others, Math.round(v)));
+  }
+  freeText() { const f = this.free(); return f ? `${money(f)} ainda livres` : 'Tudo distribuído'; }
+}
+
+function shell(el, body) {
+  el.innerHTML = `
+    <div class="p-head"><button class="ib" aria-label="Voltar">${svg('back')}</button><span>Etapa 3 de 4</span><span style="width:44px"></span></div>
+    <div class="p-prog" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
+    <div class="p-body"><h2>Qual o seu orçamento?</h2>${body}</div>
+    <div class="p-foot"><button class="cta">Continuar</button></div>`;
+}
+
+// Campo de dinheiro: formata enquanto digita e respeita o limite do modelo.
+function bindMoney(input, apply, read, render) {
+  input.addEventListener('focus', () => setTimeout(() => input.select(), 0));
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') input.blur(); });
+  input.addEventListener('input', () => {
+    const raw = input.value.replace(/\D/g, '');
+    apply(raw ? Math.min(100000, +raw) : 0, false);
+    input.value = raw ? fmt(read()) : '';
+    render();
+  });
+  input.addEventListener('blur', () => { apply(read(), true); render(); });
+}
+function syncInput(input, v) {
+  if (document.activeElement !== input) input.value = fmt(v);
+  input.style.width = Math.max(1, input.value.length) + 'ch';
+}
+const applyTotal = (m) => (v, commit) => m.setTotal(commit ? Math.max(100, v) : v);
+
+/* ---------- A: Lista ---------- */
+(function () {
+  const el = document.getElementById('va'), m = new Budget();
+  shell(el, `
+    <div class="va-total">
+      <label class="lbl" for="va-t">Total da viagem</label>
+      <div class="mi xl"><span>R$</span><input id="va-t" inputmode="numeric" autocomplete="off"></div>
+      <span class="muted" data-perday></span>
+    </div>
+    <div class="va-list">${CATS.map((c, i) => `
+      <div class="va-row">
+        <label for="va-c${i}"><b>${c.name}</b><span class="muted" data-pct="${i}"></span></label>
+        <div class="mi"><span>R$</span><input id="va-c${i}" inputmode="numeric" autocomplete="off"></div>
+      </div>`).join('')}
+    </div>
+    <p class="muted" data-free></p>`);
+  const t = el.querySelector('#va-t');
+  const render = () => {
+    syncInput(t, m.total);
+    el.querySelector('[data-perday]').textContent = `${money(m.total / NIGHTS)} por dia · ${NIGHTS} noites`;
+    CATS.forEach((c, i) => {
+      syncInput(el.querySelector('#va-c' + i), m.alloc[i]);
+      el.querySelector(`[data-pct="${i}"]`).textContent = `${m.total ? Math.round(m.alloc[i] / m.total * 100) : 0}% · ${money(m.alloc[i] / NIGHTS)} por dia`;
+    });
+    el.querySelector('[data-free]').textContent = m.freeText();
+  };
+  bindMoney(t, applyTotal(m), () => m.total, render);
+  CATS.forEach((c, i) => bindMoney(el.querySelector('#va-c' + i), (v) => m.setCat(i, v), () => m.alloc[i], render));
+  render();
+})();
+
+/* ---------- B: Foco ---------- */
+(function () {
+  const el = document.getElementById('vb'), m = new Budget();
+  let sel = -1;
+  shell(el, `
+    <div class="vb-tabs" role="group" aria-label="O que editar">
+      <button data-sel="-1">Total</button>${CATS.map((c, i) => `<button data-sel="${i}">${c.name}</button>`).join('')}
+    </div>
+    <div class="vb-main">
+      <div class="vb-amount">
+        <button class="ib round" data-d="-100" aria-label="Diminuir R$ 100">${svg('minus', 18, 2.4)}</button>
+        <label class="mi xxl"><span>R$</span><input id="vb-in" inputmode="numeric" autocomplete="off" aria-label="Valor"></label>
+        <button class="ib round" data-d="100" aria-label="Aumentar R$ 100">${svg('plus', 18, 2.4)}</button>
+      </div>
+      <span class="muted center" data-sub></span>
+    </div>
+    <div class="vb-line" aria-hidden="true">${CATS.map((c) => `<i style="background:${c.color}"></i>`).join('')}</div>
+    <p class="muted center" data-free style="margin-top:-8px"></p>`);
+  const input = el.querySelector('#vb-in');
+  const read = () => (sel < 0 ? m.total : m.alloc[sel]);
+  const apply = (v, commit) => (sel < 0 ? applyTotal(m)(v, commit) : m.setCat(sel, v));
+  const render = () => {
+    syncInput(input, read());
+    el.querySelectorAll('[data-sel]').forEach((b) => b.setAttribute('aria-pressed', +b.dataset.sel === sel));
+    el.querySelector('[data-sub]').textContent = sel < 0
+      ? `${money(m.total / NIGHTS)} por dia · ${NIGHTS} noites`
+      : `${m.total ? Math.round(m.alloc[sel] / m.total * 100) : 0}% do total · ${money(m.alloc[sel] / NIGHTS)} por dia`;
+    [...el.querySelector('.vb-line').children].forEach((s, i) => {
+      s.style.width = (m.total ? m.alloc[i] / m.total * 100 : 0) + '%';
+      s.style.opacity = sel < 0 || sel === i ? 1 : 0.3;
+    });
+    el.querySelector('[data-d="100"]').disabled = sel >= 0 && m.free() <= 0;
+    el.querySelector('[data-d="-100"]').disabled = read() <= 0;
+    el.querySelector('[data-free]').textContent = m.freeText();
+  };
+  el.querySelector('.vb-tabs').addEventListener('click', (e) => { const b = e.target.closest('[data-sel]'); if (b) { sel = +b.dataset.sel; render(); } });
+  el.querySelectorAll('[data-d]').forEach((b) => b.addEventListener('click', () => { apply(read() + +b.dataset.d, true); render(); }));
+  bindMoney(input, apply, read, render);
+  render();
+})();
+
+/* ---------- C: Teclado ---------- */
+(function () {
+  const el = document.getElementById('vc'), m = new Budget();
+  let sel = -1, fresh = true;
+  const fields = [{ name: 'Total', color: 'transparent' }, ...CATS];
+  shell(el, `
+    <button class="vc-display" aria-label="Editar total"><span class="lbl" data-label></span><strong data-num></strong><span class="muted" data-sub></span></button>
+    <div class="vc-fields" role="group" aria-label="Campo em edição">${fields.map((c, i) => `
+      <button data-sel="${i - 1}"><i style="background:${c.color}"></i>${c.name}<em data-v="${i - 1}"></em></button>`).join('')}
+    </div>
+    <div class="vc-pad">${['1', '2', '3', '4', '5', '6', '7', '8', '9', '00', '0', 'del'].map((k) => `
+      <button data-k="${k}" ${k === 'del' ? 'aria-label="Apagar"' : ''}>${k === 'del' ? svg('del', 22, 1.8) : k}</button>`).join('')}
+    </div>`);
+  const read = () => (sel < 0 ? m.total : m.alloc[sel]);
+  const render = () => {
+    el.querySelector('[data-label]').textContent = sel < 0 ? 'Total da viagem' : fields[sel + 1].name;
+    el.querySelector('[data-num]').textContent = money(read());
+    el.querySelector('[data-sub]').textContent = sel < 0 ? m.freeText() : `${money(m.alloc[sel] / NIGHTS)} por dia · ${m.freeText().toLowerCase()}`;
+    el.querySelectorAll('[data-sel]').forEach((b) => b.setAttribute('aria-pressed', +b.dataset.sel === sel));
+    el.querySelectorAll('[data-v]').forEach((e) => { const i = +e.dataset.v; e.textContent = money(i < 0 ? m.total : m.alloc[i]); });
+  };
+  const select = (i) => { if (sel < 0 && m.total < 100) m.setTotal(100); sel = i; fresh = true; render(); };
+  el.querySelector('.vc-display').addEventListener('click', () => select(-1));
+  el.querySelector('.vc-fields').addEventListener('click', (e) => { const b = e.target.closest('[data-sel]'); if (b) select(+b.dataset.sel); });
+  el.querySelector('.vc-pad').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-k]'); if (!b) return;
+    const k = b.dataset.k;
+    let v = read();
+    if (k === 'del') v = Math.floor(v / 10);
+    else v = Math.min(100000, fresh ? +k : +(String(v) + k));
+    fresh = false;
+    if (sel < 0) m.setTotal(v); else m.setCat(sel, v);
+    render();
+  });
+  render();
+})();
+
+/* ---------- D: Anel ---------- */
+(function () {
+  const el = document.getElementById('vd'), m = new Budget();
+  const R = 86, C = 2 * Math.PI * R;
+  shell(el, `
+    <div class="vd-ring">
+      <svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="${R}" stroke="#F2F2F5"/>${CATS.map((c) => `<circle class="seg" cx="100" cy="100" r="${R}" stroke="${c.color}"/>`).join('')}</svg>
+      <div class="vd-center">
+        <label class="mi md"><span>R$</span><input id="vd-t" inputmode="numeric" autocomplete="off" aria-label="Total da viagem"></label>
+        <span class="muted" data-perday></span>
+      </div>
+    </div>
+    <p class="muted center" data-free></p>
+    <div class="vd-rows">${CATS.map((c, i) => `
+      <div class="vd-row">
+        <i style="background:${c.color}"></i><b>${c.name}</b>
+        <div class="vd-step">
+          <button class="ib sm" data-i="${i}" data-d="-100" aria-label="Diminuir ${c.name.toLowerCase()}">${svg('minus', 16, 2.4)}</button>
+          <label class="mi"><input id="vd-c${i}" inputmode="numeric" autocomplete="off" aria-label="Valor de ${c.name.toLowerCase()}"></label>
+          <button class="ib sm" data-i="${i}" data-d="100" aria-label="Aumentar ${c.name.toLowerCase()}">${svg('plus', 16, 2.4)}</button>
+        </div>
+      </div>`).join('')}
+    </div>`);
+  const t = el.querySelector('#vd-t');
+  const segs = [...el.querySelectorAll('.seg')];
+  const render = () => {
+    syncInput(t, m.total);
+    el.querySelector('[data-perday]').textContent = `${money(m.total / NIGHTS)} por dia`;
+    el.querySelector('[data-free]').textContent = m.freeText();
+    let start = 0;
+    segs.forEach((s, i) => {
+      const len = m.total ? m.alloc[i] / m.total * C : 0;
+      const vis = Math.max(0, len - 14); // espaço entre segmentos (pontas arredondadas)
+      s.style.strokeDasharray = `${vis} ${C}`;
+      s.style.strokeDashoffset = -(start + 7);
+      s.style.opacity = vis > 0 ? 1 : 0;
+      start += len;
+    });
+    CATS.forEach((c, i) => {
+      const inp = el.querySelector('#vd-c' + i);
+      if (document.activeElement !== inp) inp.value = money(m.alloc[i]);
+      inp.style.width = '9ch';
+      el.querySelector(`[data-i="${i}"][data-d="100"]`).disabled = m.free() <= 0;
+      el.querySelector(`[data-i="${i}"][data-d="-100"]`).disabled = m.alloc[i] <= 0;
+    });
+  };
+  bindMoney(t, applyTotal(m), () => m.total, render);
+  CATS.forEach((c, i) => {
+    const inp = el.querySelector('#vd-c' + i);
+    bindMoney(inp, (v) => m.setCat(i, v), () => m.alloc[i], render);
+  });
+  el.querySelectorAll('[data-d]').forEach((b) => b.addEventListener('click', () => { const i = +b.dataset.i; m.setCat(i, m.alloc[i] + +b.dataset.d); render(); }));
+  render();
+})();
+</script>
+</body>
+</html>

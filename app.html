@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Partiu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<a class="dev-link" href="index.html">← Todas as telas</a>
+<div class="phone">
+
+  <!-- Onboarding -->
+  <section id="intro" class="screen" aria-label="Apresentação">
+    <div class="intro-top">
+      <span class="brand">Partiu</span>
+      <button class="link" id="skip">Pular</button>
+    </div>
+    <div class="illus" id="illus" aria-hidden="true"></div>
+    <div class="intro-text">
+      <h1 id="introTitle"></h1>
+      <p class="sub" id="introText"></p>
+    </div>
+    <div class="intro-foot">
+      <div class="dots" id="dots" aria-hidden="true"><span></span><span></span><span></span></div>
+      <button class="btn-primary" id="introNext">Continuar</button>
+    </div>
+  </section>
+
+  <!-- Perguntas -->
+  <section id="quiz" class="screen" hidden>
+    <header class="q-head">
+      <button class="icon-btn" id="qBack" aria-label="Voltar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <span id="qStep"></span>
+      <span style="width:44px"></span>
+    </header>
+    <div class="progress" id="qProg" role="group" aria-label="Etapas"></div>
+    <div class="q-body" id="qBody"></div>
+    <footer class="q-foot">
+      <p id="qNote" hidden></p>
+      <button class="btn-primary" id="qNext">Continuar</button>
+    </footer>
+  </section>
+
+  <!-- Carregando -->
+  <section id="loading" class="screen" hidden>
+    <div class="load-wrap">
+      <div class="load-ring" aria-hidden="true">
+        <svg viewBox="0 0 112 112"><circle class="trk" cx="56" cy="56" r="50"/><circle class="arc" id="loadArc" cx="56" cy="56" r="50"/></svg>
+        <span id="loadPct">0%</span>
+      </div>
+      <div class="load-text" aria-live="polite"><h1 id="loadTitle">Montando seu roteiro</h1><p id="loadMeta"></p></div>
+      <ul class="load-steps" id="loadSteps"></ul>
+    </div>
+  </section>
+
+  <!-- Roteiro: 1) escolher lugares por categoria, deslizando  2) organizar na linha do tempo -->
+  <section id="plan" class="screen" hidden>
+    <header class="plan-head">
+      <button class="icon-btn" id="planBack" aria-label="Voltar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <div class="plan-title"><strong>Seu roteiro</strong><span id="planMeta"></span></div>
+      <button class="icon-btn" id="planClose" aria-label="Fechar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </header>
+    <div class="day-strip" id="dayStrip" role="group" aria-label="Dias da viagem"></div>
+    <div class="tray" id="tray" hidden>
+      <div class="tray-head"><strong id="trayTitle"></strong><button class="link-sm" id="autoPlace">Organizar automático</button></div>
+      <div class="tray-row" id="trayRow"></div>
+    </div>
+    <div class="tl-head"><strong id="dayTitle"></strong><span id="dayCount"></span></div>
+    <div class="tl" id="timeline"></div>
+    <div class="plan-foot">
+      <button class="btn-sec" id="openDiscover"></button>
+      <button class="btn-primary" id="planGo">Ver no mapa</button>
+    </div>
+
+    <!-- Etapa 1: escolher lugares, um por vez -->
+    <div class="disc" id="disc" role="dialog" aria-label="Escolher lugares" hidden>
+      <header class="disc-head">
+        <button class="icon-btn" id="discClose" aria-label="Fechar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+        <div class="plan-title"><strong>Escolher lugares</strong><span id="discCount"></span></div>
+        <span style="width:44px"></span>
+      </header>
+      <div class="stages" id="stages" role="group" aria-label="Categorias"></div>
+      <div class="stack" id="stack"></div>
+      <div class="disc-acts">
+        <button class="round-act" id="noAct" aria-label="Pular"></button>
+        <button class="round-act sm" id="undoAct" aria-label="Desfazer"></button>
+        <button class="round-act ok" id="yesAct" aria-label="Quero ir"></button>
+      </div>
+      <div class="disc-foot" id="discFoot" hidden><button class="btn-primary" id="goOrganize"></button></div>
+    </div>
+
+    <!-- Etapa 2: escolher dia e horário (ou o que fazer num horário livre) -->
+    <div class="when-wrap" id="when" hidden>
+      <div class="when-panel" role="dialog" aria-label="Organizar">
+        <div class="grabber" aria-hidden="true"></div>
+        <div class="sheet-head"><strong id="whenTitle"></strong><button class="icon-btn" id="whenClose" aria-label="Fechar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+        <p class="when-sub" id="whenSub"></p>
+        <div class="when-body" id="whenBody"></div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" role="status" hidden><span></span><button id="undo">Desfazer</button></div>
+  </section>
+
+  <!-- Principal -->
+  <section id="main" class="screen" hidden>
+    <div class="map-wrap">
+      <div id="map" role="region" aria-label="Mapa"></div>
+      <div class="trip-card">
+        <div><strong id="tripCity"></strong><span id="tripMeta"></span></div>
+        <button class="icon-btn filled" id="editTrip" aria-label="Editar viagem"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.2"/><circle cx="10" cy="17" r="2.2"/></svg></button>
+      </div>
+      <div class="map-note" id="mapNote" role="status" hidden></div>
+      <button class="fab" id="locate" aria-label="Mostrar minha localização"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 3L3 10.5l7.5 3 3 7.5z"/></svg></button>
+    </div>
+    <div class="sheet" id="placesSheet">
+      <button class="grabber-btn" id="grabber" aria-label="Expandir ou recolher a lista"><span></span></button>
+      <div class="places-head"><div><h2>Lugares sugeridos</h2><span id="placesMeta"></span></div><button class="icon-btn filled" id="sheetToggle"></button></div>
+      <div class="chips" id="filters" role="group" aria-label="Filtrar lugares"></div>
+      <div class="list" id="list"></div>
+      <nav class="tabbar" aria-label="Navegação">
+        <button aria-current="page"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14" stroke="#fff"/></svg>Explorar</button>
+        <button id="tabPlan"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Roteiro</button>
+        <button><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18"/></svg>Gastos</button>
+        <button><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg>Perfil</button>
+      </nav>
+    </div>
+  </section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

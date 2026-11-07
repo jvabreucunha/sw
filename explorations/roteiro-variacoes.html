@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>body { margin: 0; } [hidden] { display: none !important; }</style>
+<title>Variações de Roteiro</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: dev board — four working phone screens side by side, one column on small screens. */
+:root {
+  --bg: #E7E7EA;
+  --surface: #FFFFFF;
+  --fill: #F2F2F5;
+  --line: #E4E4E8;
+  --ink: #1C1C1E;
+  --sec: #6C6C72;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; scrollbar-width: none; }
+*::-webkit-scrollbar { display: none; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); -webkit-font-smoothing: antialiased; padding-block: 40px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+button { font: inherit; color: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+h1, p { margin: 0; }
+
+.board { max-width: 1640px; margin: 0 auto; display: flex; flex-direction: column; gap: 36px; }
+.intro { display: flex; flex-direction: column; gap: 8px; max-width: 640px; }
+.intro h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.6px; }
+.intro p { font-size: 16px; line-height: 1.5; color: var(--sec); }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 48px 32px; justify-items: center; }
+@media (max-width: 420px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+figure { margin: 0; display: flex; flex-direction: column; gap: 16px; width: 100%; max-width: 360px; }
+figcaption { display: flex; gap: 12px; align-items: flex-start; }
+figcaption .tag { flex: none; width: 32px; height: 32px; border-radius: 10px; background: var(--ink); color: var(--surface); display: grid; place-items: center; font-weight: 700; font-size: 15px; }
+figcaption strong { display: block; font-size: 16px; font-weight: 600; }
+figcaption span { display: block; font-size: 14px; line-height: 1.45; color: var(--sec); margin-top: 2px; }
+
+/* ---------- telefone ---------- */
+.phone { width: 100%; height: 760px; background: var(--surface); border-radius: 40px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 0 0 8px #101012, 0 30px 70px rgba(0,0,0,.18); }
+.v-head { flex: none; padding: 22px 6px 0 10px; display: flex; align-items: center; gap: 2px; }
+.v-head .tt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.v-head strong { font-size: 17px; font-weight: 600; }
+.v-head span { font-size: 13px; color: var(--sec); }
+.v-foot { flex: none; padding: 8px 20px 24px; }
+.cta { width: 100%; min-height: 52px; border: 0; border-radius: 14px; background: var(--ink); color: var(--surface); font-size: 16px; font-weight: 600; }
+.ib { width: 44px; height: 44px; flex: none; border: 0; border-radius: 12px; background: transparent; display: grid; place-items: center; }
+.ib.sm { width: 36px; height: 36px; }
+
+/* rolagem lateral com setas (e roda do mouse) */
+.hnav { position: relative; display: flex; flex-direction: column; min-width: 0; }
+.hnav-btn { position: absolute; top: 50%; transform: translateY(-50%); z-index: 5; width: 32px; height: 32px; border: 0; border-radius: 50%; background: var(--surface); box-shadow: 0 2px 8px rgba(0,0,0,.18); display: grid; place-items: center; }
+.hnav-btn.l { left: 6px; }
+.hnav-btn.r { right: 6px; }
+
+.chips-row { flex: none; display: flex; gap: 6px; overflow-x: auto; padding: 10px 20px; }
+.dchip { flex: none; width: 46px; min-height: 58px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 11px; font-weight: 500; color: var(--sec); }
+.dchip b { font-size: 17px; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+.dchip i { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.dchip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #C7C7CC; }
+.dchip[aria-pressed="true"] b { color: var(--surface); }
+.pill { flex: none; min-height: 38px; padding: 0 14px; border-radius: 19px; border: 1px solid #D4D4D9; background: var(--surface); font-size: 14px; font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pill[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--surface); }
+
+/* espaço para foto (placeholder ilustrado) */
+.ph { display: block; flex: none; overflow: hidden; border-radius: 12px; background: #DEDEE2; }
+.ph svg { display: block; width: 100%; height: 100%; }
+.tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.tx strong { font-size: 14px; font-weight: 600; line-height: 1.25; }
+.tx span { font-size: 12px; color: var(--sec); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.addtile { flex: none; min-height: 44px; border: 1.5px dashed #CACAD0; border-radius: 12px; background: none; font-size: 14px; font-weight: 600; color: var(--sec); display: flex; align-items: center; justify-content: center; gap: 6px; }
+.addtile:hover { border-color: var(--ink); color: var(--ink); }
+
+/* A — linha do tempo */
+.tl { flex: 1; min-height: 0; overflow-y: auto; padding: 0 20px 8px; }
+.tl-row { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 8px; align-items: center; min-height: 64px; border-top: 1px solid var(--line); padding-block: 6px; }
+.tl-time { font-size: 13px; font-weight: 600; color: var(--sec); font-variant-numeric: tabular-nums; }
+.tl-free { min-height: 48px; border: 1.5px dashed #D0D0D5; border-radius: 12px; background: none; color: var(--sec); font-size: 13px; font-weight: 600; }
+.tl-free[aria-pressed="true"] { border-color: var(--ink); color: var(--ink); background: var(--fill); }
+.tl-card { display: flex; align-items: center; gap: 10px; padding: 6px 2px 6px 6px; border-radius: 14px; background: var(--fill); }
+.tl-card .ph { width: 44px; height: 44px; border-radius: 10px; }
+.tray { flex: none; border-top: 1px solid var(--line); padding-top: 10px; }
+.tray-head { padding: 0 20px 8px; font-size: 15px; font-weight: 600; }
+.tray-row { display: flex; gap: 10px; overflow-x: auto; padding: 0 20px 4px; }
+.scard { flex: none; width: 128px; position: relative; display: flex; flex-direction: column; gap: 6px; }
+.scard .ph { width: 128px; height: 76px; }
+.scard strong { font-size: 13px; font-weight: 600; line-height: 1.25; }
+.scard .add { position: absolute; top: 6px; right: 6px; width: 30px; height: 30px; border: 0; border-radius: 50%; background: var(--surface); box-shadow: 0 1px 4px rgba(0,0,0,.2); display: grid; place-items: center; }
+
+/* B — Kanban com fotos */
+.kb { flex: 1; min-height: 0; display: flex; gap: 10px; overflow-x: auto; padding: 0 20px 10px; scroll-snap-type: x mandatory; scroll-padding-inline: 20px; }
+.kcol { flex: 0 0 240px; min-height: 0; display: flex; flex-direction: column; background: var(--fill); border-radius: 18px; scroll-snap-align: start; }
+.kcol-h { padding: 12px 14px 8px; font-size: 15px; font-weight: 700; }
+.kcol-b { flex: 1; min-height: 0; overflow-y: auto; padding: 0 8px 8px; display: flex; flex-direction: column; gap: 8px; }
+.kcard { flex: none; background: var(--surface); border-radius: 14px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+.kph { position: relative; display: block; }
+.kph .ph { height: 84px; border-radius: 0; }
+.t-ov { position: absolute; left: 8px; top: 8px; background: var(--surface); font-size: 12px; font-weight: 600; padding: 3px 7px; border-radius: 7px; font-variant-numeric: tabular-nums; }
+.kt { padding: 8px 10px 10px; display: flex; flex-direction: column; gap: 2px; }
+.kt strong { font-size: 14px; font-weight: 600; }
+.kt span { font-size: 12px; color: var(--sec); }
+.bar { flex: none; margin: 0 20px; min-height: 50px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); display: flex; align-items: center; gap: 10px; padding: 0 14px; font-size: 14px; color: var(--sec); text-align: left; }
+.bar b { color: var(--ink); font-weight: 600; }
+.bar em { margin-left: auto; font-style: normal; font-weight: 600; color: var(--ink); }
+
+/* C — por período */
+.pd { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; padding: 4px 0 12px; }
+.pd-h { padding: 0 20px; display: flex; justify-content: space-between; align-items: baseline; }
+.pd-h strong { font-size: 16px; font-weight: 700; }
+.pd-h span { font-size: 13px; color: var(--sec); }
+.pd-row { display: flex; gap: 10px; overflow-x: auto; padding: 8px 20px 2px; }
+.pcard { flex: none; width: 132px; display: flex; flex-direction: column; gap: 5px; }
+.pcard .ph { width: 132px; height: 86px; }
+.pcard small { font-size: 12px; font-weight: 600; color: var(--sec); font-variant-numeric: tabular-nums; }
+.pcard strong { font-size: 13px; font-weight: 600; line-height: 1.25; }
+.addtile.v { width: 92px; min-height: 86px; flex-direction: column; align-self: flex-start; }
+
+/* D — descobrir */
+.dc { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding: 6px 20px 12px; }
+.dc-count { font-size: 13px; color: var(--sec); font-weight: 500; }
+.dc-card { flex: none; border-radius: 22px; overflow: hidden; background: var(--surface); border: 1px solid var(--line); box-shadow: 0 6px 24px rgba(0,0,0,.08); animation: in .3s ease; }
+@keyframes in { from { opacity: 0; transform: translateY(8px) scale(.98); } }
+.dc-card .ph { height: 220px; border-radius: 0; }
+.dc-card.small .ph { height: 110px; }
+.dc-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 4px; }
+.dc-body strong { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+.dc-body span { font-size: 14px; color: var(--sec); }
+.dc-acts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.btn-out, .btn-in { min-height: 52px; border-radius: 14px; font-size: 16px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.btn-out { border: 1px solid #D4D4D9; background: var(--surface); }
+.btn-in { border: 0; background: var(--ink); color: var(--surface); }
+.lbl { font-size: 13px; font-weight: 600; color: var(--sec); }
+.row-x { display: flex; gap: 8px; overflow-x: auto; padding-block: 2px; }
+.mini { flex: none; border-top: 1px solid var(--line); padding-top: 10px; }
+.mini .lbl { padding: 0 20px; display: block; }
+.mchip { flex: none; min-height: 44px; padding: 0 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.mchip b { min-width: 20px; height: 20px; border-radius: 10px; background: var(--ink); color: var(--surface); font-size: 11px; display: grid; place-items: center; padding: 0 5px; }
+.mchip b.zero { background: var(--fill); color: var(--sec); }
+.empty { text-align: center; color: var(--sec); font-size: 15px; padding: 40px 0; display: flex; flex-direction: column; gap: 12px; align-items: center; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+<main class="board">
+  <header class="intro">
+    <h1>Montar o roteiro, 4 variações</h1>
+    <p>Quatro formas de transformar as sugestões em dias e horários. Todas têm espaço para foto em cada item e setas para rolar o que fica de lado. A roda do mouse também rola.</p>
+  </header>
+  <div class="grid">
+    <figure>
+      <figcaption><span class="tag">A</span><div><strong>Linha do tempo</strong><span>Um dia por vez, com horários fixos. Toque num horário livre e escolha a sugestão na faixa de baixo.</span></div></figcaption>
+      <div class="phone" id="va"></div>
+    </figure>
+    <figure>
+      <figcaption><span class="tag">B</span><div><strong>Quadro com fotos</strong><span>Uma coluna por dia, como um Kanban. Cada cartão traz foto e horário em destaque.</span></div></figcaption>
+      <div class="phone" id="vb"></div>
+    </figure>
+    <figure>
+      <figcaption><span class="tag">C</span><div><strong>Por período</strong><span>O dia dividido em manhã, tarde e noite, com uma fileira de fotos em cada período.</span></div></figcaption>
+      <div class="phone" id="vc"></div>
+    </figure>
+    <figure>
+      <figcaption><span class="tag">D</span><div><strong>Descobrir</strong><span>Uma sugestão por vez, em tela cheia. Adicionar pergunta dia e horário na hora.</span></div></figcaption>
+      <div class="phone" id="vd"></div>
+    </figure>
+  </div>
+</main>
+
+<script>
+const $ = (s, r = document) => r.querySelector(s);
+const ICON = {
+  back: '<path d="M15 5l-7 7 7 7"/>', x: '<path d="M6 6l12 12M18 6L6 18"/>', plus: '<path d="M5 12h14M12 5v14"/>',
+  chevL: '<path d="M15 5l-7 7 7 7"/>', chevR: '<path d="M9 5l7 7-7 7"/>', check: '<path d="M5 12l5 5 9-10"/>',
+  pin: '<path d="M12 21s7-6.1 7-11.5A7 7 0 0 0 5 9.5C5 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>'
+};
+const svg = (n, s = 20, w = 2.2) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[n]}</svg>`;
+const WEEK = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
+const DAYN = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+const DAYS = Array.from({ length: 7 }, (_, i) => new Date(2026, 10, 12 + i));
+// Sugestões de exemplo (Balneário Camboriú)
+const SUGG = [
+  { id: 1, t: 'Praia Central', s: 'Praia · Av. Atlântica', k: 'praia' },
+  { id: 2, t: 'Parque Unipraias', s: 'Bondinho · Barra Sul', k: 'natureza' },
+  { id: 3, t: 'Cantina da Barra', s: 'Italiana · Barra Sul', k: 'comer' },
+  { id: 4, t: 'Cristo Luz', s: 'Mirante · Centro', k: 'ver' },
+  { id: 5, t: 'Mar & Brasa', s: 'Frutos do mar · Pioneiros', k: 'comer' },
+  { id: 6, t: 'Pôr do sol na orla', s: 'Passeio · fim de tarde', k: 'praia' },
+  { id: 7, t: 'Bar com música ao vivo', s: 'Vida noturna', k: 'noite' },
+  { id: 8, t: 'Café Atlântico', s: 'Café · Centro', k: 'relax' },
+  { id: 9, t: 'Praia de Laranjeiras', s: 'Praia · Interpraias', k: 'praia' },
+  { id: 10, t: 'Trilha até o mirante', s: 'Natureza · 2 h', k: 'natureza' }
+];
+const byId = (id) => SUGG.find((s) => s.id === id);
+
+// Ilustração no lugar da foto real do lugar
+function scene(k) {
+  const night = k === 'noite', bg = night ? '#3A3A3F' : '#DEDEE2', st = '#9A9AA0', fl = night ? '#2C2C30' : '#CDCDD2';
+  const art = {
+    praia: `<circle cx="88" cy="28" r="10" fill="${fl}"/><path d="M0 46H120" stroke="${st}"/><path d="M0 56q10-5 20 0t20 0t20 0t20 0t20 0t20 0" stroke="${st}"/><path d="M0 66q10-5 20 0t20 0t20 0t20 0t20 0t20 0" stroke="${st}" opacity=".6"/>`,
+    comer: `<circle cx="60" cy="42" r="24" fill="#E9E9EC" stroke="${st}"/><circle cx="60" cy="42" r="15" stroke="${st}"/><path d="M26 22v40M22 22v10a4 4 0 0 0 8 0V22M96 62V22c-4 2-6 8-6 15v5h6" stroke="${st}"/>`,
+    ver: `<path d="M30 34L60 20L90 34Z" fill="${fl}" stroke="${st}"/><path d="M36 38V62M48 38V62M60 38V62M72 38V62M84 38V62M28 66H92" stroke="${st}"/>`,
+    natureza: `<circle cx="88" cy="22" r="8" fill="${fl}"/><path d="M-4 80L40 32Q48 24 56 32L100 80Z" fill="${fl}" stroke="${st}"/><path d="M50 80L80 48Q86 42 92 48L126 80Z" fill="#D5D5DA" stroke="${st}"/>`,
+    noite: `<path d="M98 14a9 9 0 1 0 8 13a7 7 0 0 1-8-13z" fill="#9A9AA0"/><rect x="10" y="40" width="18" height="40" fill="${fl}"/><rect x="32" y="28" width="20" height="52" fill="${fl}"/><rect x="56" y="46" width="16" height="34" fill="${fl}"/><rect x="76" y="34" width="20" height="46" fill="${fl}"/><g fill="#8E8E94"><rect x="15" y="46" width="3" height="3"/><rect x="38" y="34" width="3" height="3"/><rect x="44" y="44" width="3" height="3"/><rect x="62" y="52" width="3" height="3"/><rect x="82" y="40" width="3" height="3"/><rect x="88" y="52" width="3" height="3"/></g>`,
+    relax: `<path d="M38 36h36v12a14 14 0 0 1-14 14h-8a14 14 0 0 1-14-14z" fill="#E9E9EC" stroke="${st}"/><path d="M74 40h4a6 6 0 0 1 0 12h-4M48 30q-4-5 0-10M56 30q-4-5 0-10M64 30q-4-5 0-10" stroke="${st}"/>`
+  }[k];
+  return `<svg viewBox="0 0 120 80" preserveAspectRatio="xMidYMid slice" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="120" height="80" fill="${bg}"/>${art}</svg>`;
+}
+const ph = (k) => `<span class="ph" role="img" aria-label="Foto do lugar">${scene(k)}</span>`;
+
+// Setas para rolar elementos laterais; também converte a roda do mouse em rolagem lateral.
+function hnav(el, step) {
+  const wrap = document.createElement('div');
+  wrap.className = 'hnav';
+  wrap.style.flex = getComputedStyle(el).flex;
+  wrap.style.minHeight = '0';
+  el.parentNode.insertBefore(wrap, el);
+  wrap.appendChild(el);
+  el.style.flex = '1 1 auto';
+  const mk = (dir) => {
+    const b = document.createElement('button');
+    b.className = 'hnav-btn ' + dir;
+    b.setAttribute('aria-label', dir === 'l' ? 'Rolar para a esquerda' : 'Rolar para a direita');
+    b.innerHTML = svg(dir === 'l' ? 'chevL' : 'chevR', 16, 2.4);
+    b.onclick = () => el.scrollBy({ left: (dir === 'l' ? -1 : 1) * (step || el.clientWidth * 0.8), behavior: 'smooth' });
+    wrap.appendChild(b);
+    return b;
+  };
+  const L = mk('l'), R = mk('r');
+  const upd = () => { L.hidden = el.scrollLeft <= 2; R.hidden = el.scrollLeft >= el.scrollWidth - el.clientWidth - 2; };
+  el.addEventListener('scroll', upd, { passive: true });
+  el.addEventListener('wheel', (e) => {
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX) && el.scrollWidth > el.clientWidth) { e.preventDefault(); el.scrollLeft += e.deltaY; }
+  }, { passive: false });
+  new ResizeObserver(upd).observe(el);
+  new MutationObserver(upd).observe(el, { childList: true, subtree: true });
+  upd();
+}
+
+function shell(el, body, cta) {
+  el.innerHTML = `
+    <div class="v-head">
+      <button class="ib" aria-label="Voltar">${svg('back')}</button>
+      <div class="tt"><strong>Seu roteiro</strong><span>Balneário Camboriú · 12–18 nov</span></div>
+      <button class="ib" aria-label="Fechar">${svg('x')}</button>
+    </div>
+    ${body}
+    <div class="v-foot"><button class="cta">${cta}</button></div>`;
+}
+const dayChips = (sel, count) => DAYS.map((x, d) => `<button class="dchip" data-day="${d}" aria-pressed="${d === sel}"><span>${WEEK[x.getDay()]}</span><b>${x.getDate()}</b><i style="visibility:${count(d) ? 'visible' : 'hidden'}"></i></button>`).join('');
+
+/* ---------- A: Linha do tempo ---------- */
+(function () {
+  const el = $('#va'), SLOTS = ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00', '22:00'];
+  const plan = DAYS.map(() => ({}));
+  Object.assign(plan[0], { '10:00': 1, '12:00': 3, '20:00': 7 });
+  Object.assign(plan[1], { '10:00': 2 });
+  let day = 0, slot = null;
+  shell(el, `<div class="chips-row" data-days></div><div class="tl" data-tl></div><div class="tray"><div class="tray-head">Sugestões</div><div class="tray-row" data-tray></div></div>`, 'Ver no mapa');
+  const days = $('[data-days]', el), tl = $('[data-tl]', el), tray = $('[data-tray]', el);
+  hnav(days); hnav(tray);
+  function render() {
+    days.innerHTML = dayChips(day, (d) => Object.keys(plan[d]).length);
+    tl.innerHTML = SLOTS.map((t) => {
+      const s = plan[day][t] && byId(plan[day][t]);
+      return `<div class="tl-row"><span class="tl-time">${t}</span>${s
+        ? `<div class="tl-card">${ph(s.k)}<span class="tx"><strong>${s.t}</strong><span>${s.s}</span></span><button class="ib sm" data-rm="${t}" aria-label="Remover ${s.t}">${svg('x', 16, 2.2)}</button></div>`
+        : `<button class="tl-free" data-slot="${t}" aria-pressed="${slot === t}">${slot === t ? 'Escolha uma sugestão abaixo' : svg('plus', 16, 2.2)}</button>`}</div>`;
+    }).join('');
+    const used = new Set(plan.flatMap((p) => Object.values(p)));
+    tray.innerHTML = SUGG.filter((s) => !used.has(s.id)).map((s) => `
+      <div class="scard">${ph(s.k)}<button class="add" data-add="${s.id}" aria-label="Adicionar ${s.t}">${svg('plus', 16, 2.4)}</button><strong>${s.t}</strong></div>`).join('');
+  }
+  el.addEventListener('click', (e) => {
+    const d = e.target.closest('[data-day]'), f = e.target.closest('[data-slot]'), r = e.target.closest('[data-rm]'), a = e.target.closest('[data-add]');
+    if (d) { day = +d.dataset.day; slot = null; }
+    else if (f) slot = slot === f.dataset.slot ? null : f.dataset.slot;
+    else if (r) delete plan[day][r.dataset.rm];
+    else if (a) { const t = slot || SLOTS.find((x) => !plan[day][x]); if (!t) return; plan[day][t] = +a.dataset.add; slot = null; }
+    else return;
+    render();
+  });
+  render();
+})();
+
+/* ---------- B: Quadro com fotos ---------- */
+(function () {
+  const el = $('#vb'), W = 250;
+  const plan = DAYS.map(() => []);
+  plan[0].push({ t: '10:00', id: 1 }, { t: '13:00', id: 3 });
+  plan[1].push({ t: '09:30', id: 2 }, { t: '19:00', id: 5 });
+  plan[2].push({ t: '18:00', id: 6 }, { t: '21:30', id: 7 });
+  let active = 0;
+  shell(el, `<div class="chips-row" data-days></div><div class="kb" data-kb></div><button class="bar" data-bar></button>`, 'Ver no mapa');
+  const days = $('[data-days]', el), kb = $('[data-kb]', el);
+  hnav(days); hnav(kb, W);
+  function render() {
+    const keep = kb.scrollLeft;
+    days.innerHTML = dayChips(active, (d) => plan[d].length);
+    kb.innerHTML = DAYS.map((x, d) => `
+      <section class="kcol" aria-label="Dia ${d + 1}">
+        <div class="kcol-h">${DAYN[x.getDay()]}, ${x.getDate()} nov</div>
+        <div class="kcol-b">${plan[d].sort((a, b) => a.t.localeCompare(b.t)).map((c) => { const s = byId(c.id); return `
+          <div class="kcard"><span class="kph">${ph(s.k)}<span class="t-ov">${c.t}</span></span><div class="kt"><strong>${s.t}</strong><span>${s.s}</span></div></div>`; }).join('')}
+          <button class="addtile" data-add="${d}">${svg('plus', 16, 2.2)}Adicionar</button>
+        </div>
+      </section>`).join('');
+    kb.scrollLeft = keep;
+    const used = new Set(plan.flat().map((c) => c.id));
+    $('[data-bar]', el).innerHTML = `${svg('pin', 18, 2)}<span><b>${SUGG.length - used.size} sugestões</b> para você</span><em>Ver</em>`;
+  }
+  kb.addEventListener('scroll', () => {
+    const a = Math.round(kb.scrollLeft / W);
+    if (a !== active) { active = a; days.querySelectorAll('[data-day]').forEach((c) => c.setAttribute('aria-pressed', +c.dataset.day === a)); }
+  });
+  el.addEventListener('click', (e) => {
+    const d = e.target.closest('[data-day]'), a = e.target.closest('[data-add]');
+    if (d) kb.scrollTo({ left: +d.dataset.day * W, behavior: 'smooth' });
+    if (a) {
+      const used = new Set(plan.flat().map((c) => c.id)), next = SUGG.find((s) => !used.has(s.id));
+      if (next) { plan[+a.dataset.add].push({ t: '15:00', id: next.id }); render(); }
+    }
+  });
+  render();
+})();
+
+/* ---------- C: Por período ---------- */
+(function () {
+  const el = $('#vc'), PER = [['Manhã', 9], ['Tarde', 14], ['Noite', 19]];
+  const plan = DAYS.map(() => ({ Manhã: [], Tarde: [], Noite: [] }));
+  plan[0].Manhã.push(1, 8); plan[0].Tarde.push(3, 4); plan[0].Noite.push(7);
+  plan[1].Manhã.push(2); plan[1].Noite.push(5);
+  let day = 0;
+  shell(el, `<div class="chips-row" data-days></div><div class="pd" data-pd></div>`, 'Ver no mapa');
+  const days = $('[data-days]', el), pd = $('[data-pd]', el);
+  hnav(days);
+  const hh = (h) => `${String(Math.floor(h)).padStart(2, '0')}:${h % 1 ? '30' : '00'}`;
+  function render() {
+    days.innerHTML = dayChips(day, (d) => PER.some(([p]) => plan[d][p].length));
+    pd.innerHTML = PER.map(([p, h0]) => `
+      <section>
+        <div class="pd-h"><strong>${p}</strong><span>${plan[day][p].length ? plan[day][p].length + (plan[day][p].length === 1 ? ' atividade' : ' atividades') : 'Livre'}</span></div>
+        <div class="pd-row" data-row>${plan[day][p].map((id, i) => { const s = byId(id); return `
+          <div class="pcard">${ph(s.k)}<small>${hh(h0 + i * 1.5)}</small><strong>${s.t}</strong></div>`; }).join('')}
+          <button class="addtile v" data-add="${p}">${svg('plus', 18, 2.2)}Adicionar</button>
+        </div>
+      </section>`).join('');
+    pd.querySelectorAll('[data-row]').forEach((r) => hnav(r));
+  }
+  el.addEventListener('click', (e) => {
+    const d = e.target.closest('[data-day]'), a = e.target.closest('[data-add]');
+    if (d) { day = +d.dataset.day; render(); }
+    if (a) {
+      const used = new Set(plan.flatMap((x) => [...x.Manhã, ...x.Tarde, ...x.Noite])), next = SUGG.find((s) => !used.has(s.id));
+      if (next) { plan[day][a.dataset.add].push(next.id); render(); }
+    }
+  });
+  render();
+})();
+
+/* ---------- D: Descobrir ---------- */
+(function () {
+  const el = $('#vd'), TIMES = ['08:00', '09:00', '10:30', '12:30', '14:00', '15:30', '17:00', '18:30', '20:00', '21:30'];
+  const plan = DAYS.map(() => []);
+  let i = 0, mode = 'card', selDay = 0, selTime = '10:30';
+  shell(el, `<div class="dc" data-dc></div><div class="mini"><span class="lbl">Seu roteiro</span><div class="chips-row" data-mini></div></div>`, 'Ver roteiro completo');
+  const dc = $('[data-dc]', el), mini = $('[data-mini]', el);
+  hnav(mini);
+  function render() {
+    const s = SUGG[i];
+    if (!s) dc.innerHTML = `<div class="empty">Você viu todas as sugestões.<button class="btn-out" data-act="restart" style="padding:0 20px">Ver de novo</button></div>`;
+    else if (mode === 'card') dc.innerHTML = `
+      <span class="dc-count">Sugestão ${i + 1} de ${SUGG.length}</span>
+      <div class="dc-card">${ph(s.k)}<div class="dc-body"><strong>${s.t}</strong><span>${s.s}</span></div></div>
+      <div class="dc-acts"><button class="btn-out" data-act="skip">${svg('x', 18, 2.2)}Pular</button><button class="btn-in" data-act="add">${svg('plus', 18, 2.4)}Adicionar</button></div>`;
+    else {
+      dc.innerHTML = `
+        <div class="dc-card small">${ph(s.k)}<div class="dc-body"><strong>${s.t}</strong><span>${s.s}</span></div></div>
+        <span class="lbl">Dia</span><div class="row-x" data-x>${dayChips(selDay, (d) => plan[d].length)}</div>
+        <span class="lbl">Horário</span><div class="row-x" data-x>${TIMES.map((t) => `<button class="pill" data-time="${t}" aria-pressed="${t === selTime}">${t}</button>`).join('')}</div>
+        <div class="dc-acts"><button class="btn-out" data-act="cancel">Voltar</button><button class="btn-in" data-act="confirm">${svg('check', 18, 2.4)}Confirmar</button></div>`;
+      dc.querySelectorAll('[data-x]').forEach((r) => hnav(r));
+    }
+    mini.innerHTML = DAYS.map((x, d) => `<span class="mchip">${WEEK[x.getDay()]} ${x.getDate()}<b class="${plan[d].length ? '' : 'zero'}">${plan[d].length}</b></span>`).join('');
+  }
+  el.addEventListener('click', (e) => {
+    const a = e.target.closest('[data-act]'), d = e.target.closest('[data-day]'), t = e.target.closest('[data-time]');
+    if (d && mode === 'when') { selDay = +d.dataset.day; render(); return; }
+    if (t) { selTime = t.dataset.time; dc.querySelectorAll('[data-time]').forEach((b) => b.setAttribute('aria-pressed', b === t)); return; }
+    if (!a) return;
+    const act = a.dataset.act;
+    if (act === 'skip') i++;
+    if (act === 'add') mode = 'when';
+    if (act === 'cancel') mode = 'card';
+    if (act === 'confirm') { plan[selDay].push({ id: SUGG[i].id, t: selTime }); i++; mode = 'card'; }
+    if (act === 'restart') i = 0;
+    render();
+  });
+  render();
+})();
+</script>
+</body>
+</html>
